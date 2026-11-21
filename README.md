@@ -1,6 +1,7 @@
 # আইএইচআর ইউনিভার্সাল আইআর রিমোট (ESP8266)
 
 [![CI](https://github.com/rmd734412-web/ihr-universal-ir-remote/actions/workflows/ci.yml/badge.svg)](https://github.com/rmd734412-web/ihr-universal-ir-remote/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/rmd734412-web/ihr-universal-ir-remote?label=release)](https://github.com/rmd734412-web/ihr-universal-ir-remote/releases/latest)
 
 NodeMCU ESP-12E দিয়ে তৈরি একটি **সম্পূর্ণ ওয়াই-ফাই আইআর রিমোট**। মোবাইল ব্রাউজার থেকে টিভি/এসির রিমোট চালানো, নতুন সংকেত শেখা, প্রোফাইল বানানো—সবই ইন্টারনেট ছাড়াই চলে।
 
@@ -8,37 +9,30 @@ NodeMCU ESP-12E দিয়ে তৈরি একটি **সম্পূর�
 
 ---
 
-## Android/Termux থেকে প্রস্তুত BIN নামানো (Arduino IDE ছাড়া)
+## ডাউনলোড ও প্রথম সেটআপ
 
-`main`-এ নতুন কোড পুশ করলেই GitHub Actions ESP8266 কোর্স ও লাইব্রেরি ইনস্টল করে আসল NodeMCU ফার্মওয়্যার কম্পাইল করে। কম্পাইল সফল হলে নিচের নামে একটি artifact তৈরি হয়:
+**সবচেয়ে সহজ পথ:** [সর্বশেষ GitHub Release](https://github.com/rmd734412-web/ihr-universal-ir-remote/releases/latest) পেজ থেকে `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin` ডাউনলোড করুন। সঙ্গে `.sha256.txt` ফাইলটিও নামালে ডাউনলোড যাচাই করা যায়।
 
-`ihr-universal-ir-remote-nodemcuv2-v1.0.0`
+- 📦 [Firmware Downloads / ফার্মওয়্যার ডাউনলোড](https://github.com/rmd734412-web/ihr-universal-ir-remote/releases/latest)
+- 📖 [INSTALL.md — Android/Termux থেকে ফ্ল্যাশ ও সেটআপ](docs/INSTALL.md)
+- 📱 [DASHBOARD.md — ড্যাশবোর্ড ব্যবহার](docs/DASHBOARD.md)
+- ❓ [FAQ.md — সাধারণ প্রশ্ন](docs/FAQ.md)
 
-**ফোনের ব্রাউজার থেকে ডাউনলোড:**
-
-1. [GitHub রেপো](https://github.com/rmd734412-web/ihr-universal-ir-remote) খুলুন → **Actions** ট্যাব।
-2. `main` ব্রাঞ্চের সবশেষ **CI** রানে সবুজ চেকমার্ক ✅ যাচাই করুন। নতুন করে বানাতে হলে **Run workflow** → `main` → **Run workflow** চাপুন।
-3. রানের ভেতরে **Build firmware (NodeMCU ESP-12E)** জব খুলুন → **Artifacts** → `ihr-universal-ir-remote-nodemcuv2-v1.0.0` ডাউনলোড করুন।
-4. ডাউনলোড করা ZIP-এর ভেতরে `.bin` ফাইলটি ফ্ল্যাশ করার জন্য ব্যবহার করুন (`.elf` শুধু ডিবাগিংয়ের জন্য)।
-
-**Termux ব্যবহার করলে (ইতিমধ্যে `gh` সেটআপ থাকলে):**
-
-```sh
-gh run list --workflow CI --limit 5
-gh run download <RUN_ID> -n ihr-universal-ir-remote-nodemcuv2-v1.0.0
-```
-
-**USB OTG দিয়ে Termux থেকে ফ্ল্যাশ (ঐচ্ছিক):**
+সংক্ষেপে:
 
 ```sh
 pkg install python
 pip install esptool
 ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null
 python3 -m esptool --chip esp8266 --port /dev/ttyUSB0 --baud 115200 \
-  write_flash --flash_size 4MB1M 0x00000 ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin
+  write_flash --flash_size 4MB1M 0x00000 \
+  ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin
 ```
 
-PORT-এর নাম আপনার ফোনে `/dev/ttyACM0` হতে পারে। কানেকশন না ধরলে বোর্ডের **FLASH** বাটন চেপে রেখে কমান্ডটি চালান। LittleFS/IOS upload লাগবে না—ওয়েব পেজগুলো BIN-এর ভেতরেই আছে।
+PORT-এর নাম `/dev/ttyACM0` হতে পারে। কানেকশন না ধরলে বোর্ডের **FLASH** বাটন চেপে রেখে কমান্ডটি চালান। USB OTG কেবল লাগবে। LittleFS/IOS upload লাগবে না—ওয়েব পেজগুলো BIN-এর ভেতরেই আছে।
+
+> ডেভেলপাররা চাইলে Actions ট্যাবের সবুজ CI রান থেকেও artifact নামাতে পারেন: **Build firmware (NodeMCU ESP-12E) → Artifacts → `ihr-universal-ir-remote-nodemcuv2-v1.0.0`**। সাধারণ ব্যবহারকারীদের জন্য Release-এই সঠিক উৎস।
+
 
 ---
 
@@ -71,27 +65,29 @@ PORT-এর নাম আপনার ফোনে `/dev/ttyACM0` হতে প�
 - TSAL620 আইআর LED
 - BC547 ট্রানজিস্টর
 - 1kΩ রেজিস্টার (বেসের জন্য)
-- **একটি 47–220Ω রেজিস্টার LED-র সঙ্গে যোগ করার পরামর্শ** (ন_IR LED-র নিরাপদ রেঞ্জের জন্য; বিস্তারিত [WIRING.md](WIRING.md)-এ)
+- **একটি 47–220Ω রেজিস্টার LED-র সঙ্গে যোগ করার পরামর্শ** (IR LED-র নিরাপদ রেঞ্জের জন্য; বিস্তারিত [WIRING.md](WIRING.md)-এ)
 - ঐচ্ছিক: 100nF ক্যাপাসিটর (TSOP-এর পাশে), ছোট push button (ফ্যাক্টরি রিসেটের জন্য)
 
 ### সফটওয়্যার
-- প্রস্তুত BIN চাইলে কোনো IDE লাগবে না—উপরের **Android/Termux থেকে প্রস্তুত BIN নামানো** অংশ দেখুন।
+- প্রস্তুত BIN চাইলে কোনো IDE লাগবে না—উপরের **ডাউনলোড ও প্রথম সেটআপ** অংশ দেখুন।
 - নিজে কম্পাইল/আপলোড করতে চাইলে: Arduino IDE 2.x
 - ESP8266 board package **3.1.2** (Board Manager থেকে)
-- লাইব্রেরি (Library Manager থেকে): **ArduinoJson 7.x**, **IRremoteESP8266 2.8.6**
+- লাইব্রেরি (Library Manager থেকে): **ArduinoJson 7.4.2**, **IRremoteESP8266 2.8.6**
 - ভিতরের লাইব্রেরি (আলাদা ইনস্টল লাগবে না): LittleFS, ESP8266WiFi, ESP8266WebServer, DNSServer
 
 ---
 
-## ৩. খুব সহজে শুরু করুন (৩ ধাপ)
+## ৩. খুব সহজে শুরু করুন
 
-### ধাপ ১ — Arduino IDE সেটআপ
+**নতুন ব্যবহারকারী:** উপরের [INSTALL.md](docs/INSTALL.md) গাইডটি অনুসরণ করুন। নিচের Arduino IDE ধাপগুলো শুধু তাদের জন্য যারা source থেকে নিজে কম্পাইল/আপলোড করতে চান।
+
+### বিকল্প — Arduino IDE সেটআপ
 1. Arduino IDE খুলুন → **File → Preferences** → “Additional boards manager URLs”-এ দিন:
    `http://arduino.esp8266.com/stable/package_esp8266com_index.json`
 2. **Tools → Board → Boards Manager** →Search দিয়ে `esp8266` → **esp8266 by ESP8266 Community (3.1.2)** ইনস্টল করুন।
-3. **Tools → Manage Libraries** → `ArduinoJson` (7.x) ও `IRremoteESP8266` (2.8.6) ইনস্টল করুন।
+3. **Tools → Manage Libraries** → `ArduinoJson` (7.4.2) ও `IRremoteESP8266` (2.8.6) ইনস্টল করুন।
 
-### ধাপ ২ — কোড আপলোড
+### ধাপ ১ — কোড আপলোড
 1. Arduino IDE-তে **File → Open** দিয়ে এই ফোল্ডারটি খুলুন (`ihr-universal-ir-remote`)。
    ভেতরে `ihr-universal-ir-remote.ino` ফাইলটি অটো খুলবে।
 2. Tools মেনুতে সেট করুন:
@@ -101,7 +97,7 @@ PORT-এর নাম আপনার ফোনে `/dev/ttyACM0` হতে প�
    | Board | NodeMCU 1.0 (ESP-12E Module) |
    | Upload Speed | 115200 |
    | CPU Frequency | 80 MHz |
-   | Flash Size | 4MB (FS: 1MB বা 2MB) |
+   | Flash Size | 4MB (FS: 1MB) |
 
 3. USB কেবল দিয়ে NodeMCU কম্পিউটারে দিন → **→ (Upload)** চাপুন।
    “Connecting…”-এ আটকে গেলে বোর্ডের **FLASH** বাটন কিছুক্ষণ চেপে রাখুন।
@@ -109,7 +105,7 @@ PORT-এর নাম আপনার ফোনে `/dev/ttyACM0` হতে প�
 
 > কোনো LittleFS/IOS upload লাগবে না। ওয়েব পেজগুলো ফার্মওয়্যারের ভেতরেই আছে।
 
-### ধাপ ৩ — মোবাইলে ড্যাশবোর্ড খুলুন
+### ধাপ ২ — মোবাইলে ড্যাশবোর্ড খুলুন
 1. আপনার ফোনের WiFi-তে নতুন নেটওয়ার্ক `IHR-IR-Setup` দেখা যাবে → সেটিতে কানেক্ট করুন (পাসওয়ার্ড লাগবে না)।
 2. কিছু ফোনে APK পপ-আপ আসবে; সেটিতে **OK/Stay connected** চাপুন। পপ-আপ না এলে ব্রাউজারে যান: **http://192.168.4.1**
 3. ড্যাশবোর্ড এসে গেলেই কাজ শুরু।
@@ -165,6 +161,8 @@ PORT-এর নাম আপনার ফোনে `/dev/ttyACM0` হতে প�
 
 ## ৭. সমস্যা হলে
 
+আরও বিস্তারিত সমাধান: [FAQ.md](docs/FAQ.md)।
+
 | সমস্যা | করণীয় |
 |---|---|
 | ফোনে `IHR-IR-Setup` দেখছি না | বোর্ডে পাওয়ার আছে কি না দেখুন; Serial Monitor-এ `ready` আছে কি না; ১২ সেকেন্ড অপেক্ষা করুন |
@@ -188,6 +186,11 @@ PORT-এর নাম আপনার ফোনে `/dev/ttyACM0` হতে প�
 | `data/devices.json` | প্রথম বুটে লোড হওয়া LG উদাহরণ প্রোফাইল |
 | `tools/generate_assets.py` | `data/` বদলের পর `WebAssets.h` বানানোর টুল |
 | `WIRING.md` | বিস্তারিত ওয়্যারিং গাইড |
+| `docs/INSTALL.md` | ফার্মওয়্যার ফ্ল্যাশ, প্রথম সেটআপ ও আপডেট গাইড |
+| `docs/DASHBOARD.md` | ড্যাশবোর্ড ও রিমোট ব্যবহারের গাইড |
+| `docs/FAQ.md` | সাধারণ প্রশ্ন ও সমস্যার সমাধান |
+| `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md` | অবদান, নিরাপত্তা ও সংস্করণ তথ্য |
+| `RELEASE_NOTES.md` | GitHub Release-এর মুক্তি নোট |
 | `tests/` | কম্পিউটারে চালানো যাচাই (হার্ডওয়্যার লাগবে না) |
 
 `data/`-এ কিছু বদলে থাকলে চালান:
@@ -210,5 +213,19 @@ sh tests/run_tests.sh
 - সব ডেটা `/config.json` ও `/signals.json`-এ থাকে (atomic write, পাওয়ার গেলে নষ্ট হয় না)।
 - ওয়েব সার্ভার: port 80, ক্যাপ্টিভ DNS: port 53, AP IP: `192.168.4.1`।
 - API: `/api/config`, `/api/signals`, `/api/send`, `/api/learn/start|status|cancel`, `/api/status`, `/api/restart`, `/api/factory-reset`।
+
+---
+
+## ১০. সীমাবদ্ধতা ও নিরাপত্তা
+
+- শুধু **2.4 GHz** Wi-Fi সমর্থিত; 5 GHz নেটওয়ার্ক দেখা যাবে না।
+- IR শেখার জন্য ট্রান্সমিটার/রিসিভারের সামনে পরিষ্কার দৃশ্য লাগবে; রোদ বা শক্তিশালী লাইট বাধা দিতে পারে।
+- শুধু NEC, LG, Sony, Samsung, JVC, Panasonic, RC5, RC6, Denon, Coolix, Midea24 ও raw timing সমর্থিত।
+- সেটআপ AP প্রথম বারের জন্য ওপেন রাখা হয়; অন্যরা দেখতে পারলে Settings-এ লগইন চালু করুন।
+- ড্যাশবোর্ড শুধু লোকাল নেটওয়ার্কের জন্য; ইন্টারনেটে expose করবেন না।
+- একটি IR LED-র সঙ্গে অবশ্যই রেজিস্টার ব্যবহার করুন। মেডিকেল, মেইন-সুইচিং বা নিরাপত্তা-সংক্রান্ত ডিভাইস নিয়ন্ত্রণে ব্যবহার করবেন না।
+- GitHub Actions শুধু সফটওয়্যার বিল্ড ও যাচাই করে; বাস্তব হার্ডওয়্যার পরীক্ষা ব্যবহারকারীকেই করতে হয়।
+
+বিস্তারিত: [SECURITY.md](SECURITY.md), [FAQ.md](docs/FAQ.md)।
 
 **লাইসেন্স:** MIT — [LICENSE](LICENSE) দেখুন।

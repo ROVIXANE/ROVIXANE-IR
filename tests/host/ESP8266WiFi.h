@@ -37,6 +37,13 @@ class WiFiClass {
     return true;
   }
   bool softAPConfig(IPAddress, IPAddress, IPAddress) { return true; }
+  bool softAPdisconnect(bool wifioff = false) {
+    apSsid = "";
+    apPassword = "";
+    apDisconnects++;
+    if (wifioff && currentMode == WIFI_AP_STA) currentMode = WIFI_STA;
+    return true;
+  }
   int status() const { return staConnected ? WL_CONNECTED : WL_IDLE_STATUS; }
   IPAddress localIP() const { return staIp; }
   IPAddress softAPIP() const { return IPAddress(192, 168, 4, 1); }
@@ -45,7 +52,7 @@ class WiFiClass {
   uint8_t currentMode = WIFI_OFF;
   bool staConnected = false;
   String staSsid, staPassword, apSsid, apPassword;
-  int beginCalls = 0, apCalls = 0;
+  int beginCalls = 0, apCalls = 0, apDisconnects = 0;
   IPAddress staIp{192, 168, 1, 42};
 };
 inline WiFiClass WiFi;

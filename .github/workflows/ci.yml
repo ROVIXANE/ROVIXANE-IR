@@ -37,6 +37,9 @@ jobs:
   firmware-build:
     name: Build firmware (NodeMCU ESP-12E)
     runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.stage.outputs.artifact_name }}
+      firmware_version: ${{ steps.stage.outputs.firmware_version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -82,6 +85,7 @@ jobs:
           echo "BUILD_DIR=${BUILD_DIR}" >> "${GITHUB_ENV}"
 
       - name: Verify and stage firmware artifact
+        id: stage
         run: |
           set -eu
           VERSION="$(sed -n 's/^#define IHR_FIRMWARE_VERSION "\([^"]*\)".*/\1/p' Compatibility.h | head -n 1)"
@@ -100,6 +104,8 @@ jobs:
 
           echo "FIRMWARE_VERSION=${VERSION}" >> "${GITHUB_ENV}"
           echo "ARTIFACT_NAME=${ARTIFACT}" >> "${GITHUB_ENV}"
+          echo "firmware_version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "artifact_name=${ARTIFACT}" >> "${GITHUB_OUTPUT}"
 
           echo "Firmware: ${ARTIFACT}.bin"
           ls -lh "${OUT}/${ARTIFACT}.bin"
@@ -124,4 +130,70 @@ jobs:
             echo "- IRremoteESP8266: \`${IRREMOTEESP8266_VERSION}\`"
             echo "- Firmware version: \`${FIRMWARE_VERSION}\`"
             echo "- Artifact: \`${ARTIFACT_NAME}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  release:
+    name: Publish verified GitHub Release
+    needs:
+      - host-checks
+      - firmware-build
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download verified firmware artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.firmware-build.outputs.artifact_name }}
+          path: release-assets
+
+      - name: Verify BIN before publishing
+        env:
+          ARTIFACT_NAME: ${{ needs.firmware-build.outputs.artifact_name }}
+        run: |
+          set -eu
+          BIN="release-assets/${ARTIFACT_NAME}.bin"
+          test -s "${BIN}"
+          MAGIC="$(od -An -tu1 -N1 "${BIN}" | tr -d '[:space:]')"
+          test "${MAGIC}" = "233"
+          sha256sum "${BIN}" > "release-assets/${ARTIFACT_NAME}.sha256.txt"
+          echo "Verified ESP8266 BIN (magic 0xE9):"
+          ls -lh "${BIN}" "release-assets/${ARTIFACT_NAME}.sha256.txt"
+          cat "release-assets/${ARTIFACT_NAME}.sha256.txt"
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: ${{ needs.firmware-build.outputs.artifact_name }}
+          FIRMWARE_VERSION: ${{ needs.firmware-build.outputs.firmware_version }}
+        run: |
+          set -eu
+          TAG="v${FIRMWARE_VERSION}"
+          BIN="release-assets/${ARTIFACT_NAME}.bin"
+          CHECKSUM="release-assets/${ARTIFACT_NAME}.sha256.txt"
+          TITLE="IHR Universal IR Remote v${FIRMWARE_VERSION}"
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} exists; refreshing verified assets."
+            gh release upload "${TAG}" "${BIN}" "${CHECKSUM}" --clobber
+          else
+            echo "Creating release ${TAG}."
+            gh release create "${TAG}" "${BIN}" "${CHECKSUM}" \
+              --title "${TITLE}" \
+              --notes-file RELEASE_NOTES.md
+          fi
+
+      - name: Write release summary
+        env:
+          FIRMWARE_VERSION: ${{ needs.firmware-build.outputs.firmware_version }}
+        run: |
+          {
+            echo "### Release published"
+            echo ""
+            echo "- Tag: \`v${FIRMWARE_VERSION}\`"
+            echo "- Download: https://github.com/rmd734412-web/ihr-universal-ir-remote/releases/tag/v${FIRMWARE_VERSION}"
           } >> "${GITHUB_STEP_SUMMARY}"

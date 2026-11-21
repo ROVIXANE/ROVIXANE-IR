@@ -5,6 +5,8 @@
   var ICONS = ['⏻','📺','🔊','🔈','🔇','➕','➖','⬆','⬇','⬅','➡','✅',
                '↩','🏠','☰','▶','⏸','⏹','⏮','⏭','❄','💡','🌀','⭐'];
   var COLORS = ['#4f8cff','#ff6b6b','#37d67a','#ffc857','#b06dff','#00c2c7','#e8eefc'];
+  var PROTOCOLS = ['NEC','LG','LG2','SONY','SAMSUNG','JVC','PANASONIC',
+                   'RC5','RC6','DENON','COOLIX','MIDEA24'];
 
   var STR = {
     en: {
@@ -28,6 +30,12 @@
       saved:'Saved', sent:'Sent', failed:'Request failed',
       confirmDeleteProfile:'Delete this profile?', confirmDeleteSignal:'Delete this button?',
       confirmFactory:'Factory reset? This erases all profiles and settings.',
+      restartNotice:'Settings saved. Restart to apply Wi-Fi / login changes.',
+      factoryHint:'Factory reset started. Reconnect to IHR-IR-Setup after reboot.',
+      setupTitle:'First-time setup', setupStep1:'Connect your phone to the IHR-IR-Setup Wi-Fi network.',
+      setupStep2:'Open Settings and enter your Wi-Fi name and password.',
+      setupStep3:'Save, restart, then reconnect your phone to your own Wi-Fi.',
+      setupGoSettings:'Open Settings',
       confirmRestart:'Restart the device now?', restored:'Backup restored',
       exported:'Backup downloaded', noProfiles:'Create a profile first',
       protocol:'Protocol', hex:'HEX value', bits:'Bits', raw:'Raw timings (µs)',
@@ -62,6 +70,12 @@
       saved:'সংরক্ষিত', sent:'পাঠানো হয়েছে', failed:'অনুরোধ ব্যর্থ',
       confirmDeleteProfile:'এই প্রোফাইল মুছে ফেলবেন?', confirmDeleteSignal:'এই বাটন মুছে ফেলবেন?',
       confirmFactory:'ফ্যাক্টরি রিসেট? সব প্রোফাইল ও সেটিংস মুছে যাবে।',
+      restartNotice:'সেটিংস সংরক্ষিত। ওয়াইফাই / লগইন পরিবর্তন প্রয়োগ করতে রিস্টার্ট করুন।',
+      factoryHint:'ফ্যাক্টরি রিসেট শুরু হয়েছে। রিস্টার্টের পর IHR-IR-Setup-এ আবার কানেক্ট করুন।',
+      setupTitle:'প্রথমবার সেটআপ', setupStep1:'আপনার ফোনকে IHR-IR-Setup ওয়াইফাইতে কানেক্ট করুন।',
+      setupStep2:'সেটিংস খুলে আপনার ওয়াইফাইয়ের নাম ও পাসওয়ার্ড দিন।',
+      setupStep3:'সংরক্ষণ করুন, রিস্টার্ট দিন, তারপর ফোনকে নিজের ওয়াইফাইতে কানেক্ট করুন।',
+      setupGoSettings:'সেটিংস খুলুন',
       confirmRestart:'এখনই ডিভাইস রিস্টার্ট করবেন?', restored:'ব্যাকআপ পুনরুদ্ধার হয়েছে',
       exported:'ব্যাকআপ ডাউনলোড হয়েছে', noProfiles:'প্রথমে একটি প্রোফাইল তৈরি করুন',
       protocol:'প্রোটোকল', hex:'হেক্স মান', bits:'বিট', raw:'কাঁচা টাইমিং (µs)',
@@ -103,6 +117,11 @@
     el.className = 'toast' + (isErr ? ' err' : '');
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { el.className = 'toast hidden'; }, 2800);
+  }
+
+  function showRestartNotice(show) {
+    $('restartNotice').classList.toggle('hidden', !show);
+    $('noticeRestartBtn').classList.toggle('hidden', !show);
   }
 
   function api(path, opts) {
@@ -171,7 +190,7 @@
                         '<span class="edit" role="button" aria-label="' + t('edit') + '">✎</span>';
         btn.addEventListener('click', function (ev) {
           if (ev.target && ev.target.classList.contains('edit')) { openSignalEditor(s); return; }
-          sendSignal(s);
+          sendSignal(s, ev);
         });
         grid.appendChild(btn);
       })(signals[i]);
@@ -181,8 +200,14 @@
   function renderStatus() {
     var s = state.status || {};
     var pill = $('connPill');
-    pill.textContent = s.apMode ? t('apMode') : (s.wifiConnected ? t('online') : t('connecting'));
+    var connectedSsid = (state.cfg && state.cfg.wifiSsid) || s.wifiSsid || '';
+    pill.textContent = s.apMode ? t('apMode')
+      : (s.wifiConnected ? (connectedSsid || t('online')) : t('connecting'));
+    pill.title = s.apMode ? (s.apSsid || t('apMode'))
+      : (s.wifiConnected ? (s.ip || connectedSsid) : t('connecting'));
     pill.className = 'pill ' + (s.apMode ? 'ap' : (s.wifiConnected ? 'on' : ''));
+    var needSetup = !!s.apMode || !(state.cfg && state.cfg.wifiSsid);
+    $('setupCard').classList.toggle('hidden', !needSetup);
     if (state.cfg && $('deviceName').textContent !== state.cfg.deviceName)
       $('deviceName').textContent = state.cfg.deviceName;
 
@@ -190,7 +215,7 @@
       var rows = [
         [t('diagFirmware'), s.version], [t('diagUptime'), s.uptimeSec],
         [t('diagHeap'), s.freeHeap], [t('diagFs'), s.fsUsed + ' / ' + s.fsTotal],
-        [t('diagIp'), s.ip], [t('diagWifi'), s.apMode ? t('apMode') : 'STA'],
+        [t('diagIp'), s.ip], [t('diagWifi'), s.apMode ? t('apMode') : (connectedSsid || 'STA')],
         [t('diagRssi'), s.rssi], [t('diagReset'), s.resetReason], [t('diagLocale'), s.locale]
       ];
       $('diagOut').textContent = rows.map(function (r) { return r[0] + ': ' + r[1]; }).join('\n');
@@ -205,9 +230,9 @@
     }).catch(function (e) { toast(t('failed') + ': ' + e.message, true); });
   }
 
-  function sendSignal(s) {
+  function sendSignal(s, ev) {
     var p = currentProfile();
-    var btn = event && event.target ? event.target : null;
+    var btn = ev && ev.target ? ev.target : null;
     if (btn) btn.classList.add('busy');
     post('/api/send', { profileId:p.id, signalId:s.id })
       .then(function () { toast(t('sent')); })
@@ -234,6 +259,12 @@
            (options[i] === selected ? ' selected' : '') + '>' + esc(options[i]) + '</option>';
     return s + '</select></label>';
   }
+  function protocolSelect(value) {
+    var current = String(value || 'NEC').toUpperCase();
+    var options = PROTOCOLS.slice();
+    if (options.indexOf(current) < 0) options.push(current);
+    return fieldSelect('mProtocol', t('protocol'), options, current);
+  }
 
   function openProfileEditor(profile) {
     state.modalMode = 'profile';
@@ -244,6 +275,7 @@
       fieldInput('mNameBn', t('nameBn'), p.nameBn, 'text', 'maxlength="39"') +
       fieldSelect('mIcon', t('icon'), ICONS, p.icon) +
       fieldInput('mColor', t('color'), p.color, 'color'));
+    $('modalDelete').classList.add('hidden');
     $('modal').classList.remove('hidden');
   }
 
@@ -264,7 +296,7 @@
       fieldInput('mColor', t('color'), s.color, 'color') +
       sel +
       '<div id="mProtoFields">' +
-        fieldInput('mProtocol', t('protocol'), s.protocol, 'text', 'maxlength="23"') +
+        protocolSelect(s.protocol) +
         fieldInput('mValue', t('value'), typeof s.value === 'number' ? '0x' + s.value.toString(16) : s.value) +
         fieldInput('mBits', t('bits'), s.bits, 'number', 'min="1" max="64"') +
       '</div>' +
@@ -282,6 +314,7 @@
     }
     $('mKind').addEventListener('change', toggleKind);
     toggleKind();
+    $('modalDelete').classList.toggle('hidden', !signal);
     $('modal').classList.remove('hidden');
   }
 
@@ -411,6 +444,21 @@
 
     $('modalSave').addEventListener('click', modalSave);
     $('modalCancel').addEventListener('click', closeModal);
+    $('modalDelete').addEventListener('click', function () {
+      if (state.modalMode !== 'signal' || !state.modalSignal) return;
+      if (!confirm(t('confirmDeleteSignal'))) return;
+      var p = currentProfile(); if (!p) return;
+      p.signals = (p.signals || []).filter(function (x) { return x.id !== state.modalSignal.id; });
+      saveDb().then(renderAll); closeModal();
+    });
+    $('setupGoSettings').addEventListener('click', function () {
+      var tab = document.querySelector('[data-tab="settings"]');
+      if (tab) tab.click();
+    });
+    $('noticeRestartBtn').addEventListener('click', function () {
+      if (!confirm(t('confirmRestart'))) return;
+      post('/api/restart', {}).catch(function () {}).then(function () { location.reload(); });
+    });
 
     $('learnStart').addEventListener('click', function () {
       post('/api/learn/start', {}).then(function () {
@@ -453,9 +501,9 @@
         irRepeat:Math.max(1, Math.min(10, parseInt($('cfgRepeat').value, 10) || 1)),
         locale:$('cfgLocale').value
       };
-      post('/api/config', c).then(function () {
+      post('/api/config', c).then(function (r) {
         state.cfg = c; state.lang = c.locale === 'bn' ? 'bn' : 'en';
-        applyI18n(); toast(t('saved')); loadAll();
+        applyI18n(); toast(t('saved')); showRestartNotice(!!(r && r.restartRequired)); loadAll();
       }).catch(function (e) { toast(t('failed') + ': ' + e.message, true); });
     });
 
@@ -476,10 +524,14 @@
         try {
           var d = JSON.parse(reader.result);
           if (d.format !== 'ihr-backup' || !d.config || !d.signals) throw new Error('bad file');
+          var needsRestart = false;
           post('/api/config', d.config)
-            .then(function () { return api('/api/signals', { method:'PUT',
-              headers:{'Content-Type':'application/json'}, body:JSON.stringify(d.signals) }); })
-            .then(function () { toast(t('restored')); loadAll(); })
+            .then(function (r) {
+              needsRestart = !!(r && r.restartRequired);
+              return api('/api/signals', { method:'PUT',
+                headers:{'Content-Type':'application/json'}, body:JSON.stringify(d.signals) });
+            })
+            .then(function () { toast(t('restored')); showRestartNotice(needsRestart); loadAll(); })
             .catch(function (e) { toast(t('failed') + ': ' + e.message, true); });
         } catch (e) { toast(t('failed') + ': ' + e.message, true); }
       };
@@ -493,13 +545,21 @@
     });
     $('factoryBtn').addEventListener('click', function () {
       if (!confirm(t('confirmFactory'))) return;
-      post('/api/factory-reset', {}).then(function () { location.reload(); }).catch(function () { location.reload(); });
+      post('/api/factory-reset', {})
+        .then(function () { alert(t('factoryHint')); })
+        .catch(function () { alert(t('factoryHint')); })
+        .then(function () {
+          if (state.status && state.status.apMode) {
+            setTimeout(function () { location.assign('http://192.168.4.1/'); }, 2500);
+          }
+        });
     });
     $('diagRefresh').addEventListener('click', function () {
       api('/api/status').then(function (s) { state.status = s; renderStatus(); });
     });
   }
 
+  showRestartNotice(false);
   bind();
   loadAll();
   setInterval(function () { api('/api/status').then(function (s) {

@@ -32,6 +32,15 @@
 
 <main>
   <section id="tab-remotes" class="panel active" aria-label="Remotes">
+    <div id="setupCard" class="card stack setup hidden">
+      <h2 data-i18n="setupTitle">First-time setup</h2>
+      <ol class="setup-steps">
+        <li data-i18n="setupStep1">Connect your phone to the IHR-IR-Setup Wi-Fi network.</li>
+        <li data-i18n="setupStep2">Open Settings and enter your Wi-Fi name and password.</li>
+        <li data-i18n="setupStep3">Save, restart, then reconnect your phone to your own Wi-Fi.</li>
+      </ol>
+      <button id="setupGoSettings" class="btn primary" type="button" data-i18n="setupGoSettings">Open Settings</button>
+    </div>
     <div class="row">
       <select id="profileSelect" aria-label="Remote profile"></select>
       <button id="addProfileBtn" class="btn ghost" type="button" data-i18n="addProfile">+ Profile</button>
@@ -77,6 +86,10 @@
       <label data-i18n="localeLbl">Language<select id="cfgLocale" name="locale"><option value="en">English</option><option value="bn">&#2476;&#2494;&#2434;&#2509;&#2482;&#2494;</option></select></label>
       <button class="btn primary" type="submit" data-i18n="saveSettings">Save settings</button>
       <p class="muted small" data-i18n="applyHint">WiFi / AP / login changes apply after restart.</p>
+      <div id="restartNotice" class="notice hidden">
+        <span data-i18n="restartNotice">Settings saved. Restart to apply Wi-Fi / login changes.</span>
+        <button id="noticeRestartBtn" class="btn primary hidden" type="button" data-i18n="restart">Restart</button>
+      </div>
     </form>
     <div class="card stack">
       <h2 data-i18n="dataTitle">Backup &amp; restore</h2>
@@ -106,6 +119,7 @@
     <div id="modalBody"></div>
     <div class="row end">
       <button id="modalCancel" class="btn ghost" type="button" data-i18n="cancel">Cancel</button>
+      <button id="modalDelete" class="btn ghost danger hidden" type="button" data-i18n="delete">Delete</button>
       <button id="modalSave" class="btn primary" type="button" data-i18n="save">Save</button>
     </div>
   </div>

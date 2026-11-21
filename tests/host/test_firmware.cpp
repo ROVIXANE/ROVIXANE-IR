@@ -175,6 +175,19 @@ static void testStatusAndNetwork() {
   d = asJson(get("/api/status"));
   CHECK(d["apMode"] == true, "status reports AP mode");
   CHECK(d["ip"] == "192.168.4.1", "AP IP reported");
+  CHECK(d["wifiSsid"] == "HomeRouter", "status reports configured WiFi SSID");
+  CHECK(d["apSsid"] == "IHR-IR-Setup", "status reports config AP SSID");
+
+  // Saved network returns: setup AP and captive DNS must be removed.
+  WiFi.staConnected = true;
+  loop();
+  CHECK(!gApMode, "AP torn down after WiFi recovers");
+  CHECK(!gDns.started, "captive DNS stopped after WiFi recovers");
+  CHECK(WiFi.apDisconnects >= 1, "softAPdisconnect called");
+  CHECK(WiFi.currentMode == WIFI_STA, "back to STA-only mode");
+  d = asJson(get("/api/status"));
+  CHECK(d["apMode"] == false, "status leaves AP mode after recovery");
+  CHECK(d["ip"] == "192.168.1.42", "status reports STA IP after recovery");
 }
 
 static void testAuth() {

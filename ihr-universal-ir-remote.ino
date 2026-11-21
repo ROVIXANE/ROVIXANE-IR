@@ -360,6 +360,13 @@ static void startAccessPoint() {
   if (gCfg.captivePortal) gDns.start(IHR_DNS_PORT, "*", IHR_AP_IP);
 }
 
+static void stopAccessPoint() {
+  if (!gApMode) return;
+  gDns.stop();
+  WiFi.softAPdisconnect(true);
+  gApMode = false;
+}
+
 static void startWifi() {
   if (gCfg.wifiSsid[0] != '\0') {
     WiFi.mode(WIFI_STA);
@@ -375,6 +382,12 @@ static void startWifi() {
 static void pollWifi() {
   if (gStaTrying && !wifiIsConnected() && millis() - gStaTryAt > 12000UL) {
     startAccessPoint();
+  }
+  // Once the saved network comes back, remove the setup AP and captive DNS so
+  // phones do not stay attached to a network that no longer leads to the device.
+  if (gApMode && gCfg.wifiSsid[0] != '\0' && wifiIsConnected()) {
+    stopAccessPoint();
+    gStaTrying = false;
   }
   if (gApMode && gCfg.wifiSsid[0] != '\0' && !wifiIsConnected() &&
       millis() - gStaRetryAt > 60000UL) {
@@ -667,6 +680,8 @@ static void handleStatus() {
   String ip = gApMode ? WiFi.softAPIP().toString() : WiFi.localIP().toString();
   doc["ip"] = ip;
   doc["apMode"] = gApMode;
+  doc["apSsid"] = gCfg.apSsid;
+  doc["wifiSsid"] = gCfg.wifiSsid;
   doc["wifiConnected"] = wifiIsConnected();
   doc["rssi"] = wifiIsConnected() ? WiFi.RSSI() : 0;
   doc["resetReason"] = ESP.getResetReason();
@@ -698,9 +713,12 @@ static void handleNotFound() {
     sendError(404, "not found");
     return;
   }
-  // Captive-portal probes get a friendly redirect to the dashboard.
-  gServer.sendHeader("Location", "http://192.168.4.1/");
-  gServer.send(302, "text/plain", "Redirecting to 192.168.4.1");
+  // Captive-portal probes get a friendly redirect to the active dashboard.
+  String target = gApMode ? IHR_AP_IP.toString()
+                          : (wifiIsConnected() ? WiFi.localIP().toString()
+                                               : IHR_AP_IP.toString());
+  gServer.sendHeader("Location", "http://" + target + "/");
+  gServer.send(302, "text/plain", "Redirecting to " + target);
 }
 
 static void setupRoutes() {
