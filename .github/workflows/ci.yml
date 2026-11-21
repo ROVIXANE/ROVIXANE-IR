@@ -160,7 +160,7 @@ jobs:
           test -s "${BIN}"
           MAGIC="$(od -An -tu1 -N1 "${BIN}" | tr -d '[:space:]')"
           test "${MAGIC}" = "233"
-          sha256sum "${BIN}" > "release-assets/${ARTIFACT_NAME}.sha256.txt"
+          (cd release-assets && sha256sum "${ARTIFACT_NAME}.bin" > "${ARTIFACT_NAME}.sha256.txt")
           echo "Verified ESP8266 BIN (magic 0xE9):"
           ls -lh "${BIN}" "release-assets/${ARTIFACT_NAME}.sha256.txt"
           cat "release-assets/${ARTIFACT_NAME}.sha256.txt"
