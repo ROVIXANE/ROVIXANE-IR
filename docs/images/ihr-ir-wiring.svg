@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1010" width="1400" height="1010" role="img" aria-labelledby="diagram-title diagram-desc">
   <title id="diagram-title">IHR Universal IR Remote — hardware wiring diagram (NodeMCU ESP-12E, TSOP38238, TSAL620, BC547)</title>
-  <desc id="diagram-desc">Source-verified 2D wiring diagram. NodeMCU D2 / GPIO4 connects through a 1 kohm base resistor to a BC547 NPN transistor; the collector sinks a TSAL620 IR LED fed from 3V3 through a recommended 47 to 220 ohm resistor, and the emitter connects to ground. TSOP38238 pin 1 OUT connects to D5 / GPIO14, pin 2 to ground and pin 3 to 3V3, with an optional 100 nF decoupling capacitor. An optional push button connects D1 / GPIO5 to ground. D4 / GPIO2 is the on-board LED only.</desc>
+  <desc id="diagram-desc">Source- and document-verified 2D wiring diagram. GPIO assignments come from Compatibility.h and firmware; component wiring follows WIRING.md. NodeMCU D2 / GPIO4 connects through a 1 kohm base resistor to a BC547 NPN transistor; the collector sinks a TSAL620 IR LED fed from 3V3 through a recommended 47 to 220 ohm resistor, and the emitter connects to ground. TSOP38238 pin 1 OUT connects to D5 / GPIO14, pin 2 to ground and pin 3 to 3V3, with an optional 100 nF decoupling capacitor. An optional push button connects D1 / GPIO5 to ground. D4 / GPIO2 is the on-board LED only.</desc>
 
   <defs>
     <style>
@@ -41,8 +41,8 @@
   <text x="36" y="48" class="title">IHR Universal IR Remote — Hardware Wiring Diagram</text>
   <text x="36" y="78" class="subtitle">NodeMCU ESP8266 (ESP-12E)  •  TSOP38238 receiver  •  TSAL620 + BC547 transmitter</text>
   <rect x="1124" y="22" width="240" height="60" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
-  <text x="1244" y="46" text-anchor="middle" font-size="15" font-weight="700" fill="#065f46">SOURCE-VERIFIED</text>
-  <text x="1244" y="67" text-anchor="middle" font-size="12.5" fill="#047857">Compatibility.h · WIRING.md</text>
+  <text x="1244" y="46" text-anchor="middle" font-size="15" font-weight="700" fill="#065f46">SOURCE + DOC VERIFIED</text>
+  <text x="1244" y="67" text-anchor="middle" font-size="12.5" fill="#047857">GPIO: Compatibility.h · wiring: WIRING.md</text>
 
   <!-- Section headings -->
   <text x="40" y="148" class="section">1 · CONTROLLER</text>

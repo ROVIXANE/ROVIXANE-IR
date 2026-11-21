@@ -72,12 +72,6 @@ PORT-এর নাম `/dev/ttyACM0` হতে পারে। কানেক�
 - **একটি 47–220Ω রেজিস্টার LED-র সঙ্গে যোগ করার পরামর্শ** (IR LED-র নিরাপদ রেঞ্জের জন্য; বিস্তারিত [WIRING.md](WIRING.md)-এ)
 - ঐচ্ছিক: 100nF ক্যাপাসিটর (TSOP-এর পাশে), ছোট push button (ফ্যাক্টরি রিসেটের জন্য)
 
-![IHR Universal IR Remote wiring diagram](docs/images/ihr-ir-wiring.svg)
-
-[স্কেলেবল SVG](docs/images/ihr-ir-wiring.svg) · [PNG প্রিভিউ](docs/images/ihr-ir-wiring.png) · [বিস্তারিত ওয়্যারিং গাইড](WIRING.md)
-
-> ডায়াগ্রামে GPIO নম্বরগুলো `Compatibility.h` ও firmware-এ যাচাই করা; কম্পোনেন্টের পিন ক্রম ও রেজিস্টার/ক্যাপাসিটরের মান শুধু `WIRING.md`-এ আছে এবং **UNVERIFIED**।
-
 ### সফটওয়্যার
 - প্রস্তুত BIN চাইলে কোনো IDE লাগবে না—উপরের **ডাউনলোড ও প্রথম সেটআপ** অংশ দেখুন।
 - নিজে কম্পাইল/আপলোড করতে চাইলে: Arduino IDE 2.x
