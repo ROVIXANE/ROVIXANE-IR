@@ -9,7 +9,7 @@ NodeMCU ESP-12E দিয়ে তৈরি একটি **সম্পূর�
 
 ![IHR Universal IR Remote — NodeMCU ESP-12E, TSOP38238 ও TSAL620 + BC547 ওয়্যারিং ডায়াগ্রাম](docs/images/ihr-ir-wiring.svg)
 
-> ডায়াগ্রামটি ফার্মওয়্যারের GPIO সংজ্ঞা থেকে যাচাই করা। মোবাইলে ছবিতে ট্যাপ করে জুম করুন; [SVG](docs/images/ihr-ir-wiring.svg) ও [PNG](docs/images/ihr-ir-wiring.png) — দুই ফরম্যাটেই আছে।
+> GPIO সংজ্ঞা `Compatibility.h`/firmware-এ যাচাই করা; কম্পোনেন্ট pinout, LED polarity ও R/C মান শুধু `WIRING.md`-এ আছে (**UNVERIFIED**)। মোবাইলে ছবিতে ট্যাপ করে জুম করুন; [SVG](docs/images/ihr-ir-wiring.svg) ও [PNG](docs/images/ihr-ir-wiring.png) — দুই ফরম্যাটেই আছে।
 
 ---
 
