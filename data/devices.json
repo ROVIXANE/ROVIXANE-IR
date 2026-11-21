@@ -1,0 +1,67 @@
+{
+  "format": "ihr-signals",
+  "version": 1,
+  "profiles": [
+    {
+      "id": "p_lg_tv_example",
+      "name": "LG TV (examples)",
+      "nameBn": "এলজি টিভি (উদাহরণ)",
+      "icon": "📺",
+      "color": "#4f8cff",
+      "signals": [
+        {
+          "id": "s_lg_power_example",
+          "label": "Power?",
+          "labelBn": "পাওয়ার?",
+          "icon": "⏻",
+          "color": "#ff6b6b",
+          "kind": "protocol",
+          "protocol": "LG",
+          "value": "0x20DF10EF",
+          "bits": 28,
+          "repeat": 1,
+          "verified": false
+        },
+        {
+          "id": "s_lg_volup_example",
+          "label": "Vol +?",
+          "labelBn": "ভলিউম +?",
+          "icon": "🔊",
+          "color": "#37d67a",
+          "kind": "protocol",
+          "protocol": "LG",
+          "value": "0x20DF4FB0",
+          "bits": 28,
+          "repeat": 1,
+          "verified": false
+        },
+        {
+          "id": "s_lg_voldown_example",
+          "label": "Vol -?",
+          "labelBn": "ভলিউম -?",
+          "icon": "🔈",
+          "color": "#37d67a",
+          "kind": "protocol",
+          "protocol": "LG",
+          "value": "0x20DF807F",
+          "bits": 28,
+          "repeat": 1,
+          "verified": false
+        },
+        {
+          "id": "s_lg_source_example",
+          "label": "Source?",
+          "labelBn": "সোর্স?",
+          "icon": "☰",
+          "color": "#ffc857",
+          "kind": "protocol",
+          "protocol": "LG",
+          "value": "0x20DFD02F",
+          "bits": 28,
+          "repeat": 1,
+          "verified": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="color-scheme" content="dark">
+<title>IHR Universal IR Remote</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true">&#9678;</span>
+    <div>
+      <strong data-i18n="appName">IHR IR Remote</strong>
+      <small id="deviceName">NodeMCU ESP-12E</small>
+    </div>
+  </div>
+  <div class="top-actions">
+    <span id="connPill" class="pill" data-i18n="connecting">Connecting…</span>
+    <button id="langBtn" class="icon-btn" type="button" aria-label="Switch language">&#2547;</button>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Main">
+  <button class="tab active" type="button" data-tab="remotes" data-i18n="tabRemotes">Remotes</button>
+  <button class="tab" type="button" data-tab="learn" data-i18n="tabLearn">Learn</button>
+  <button class="tab" type="button" data-tab="settings" data-i18n="tabSettings">Settings</button>
+  <button class="tab" type="button" data-tab="diag" data-i18n="tabDiag">Diagnostics</button>
+</nav>
+
+<main>
+  <section id="tab-remotes" class="panel active" aria-label="Remotes">
+    <div class="row">
+      <select id="profileSelect" aria-label="Remote profile"></select>
+      <button id="addProfileBtn" class="btn ghost" type="button" data-i18n="addProfile">+ Profile</button>
+    </div>
+    <div class="profile-bar">
+      <button id="editProfileBtn" class="btn ghost" type="button" data-i18n="edit">Edit</button>
+      <button id="dupProfileBtn" class="btn ghost" type="button" data-i18n="duplicate">Duplicate</button>
+      <button id="delProfileBtn" class="btn ghost danger" type="button" data-i18n="delete">Delete</button>
+    </div>
+    <p id="emptyHint" class="hint hidden" data-i18n="emptyHint">No buttons yet. Add one or learn from your remote.</p>
+    <div id="signalGrid" class="grid"></div>
+    <button id="addSignalBtn" class="btn primary wide" type="button" data-i18n="addSignal">+ Add button</button>
+  </section>
+
+  <section id="tab-learn" class="panel" aria-label="Learn">
+    <div class="card">
+      <h2 data-i18n="learnTitle">Learn a signal</h2>
+      <p class="muted" data-i18n="learnHelp">Point your remote at the TSOP38238 receiver and press a button. Captured protocol, HEX value, bit length and raw timings are shown below.</p>
+      <div class="row wrap">
+        <button id="learnStart" class="btn primary" type="button" data-i18n="startLearning">Start learning</button>
+        <button id="learnCancel" class="btn ghost" type="button" data-i18n="cancel">Cancel</button>
+      </div>
+      <pre id="learnResult" class="result hidden"></pre>
+      <button id="learnSave" class="btn primary hidden" type="button" data-i18n="saveAsButton">Save as button</button>
+    </div>
+  </section>
+
+  <section id="tab-settings" class="panel" aria-label="Settings">
+    <form id="configForm" class="card stack">
+      <h2 data-i18n="settingsTitle">Settings</h2>
+      <label data-i18n="deviceNameLbl">Device name<input id="cfgDeviceName" name="deviceName" maxlength="31" required></label>
+      <label data-i18n="apSsidLbl">Config AP SSID<input id="cfgApSsid" name="apSsid" maxlength="31" required></label>
+      <label data-i18n="apPassLbl">Config AP password (empty = open AP)<input id="cfgApPass" name="apPassword" type="password" maxlength="63" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"></label>
+      <label data-i18n="wifiSsidLbl">WiFi network (SSID)<input id="cfgWifiSsid" name="wifiSsid" maxlength="31"></label>
+      <label data-i18n="wifiPassLbl">WiFi password<input id="cfgWifiPass" name="wifiPassword" type="password" maxlength="63"></label>
+      <div class="row wrap">
+        <label class="check"><input id="cfgCaptive" name="captivePortal" type="checkbox"><span data-i18n="captiveLbl">Captive portal</span></label>
+        <label class="check"><input id="cfgAuth" name="httpAuth" type="checkbox"><span data-i18n="httpAuthLbl">Require login</span></label>
+      </div>
+      <label data-i18n="httpUserLbl">Login user<input id="cfgUser" name="httpUser" maxlength="31"></label>
+      <label data-i18n="httpPassLbl">Login password<input id="cfgHttpPass" name="httpPassword" type="password" maxlength="63"></label>
+      <label data-i18n="repeatLbl">Default repeats (1-10)<input id="cfgRepeat" name="irRepeat" type="number" min="1" max="10"></label>
+      <label data-i18n="localeLbl">Language<select id="cfgLocale" name="locale"><option value="en">English</option><option value="bn">&#2476;&#2494;&#2434;&#2509;&#2482;&#2494;</option></select></label>
+      <button class="btn primary" type="submit" data-i18n="saveSettings">Save settings</button>
+      <p class="muted small" data-i18n="applyHint">WiFi / AP / login changes apply after restart.</p>
+    </form>
+    <div class="card stack">
+      <h2 data-i18n="dataTitle">Backup &amp; restore</h2>
+      <div class="row wrap">
+        <button id="exportBtn" class="btn ghost" type="button" data-i18n="exportJson">Export JSON</button>
+        <button id="restoreBtn" class="btn ghost" type="button" data-i18n="restoreJson">Restore JSON</button>
+      </div>
+      <div class="row wrap">
+        <button id="restartBtn" class="btn ghost" type="button" data-i18n="restart">Restart</button>
+        <button id="factoryBtn" class="btn ghost danger" type="button" data-i18n="factoryReset">Factory reset</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-diag" class="panel" aria-label="Diagnostics">
+    <div class="card stack">
+      <h2 data-i18n="diagTitle">Diagnostics</h2>
+      <pre id="diagOut" class="result" data-i18n="loading">Loading…</pre>
+      <button id="diagRefresh" class="btn ghost" type="button" data-i18n="refresh">Refresh</button>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast hidden" role="status"></div>
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <div id="modalBody"></div>
+    <div class="row end">
+      <button id="modalCancel" class="btn ghost" type="button" data-i18n="cancel">Cancel</button>
+      <button id="modalSave" class="btn primary" type="button" data-i18n="save">Save</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="restoreFile" accept="application/json,.json" class="hidden">
+<script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# Arduino / build output
+*.o
+*.elf
+*.bin
+*.hex
+*.eep
+*.lss
+*.lst
+*.map
+*.output
+build/
+.pio/
+
+# Arduino IDE metadata
+.vscode/
+.idea/
+*.code-workspace
+
+# Local secrets / generated binaries
+secrets.*
+*_local.*
+mklittlefs.bin
+
+# Host test artifacts
+tests/.test_firmware
+tests/.littlefs/
+tests/.irlib/
+tests/.irheaders/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# OS cruft
+.DS_Store
+Thumbs.db
