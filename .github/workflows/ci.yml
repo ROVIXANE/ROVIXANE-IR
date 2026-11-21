@@ -2,13 +2,25 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+env:
+  SKETCH_NAME: ihr-universal-ir-remote
+  BOARD_ID: nodemcuv2
+  BOARD_FQBN: esp8266:esp8266:nodemcuv2:xtal=80,eesz=4M1M,led=2,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200
+  ESP8266_CORE_VERSION: 3.1.2
+  ARDUINOJSON_VERSION: 7.4.2
+  IRREMOTEESP8266_VERSION: 2.8.6
+
 jobs:
   host-checks:
+    name: Host asset and real-IR API checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -19,5 +31,97 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Run asset, firmware and real-IR API checks
+      - name: Run host checks (not a firmware compile)
         run: sh tests/run_tests.sh
+
+  firmware-build:
+    name: Build firmware (NodeMCU ESP-12E)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+        with:
+          version: '1.6.0'
+
+      - name: Configure ESP8266 board index
+        run: |
+          arduino-cli config init --overwrite
+          arduino-cli config add board_manager.additional_urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
+          arduino-cli config dump
+
+      - name: Install ESP8266 core and libraries
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install "esp8266:esp8266@${ESP8266_CORE_VERSION}"
+          arduino-cli lib install "ArduinoJson@${ARDUINOJSON_VERSION}"
+          arduino-cli lib install "IRremoteESP8266@${IRREMOTEESP8266_VERSION}"
+          arduino-cli core list
+          arduino-cli lib list
+
+      - name: Verify IR protocol build options
+        run: |
+          test -f "${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-D_IR_ENABLE_DEFAULT_=false' "${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DDECODE_NEC=true' "${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DSEND_NEC=true' "${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DDECODE_LG=true' "${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DSEND_LG=true' "${SKETCH_NAME}.ino.globals.h"
+
+      - name: Compile ESP8266 firmware
+        run: |
+          BUILD_DIR="${RUNNER_TEMP}/arduino-build"
+          mkdir -p "${BUILD_DIR}"
+          arduino-cli compile \
+            --fqbn "${BOARD_FQBN}" \
+            --build-path "${BUILD_DIR}" \
+            --warnings all \
+            .
+          echo "BUILD_DIR=${BUILD_DIR}" >> "${GITHUB_ENV}"
+
+      - name: Verify and stage firmware artifact
+        run: |
+          set -eu
+          VERSION="$(sed -n 's/^#define IHR_FIRMWARE_VERSION "\([^"]*\)".*/\1/p' Compatibility.h | head -n 1)"
+          test -n "${VERSION}"
+
+          SRC="${BUILD_DIR}/${SKETCH_NAME}.ino.bin"
+          ELF="${BUILD_DIR}/${SKETCH_NAME}.ino.elf"
+          test -s "${SRC}"
+          test -s "${ELF}"
+
+          ARTIFACT="${SKETCH_NAME}-${BOARD_ID}-v${VERSION}"
+          OUT="dist/${ARTIFACT}"
+          mkdir -p "${OUT}"
+          cp "${SRC}" "${OUT}/${ARTIFACT}.bin"
+          cp "${ELF}" "${OUT}/${ARTIFACT}.elf"
+
+          echo "FIRMWARE_VERSION=${VERSION}" >> "${GITHUB_ENV}"
+          echo "ARTIFACT_NAME=${ARTIFACT}" >> "${GITHUB_ENV}"
+
+          echo "Firmware: ${ARTIFACT}.bin"
+          ls -lh "${OUT}/${ARTIFACT}.bin"
+          sha256sum "${OUT}/${ARTIFACT}.bin"
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: dist/${{ env.ARTIFACT_NAME }}/*
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Write job summary
+        run: |
+          {
+            echo "### Firmware build complete"
+            echo ""
+            echo "- Board: NodeMCU 1.0 (ESP-12E) (\`${BOARD_ID}\`)"
+            echo "- Core: esp8266 \`${ESP8266_CORE_VERSION}\`"
+            echo "- ArduinoJson: \`${ARDUINOJSON_VERSION}\`"
+            echo "- IRremoteESP8266: \`${IRREMOTEESP8266_VERSION}\`"
+            echo "- Firmware version: \`${FIRMWARE_VERSION}\`"
+            echo "- Artifact: \`${ARTIFACT_NAME}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"

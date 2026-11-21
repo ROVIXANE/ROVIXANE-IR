@@ -1,8 +1,44 @@
 # আইএইচআর ইউনিভার্সাল আইআর রিমোট (ESP8266)
 
+[![CI](https://github.com/rmd734412-web/ihr-universal-ir-remote/actions/workflows/ci.yml/badge.svg)](https://github.com/rmd734412-web/ihr-universal-ir-remote/actions/workflows/ci.yml)
+
 NodeMCU ESP-12E দিয়ে তৈরি একটি **সম্পূর্ণ ওয়াই-ফাই আইআর রিমোট**। মোবাইল ব্রাউজার থেকে টিভি/এসির রিমোট চালানো, নতুন সংকেত শেখা, প্রোফাইল বানানো—সবই ইন্টারনেট ছাড়াই চলে।
 
 [রেজিস্টার/ওয়্যারিং কীভাবে লাগাবেন](WIRING.md) — সরাসরি এই লিংকটি দেখুন।
+
+---
+
+## Android/Termux থেকে প্রস্তুত BIN নামানো (Arduino IDE ছাড়া)
+
+`main`-এ নতুন কোড পুশ করলেই GitHub Actions ESP8266 কোর্স ও লাইব্রেরি ইনস্টল করে আসল NodeMCU ফার্মওয়্যার কম্পাইল করে। কম্পাইল সফল হলে নিচের নামে একটি artifact তৈরি হয়:
+
+`ihr-universal-ir-remote-nodemcuv2-v1.0.0`
+
+**ফোনের ব্রাউজার থেকে ডাউনলোড:**
+
+1. [GitHub রেপো](https://github.com/rmd734412-web/ihr-universal-ir-remote) খুলুন → **Actions** ট্যাব।
+2. `main` ব্রাঞ্চের সবশেষ **CI** রানে সবুজ চেকমার্ক ✅ যাচাই করুন। নতুন করে বানাতে হলে **Run workflow** → `main` → **Run workflow** চাপুন।
+3. রানের ভেতরে **Build firmware (NodeMCU ESP-12E)** জব খুলুন → **Artifacts** → `ihr-universal-ir-remote-nodemcuv2-v1.0.0` ডাউনলোড করুন।
+4. ডাউনলোড করা ZIP-এর ভেতরে `.bin` ফাইলটি ফ্ল্যাশ করার জন্য ব্যবহার করুন (`.elf` শুধু ডিবাগিংয়ের জন্য)।
+
+**Termux ব্যবহার করলে (ইতিমধ্যে `gh` সেটআপ থাকলে):**
+
+```sh
+gh run list --workflow CI --limit 5
+gh run download <RUN_ID> -n ihr-universal-ir-remote-nodemcuv2-v1.0.0
+```
+
+**USB OTG দিয়ে Termux থেকে ফ্ল্যাশ (ঐচ্ছিক):**
+
+```sh
+pkg install python
+pip install esptool
+ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null
+python3 -m esptool --chip esp8266 --port /dev/ttyUSB0 --baud 115200 \
+  write_flash --flash_size 4MB1M 0x00000 ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin
+```
+
+PORT-এর নাম আপনার ফোনে `/dev/ttyACM0` হতে পারে। কানেকশন না ধরলে বোর্ডের **FLASH** বাটন চেপে রেখে কমান্ডটি চালান। LittleFS/IOS upload লাগবে না—ওয়েব পেজগুলো BIN-এর ভেতরেই আছে।
 
 ---
 
@@ -39,7 +75,8 @@ NodeMCU ESP-12E দিয়ে তৈরি একটি **সম্পূর�
 - ঐচ্ছিক: 100nF ক্যাপাসিটর (TSOP-এর পাশে), ছোট push button (ফ্যাক্টরি রিসেটের জন্য)
 
 ### সফটওয়্যার
-- Arduino IDE 2.x
+- প্রস্তুত BIN চাইলে কোনো IDE লাগবে না—উপরের **Android/Termux থেকে প্রস্তুত BIN নামানো** অংশ দেখুন।
+- নিজে কম্পাইল/আপলোড করতে চাইলে: Arduino IDE 2.x
 - ESP8266 board package **3.1.2** (Board Manager থেকে)
 - লাইব্রেরি (Library Manager থেকে): **ArduinoJson 7.x**, **IRremoteESP8266 2.8.6**
 - ভিতরের লাইব্রেরি (আলাদা ইনস্টল লাগবে না): LittleFS, ESP8266WiFi, ESP8266WebServer, DNSServer
