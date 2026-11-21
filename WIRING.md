@@ -6,6 +6,34 @@
 
 ---
 
+## হার্ডওয়্যার ওয়্যারিং ডায়াগ্রাম (2D)
+
+নিচের ডায়াগ্রামটি `Compatibility.h`-এর `IHR_PIN_*` সংজ্ঞা, ফার্মওয়্যার ও এই গাইডের সংযোগ-বিবরণ থেকে তৈরি। **কোনো GPIO পিন বদলানো হয়নি**—চিত্রে যেভাবে দেখানো হয়েছে, source-এও ঠিক সেভাবেই আছে।
+
+![IHR Universal IR Remote wiring diagram — NodeMCU ESP-12E, TSOP38238 receiver, TSAL620 + BC547 transmitter](docs/images/ihr-ir-wiring.svg)
+
+| ফরম্যাট | ফাইল | ব্যবহার |
+|---|---|---|
+| Scalable SVG | [ihr-ir-wiring.svg](docs/images/ihr-ir-wiring.svg) | GitHub-এ ইনলাইন দেখা যায়; জুম করলেও অস্পষ্ট হয় না (মোবাইলে ছবিতে ট্যাপ করে জুম করুন) |
+| PNG প্রিভিউ (2800 × 2020) | [ihr-ir-wiring.png](docs/images/ihr-ir-wiring.png) | যেসব জায়গায় SVG দেখা যায় না |
+
+**ডায়াগ্রামের সংযোগগুলো কোথা থেকে যাচাই করা হয়েছে:**
+
+| চিত্রের অংশ | সংযোগ | Source |
+|---|---|---|
+| D2 / GPIO4 | 1kΩ → BC547 **base** | `IHR_PIN_IR_SEND 4` (`Compatibility.h`), [অংশ ৩](#৩-আইআর-led-অংশ-ট্রান্সমিটার) |
+| BC547 **C** | TSAL620-এর cathode (ছোট পা) | [অংশ ৩](#৩-আইআর-led-অংশ-ট্রান্সমিটার) |
+| TSAL620 **A** (লম্বা পা) | 47–220Ω → 3V3 | [অংশ ৩](#৩-আইআর-led-অংশ-ট্রান্সমিটার) — মান *পরামর্শ*, firmware-এ fixed নয় |
+| BC547 **E** | GND | [অংশ ৩](#৩-আইআর-led-অংশ-ট্রান্সমিটার) |
+| D5 / GPIO14 | TSOP38238 **pin 1 (OUT)** | `IHR_PIN_IR_RECV 14` (`Compatibility.h`), [অংশ ৪](#৪-আইআর-রিসিভার-অংশ-tsop38238) |
+| TSOP pin 2 / pin 3 | GND / 3V3 | [অংশ ৪](#৪-আইআর-রিসিভার-অংশ-tsop38238) — Vishay TSOP382xx pin ক্রম (1=OUT, 2=GND, 3=Vs)-এর সাথে মেলে |
+| D1 / GPIO5 | ঐচ্ছিক SW1 → GND (`INPUT_PULLUP`, ৩ সেকেন্ড) | `IHR_PIN_CFG_BTN 5` (`Compatibility.h`), [অংশ ৫](#৫-ঐচ্ছিক-রিসেট-বাটন) |
+| D4 / GPIO2 | শুধু বিল্ট-ইন LED; বাইরে লাগাবেন না | `IHR_PIN_LED 2` (`Compatibility.h`) |
+
+`R2` (47–220Ω), `C1` (100nF) ও `SW1` চিত্রে **OPTIONAL / recommended** হিসেবে চিহ্নিত—এগুলো firmware-এ নির্ধারিত নয়, এই গাইডে পরামর্শ হিসেবে আছে। কোনো **unverified** সংযোগ চিত্রে দেখানো হয়নি। 38 kHz ডিফল্ট ক্যারিয়ার firmware (`khz = 38`) ও TSOP38238-র ভেতরের ফিল্টার—দুটির সাথে মেলে।
+
+---
+
 ## ১. প্রয়োজনীয় অংশ
 
 | অংশ | কতটি | মন্তব্য |

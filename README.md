@@ -7,6 +7,10 @@ NodeMCU ESP-12E দিয়ে তৈরি একটি **সম্পূর�
 
 [রেজিস্টার/ওয়্যারিং কীভাবে লাগাবেন](WIRING.md) — সরাসরি এই লিংকটি দেখুন।
 
+![IHR Universal IR Remote — NodeMCU ESP-12E, TSOP38238 ও TSAL620 + BC547 ওয়্যারিং ডায়াগ্রাম](docs/images/ihr-ir-wiring.svg)
+
+> ডায়াগ্রামটি ফার্মওয়্যারের GPIO সংজ্ঞা থেকে যাচাই করা। মোবাইলে ছবিতে ট্যাপ করে জুম করুন; [SVG](docs/images/ihr-ir-wiring.svg) ও [PNG](docs/images/ihr-ir-wiring.png) — দুই ফরম্যাটেই আছে।
+
 ---
 
 ## ডাউনলোড ও প্রথম সেটআপ
@@ -67,6 +71,12 @@ PORT-এর নাম `/dev/ttyACM0` হতে পারে। কানেক�
 - 1kΩ রেজিস্টার (বেসের জন্য)
 - **একটি 47–220Ω রেজিস্টার LED-র সঙ্গে যোগ করার পরামর্শ** (IR LED-র নিরাপদ রেঞ্জের জন্য; বিস্তারিত [WIRING.md](WIRING.md)-এ)
 - ঐচ্ছিক: 100nF ক্যাপাসিটর (TSOP-এর পাশে), ছোট push button (ফ্যাক্টরি রিসেটের জন্য)
+
+![IHR Universal IR Remote wiring diagram](docs/images/ihr-ir-wiring.svg)
+
+[স্কেলেবল SVG](docs/images/ihr-ir-wiring.svg) · [PNG প্রিভিউ](docs/images/ihr-ir-wiring.png) · [বিস্তারিত ওয়্যারিং গাইড](WIRING.md)
+
+> ডায়াগ্রামে GPIO নম্বরগুলো `Compatibility.h` ও firmware-এ যাচাই করা; কম্পোনেন্টের পিন ক্রম ও রেজিস্টার/ক্যাপাসিটরের মান শুধু `WIRING.md`-এ আছে এবং **UNVERIFIED**।
 
 ### সফটওয়্যার
 - প্রস্তুত BIN চাইলে কোনো IDE লাগবে না—উপরের **ডাউনলোড ও প্রথম সেটআপ** অংশ দেখুন।

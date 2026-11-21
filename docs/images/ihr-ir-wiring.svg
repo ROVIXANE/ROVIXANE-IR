@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1010" width="1400" height="1010" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">IHR Universal IR Remote — hardware wiring diagram (NodeMCU ESP-12E, TSOP38238, TSAL620, BC547)</title>
+  <desc id="diagram-desc">Source-verified 2D wiring diagram. NodeMCU D2 / GPIO4 connects through a 1 kohm base resistor to a BC547 NPN transistor; the collector sinks a TSAL620 IR LED fed from 3V3 through a recommended 47 to 220 ohm resistor, and the emitter connects to ground. TSOP38238 pin 1 OUT connects to D5 / GPIO14, pin 2 to ground and pin 3 to 3V3, with an optional 100 nF decoupling capacitor. An optional push button connects D1 / GPIO5 to ground. D4 / GPIO2 is the on-board LED only.</desc>
+
+  <defs>
+    <style>
+      text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+      .title { font-size: 34px; font-weight: 700; fill: #0f172a; }
+      .subtitle { font-size: 18px; fill: #475569; }
+      .section { font-size: 16px; font-weight: 700; letter-spacing: 1.1px; fill: #0369a1; }
+      .section.tx { fill: #b45309; }
+      .wire { fill: none; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+      .vcc { stroke: #dc2626; }
+      .gnd { stroke: #1e293b; }
+      .sig { stroke: #059669; }
+      .lead { stroke: #c2410c; }
+      .body { stroke: #334155; stroke-width: 2.5; }
+      .lbl { font-size: 15px; fill: #334155; }
+      .small { font-size: 13.5px; fill: #475569; }
+      .tiny { font-size: 12.5px; fill: #64748b; }
+      .pin { font-size: 15px; font-weight: 700; fill: #0c4a6e; }
+      .nettag { font-size: 13px; font-weight: 700; paint-order: stroke; stroke: #ffffff; stroke-width: 4px; stroke-linejoin: round; }
+      .halo { paint-order: stroke; stroke: #ffffff; stroke-width: 4px; stroke-linejoin: round; }
+    </style>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#dbe4ee" opacity="0.75"/>
+    </pattern>
+    <marker id="irarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f59e0b"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1400" height="1010" fill="#ffffff"/>
+  <rect x="0" y="104" width="1400" height="792" fill="url(#grid)"/>
+
+  <!-- Header -->
+  <rect x="0" y="0" width="1400" height="104" fill="#f8fafc"/>
+  <line x1="0" y1="104" x2="1400" y2="104" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="36" y="48" class="title">IHR Universal IR Remote — Hardware Wiring Diagram</text>
+  <text x="36" y="78" class="subtitle">NodeMCU ESP8266 (ESP-12E)  •  TSOP38238 receiver  •  TSAL620 + BC547 transmitter</text>
+  <rect x="1124" y="22" width="240" height="60" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+  <text x="1244" y="46" text-anchor="middle" font-size="15" font-weight="700" fill="#065f46">SOURCE-VERIFIED</text>
+  <text x="1244" y="67" text-anchor="middle" font-size="12.5" fill="#047857">Compatibility.h · WIRING.md</text>
+
+  <!-- Section headings -->
+  <text x="40" y="148" class="section">1 · CONTROLLER</text>
+  <text x="450" y="148" class="section">2 · RECEIVER (LEARN)</text>
+  <text x="850" y="148" class="section tx">3 · TRANSMITTER (SEND)</text>
+
+  <!-- Group backgrounds -->
+  <rect x="424" y="236" width="356" height="590" rx="14" fill="#f8fbff" stroke="#bfdbfe" stroke-width="1.5" stroke-dasharray="7 6"/>
+  <rect x="830" y="200" width="330" height="688" rx="14" fill="#fffbf5" stroke="#fed7aa" stroke-width="1.5" stroke-dasharray="7 6"/>
+
+  <!-- ================= POWER RAILS ================= -->
+  <path class="wire vcc" d="M 394,430 L 410,430 L 410,180 L 880,180 L 880,280"/>
+  <path class="wire vcc" d="M 740,490 L 740,180"/>
+  <text x="600" y="170" class="nettag vcc halo" text-anchor="middle">3V3 · +3.3 V (USB regulator)</text>
+
+  <path class="wire gnd" d="M 394,844 L 400,844 L 400,860 L 1150,860"/>
+  <path class="wire gnd" d="M 605,450 L 605,860"/>
+  <path class="wire gnd" d="M 1052,668 L 1150,668 L 1150,860"/>
+  <text x="855" y="884" class="nettag gnd halo" text-anchor="middle">GND · common ground (all returns)</text>
+
+  <!-- ================= 1. NODEMCU BOARD ================= -->
+  <rect x="40" y="170" width="340" height="710" rx="16" fill="#eaf5fb" stroke="#0e7490" stroke-width="3"/>
+  <rect x="52" y="182" width="316" height="686" rx="11" fill="#f8fdff" stroke="#bae6fd" stroke-width="2"/>
+  <text x="210" y="210" text-anchor="middle" font-size="20" font-weight="700" fill="#0c4a6e">NodeMCU 1.0</text>
+  <text x="210" y="232" text-anchor="middle" font-size="13.5" fill="#0369a1">ESP-12E · ESP8266 · 3.3 V logic</text>
+
+  <rect x="26" y="288" width="22" height="54" rx="3" fill="#94a3b8" stroke="#475569" stroke-width="2"/>
+  <line x1="31" y1="298" x2="31" y2="332" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="62" y="320" font-size="12" fill="#475569">USB</text>
+
+  <rect x="96" y="248" width="228" height="104" rx="8" fill="#1f2937" stroke="#111827" stroke-width="2"/>
+  <path d="M 300,248 L 300,238 L 312,238" fill="none" stroke="#1f2937" stroke-width="4"/>
+  <text x="210" y="298" text-anchor="middle" font-size="22" font-weight="700" fill="#ffffff">ESP-12E</text>
+  <text x="210" y="324" text-anchor="middle" font-size="12" fill="#cbd5e1">ESP8266 · Wi-Fi module</text>
+  <text x="210" y="380" text-anchor="middle" font-size="12.5" fill="#475569">USB 5 V → on-board 3.3 V regulator</text>
+  <text x="210" y="408" text-anchor="middle" font-size="12" fill="#64748b">used pins ↓</text>
+
+  <!-- Board pads and labels -->
+  <g>
+    <rect x="366" y="417" width="28" height="26" rx="3" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
+    <text x="356" y="435" text-anchor="end" class="pin">3V3</text>
+
+    <rect x="366" y="507" width="28" height="26" rx="3" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
+    <text x="356" y="525" text-anchor="end" class="pin">D5 / GPIO14</text>
+
+    <rect x="366" y="597" width="28" height="26" rx="3" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
+    <text x="356" y="615" text-anchor="end" class="pin">D2 / GPIO4</text>
+
+    <rect x="366" y="687" width="28" height="26" rx="3" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
+    <text x="356" y="705" text-anchor="end" class="pin">D1 / GPIO5</text>
+
+    <rect x="366" y="771" width="28" height="26" rx="3" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
+    <text x="356" y="789" text-anchor="end" class="pin">D4 / GPIO2</text>
+    <text x="356" y="806" text-anchor="end" class="tiny">on-board LED only — no wiring</text>
+
+    <rect x="366" y="831" width="28" height="26" rx="3" fill="#fbbf24" stroke="#b45309" stroke-width="2"/>
+    <text x="356" y="849" text-anchor="end" class="pin">GND</text>
+  </g>
+
+  <!-- ================= SIGNAL WIRES ================= -->
+  <!-- D5 → receiver OUT -->
+  <path class="wire sig" d="M 394,520 L 450,520 L 450,450 L 545,450"/>
+  <text x="487" y="440" text-anchor="middle" class="nettag sig halo">IR_RX</text>
+
+  <!-- D2 → base resistor, with bridge over receiver GND -->
+  <path class="wire sig" d="M 394,610 L 595,610 A 10 10 0 0 1 615,610 L 850,610"/>
+  <text x="790" y="596" text-anchor="middle" class="nettag sig halo">IR_TX · 38 kHz</text>
+
+  <!-- D1 → optional factory-reset button -->
+  <path class="wire sig" d="M 394,700 L 500,700 L 500,740 L 540,740"/>
+  <text x="444" y="686" text-anchor="middle" class="nettag sig halo">CFG_BTN</text>
+
+  <!-- ================= 2. TSOP38238 RECEIVER ================= -->
+  <path d="M 560,270 A 40 40 0 0 1 640,270 Z" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="600" y="254" text-anchor="middle" font-size="12.5" fill="#1d4ed8">IR lens → remote</text>
+  <rect x="500" y="270" width="200" height="150" rx="12" fill="#ffffff" class="body"/>
+  <text x="600" y="318" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">U2</text>
+  <text x="600" y="346" text-anchor="middle" font-size="19" font-weight="700" fill="#0f172a">TSOP38238</text>
+  <text x="600" y="372" text-anchor="middle" font-size="12.5" fill="#475569">38 kHz IR receiver module</text>
+  <text x="600" y="398" text-anchor="middle" font-size="12" fill="#64748b">front view · pins down</text>
+
+  <!-- Receiver pins -->
+  <rect x="539" y="420" width="12" height="12" fill="#475569"/>
+  <rect x="599" y="420" width="12" height="12" fill="#475569"/>
+  <rect x="659" y="420" width="12" height="12" fill="#475569"/>
+  <path class="wire lead" d="M 545,432 L 545,450"/>
+  <path class="wire gnd" d="M 605,432 L 605,450"/>
+  <path class="wire vcc" d="M 665,432 L 665,450"/>
+
+  <!-- VCC branch from pin 3 to the top rail -->
+  <path class="wire vcc" d="M 665,450 L 665,490 L 740,490"/>
+
+  <!-- Receiver pin labels -->
+  <text x="545" y="470" text-anchor="middle" class="nettag lead halo">1 OUT</text>
+  <text x="605" y="470" text-anchor="middle" class="nettag gnd halo">2 GND</text>
+  <text x="677" y="476" text-anchor="middle" class="nettag vcc halo">3 VCC</text>
+
+  <!-- Optional C1 decoupling capacitor -->
+  <path class="wire lead" d="M 700,490 L 700,520"/>
+  <line x1="686" y1="520" x2="714" y2="520" stroke="#c2410c" stroke-width="4" stroke-linecap="round"/>
+  <line x1="686" y1="536" x2="714" y2="536" stroke="#c2410c" stroke-width="4" stroke-linecap="round"/>
+  <path class="wire lead" d="M 700,536 L 700,570 L 605,570"/>
+  <text x="742" y="536" class="nettag lead halo" fill="#9a3412">C1 · 100 nF</text>
+  <text x="742" y="554" class="tiny">OPTIONAL · across VCC/GND</text>
+
+  <rect x="444" y="614" width="316" height="60" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="602" y="638" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e40af">LEARN: TSOP38238 → D5 / GPIO14</text>
+  <text x="602" y="658" text-anchor="middle" font-size="12" fill="#475569">Lens faces the remote; avoid direct sunlight.</text>
+
+  <!-- Optional SW1 factory-reset button -->
+  <circle cx="540" cy="740" r="6" fill="#ffffff" stroke="#c2410c" stroke-width="2.5"/>
+  <circle cx="596" cy="740" r="6" fill="#ffffff" stroke="#c2410c" stroke-width="2.5"/>
+  <path d="M 540,736 L 590,722" fill="none" stroke="#c2410c" stroke-width="3.5" stroke-linecap="round"/>
+  <path class="wire gnd" d="M 596,740 L 605,740"/>
+  <text x="568" y="774" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">SW1 · factory reset</text>
+  <text x="568" y="792" text-anchor="middle" font-size="11.5" fill="#64748b">OPTIONAL · hold 3 s</text>
+
+  <!-- ================= 3. TRANSMITTER ================= -->
+  <!-- R2: IR LED series resistor -->
+  <path class="wire lead" d="M 880,280 L 888,280 l 10,-12 l 14,24 l 14,-24 l 14,24 l 14,-24 l 10,12 L 980,280"/>
+  <text x="930" y="230" text-anchor="middle" font-size="14" font-weight="700" fill="#9a3412">R2 · 47–220 Ω</text>
+  <text x="930" y="248" text-anchor="middle" font-size="11.5" fill="#9a3412">LED series · recommended</text>
+
+  <!-- LED1: TSAL620 (diode symbol + emitted IR rays) -->
+  <path class="wire lead" d="M 980,280 L 992,280"/>
+  <path d="M 992,264 L 992,296 L 1022,280 Z" fill="#fef3c7" stroke="#b45309" stroke-width="2.5" stroke-linejoin="round"/>
+  <line x1="1027" y1="262" x2="1027" y2="298" stroke="#b45309" stroke-width="4" stroke-linecap="round"/>
+  <line x1="1002" y1="260" x2="1032" y2="230" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#irarrow)"/>
+  <line x1="1014" y1="264" x2="1046" y2="236" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#irarrow)"/>
+  <text x="1062" y="234" class="nettag halo" fill="#b45309">IR beam · 38 kHz</text>
+  <path class="wire lead" d="M 1027,280 L 1120,280 L 1120,552 L 1052,552"/>
+  <text x="1008" y="344" text-anchor="middle" font-size="14" font-weight="700" fill="#9a3412">LED1 · TSAL620</text>
+  <text x="1008" y="364" text-anchor="middle" font-size="12" fill="#64748b">A = long lead · K = short lead</text>
+
+  <!-- R1: base resistor -->
+  <path class="wire lead" d="M 850,610 L 858,610 l 10,-12 l 14,24 l 14,-24 l 14,24 l 14,-24 l 10,12 L 950,610"/>
+  <text x="900" y="578" text-anchor="middle" font-size="14" font-weight="700" fill="#9a3412">R1 · 1 kΩ</text>
+  <text x="900" y="596" text-anchor="middle" font-size="11.5" fill="#9a3412">GPIO → base</text>
+  <path class="wire lead" d="M 950,610 L 1000,610"/>
+
+  <!-- Q1: BC547 NPN transistor -->
+  <line x1="1000" y1="572" x2="1000" y2="648" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+  <line x1="1000" y1="588" x2="1052" y2="552" stroke="#334155" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="1000" y1="632" x2="1052" y2="668" stroke="#334155" stroke-width="3.5" stroke-linecap="round"/>
+  <polygon points="1052,668 1043.9,655.1 1037.1,664.9" fill="#334155"/>
+  <text x="984" y="615" text-anchor="end" font-size="13" font-weight="700" fill="#334155">B</text>
+  <text x="1060" y="546" font-size="13" font-weight="700" fill="#334155">C</text>
+  <text x="1060" y="690" font-size="13" font-weight="700" fill="#334155">E</text>
+  <text x="1000" y="530" text-anchor="middle" font-size="14" font-weight="700" fill="#0f172a">Q1 · BC547 (NPN)</text>
+  <text x="1000" y="716" text-anchor="middle" font-size="11.5" fill="#64748b">flat face toward you: C – B – E</text>
+
+  <!-- Junctions -->
+  <g fill="#0f172a">
+    <circle cx="410" cy="180" r="5"/><circle cx="740" cy="180" r="5"/><circle cx="880" cy="180" r="5"/>
+    <circle cx="400" cy="860" r="5"/><circle cx="605" cy="860" r="5"/><circle cx="1150" cy="860" r="5"/>
+    <circle cx="605" cy="570" r="5"/><circle cx="700" cy="490" r="5"/><circle cx="605" cy="740" r="5"/>
+  </g>
+
+  <!-- ================= FOOTER / LEGEND ================= -->
+  <rect x="24" y="896" width="1352" height="96" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="24" y1="938" x2="1376" y2="938" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <line x1="44" y1="922" x2="80" y2="922" class="wire vcc"/>
+  <text x="88" y="927" class="lbl">3V3 · +3.3 V</text>
+  <line x1="212" y1="922" x2="248" y2="922" class="wire gnd"/>
+  <text x="256" y="927" class="lbl">GND · common</text>
+  <line x1="390" y1="922" x2="426" y2="922" class="wire sig"/>
+  <text x="434" y="927" class="lbl">GPIO signal</text>
+  <line x1="550" y1="922" x2="586" y2="922" class="wire lead"/>
+  <text x="594" y="927" class="lbl">component lead</text>
+  <line x1="736" y1="922" x2="772" y2="922" stroke="#c2410c" stroke-width="3" stroke-dasharray="6 5"/>
+  <text x="780" y="927" class="lbl">optional / recommended</text>
+
+  <text x="44" y="961" class="small">Verified: <tspan font-weight="700">Compatibility.h</tspan> (IHR_PIN_IR_SEND = 4, IHR_PIN_IR_RECV = 14, IHR_PIN_CFG_BTN = 5, IHR_PIN_LED = 2), firmware, WIRING.md, docs/INSTALL.md.</text>
+  <text x="44" y="980" class="small">R2 (47–220 Ω) and C1 (100 nF) are documented recommendations, not fixed firmware values · SW1 is optional (INPUT_PULLUP) · No unverified connections shown.</text>
+  <text x="1352" y="961" text-anchor="end" font-size="12.5" font-weight="700" fill="#0369a1">IHR firmware 1.0.0</text>
+  <text x="1352" y="980" text-anchor="end" font-size="11.5" fill="#64748b">Tap / zoom on mobile · 3.3 V GPIO only</text>
+</svg>
