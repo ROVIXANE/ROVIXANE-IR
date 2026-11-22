@@ -107,6 +107,7 @@ static bool parseHex64(const char *text, uint64_t &out) {
   if (text[0] == '0' && (text[1] == 'x' || text[1] == 'X')) text += 2;
   if (*text == '\0') return false;
   uint64_t value = 0;
+  uint8_t digits = 0;
   for (; *text != '\0'; ++text) {
     char c = *text;
     uint8_t d;
@@ -115,8 +116,12 @@ static bool parseHex64(const char *text, uint64_t &out) {
     else if (c >= 'A' && c <= 'F') d = c - 'A' + 10;
     else if (c == ' ' || c == '_' || c == ',') continue;
     else return false;
+    // A 64-bit value has at most 16 hexadecimal digits; otherwise shifting
+    // wraps and can silently produce a different transmitted code.
+    if (++digits > 16) return false;
     value = (value << 4) | d;
   }
+  if (digits == 0) return false;
   out = value;
   return true;
 }
@@ -127,6 +132,7 @@ static bool jsonToU64(JsonVariantConst value, uint64_t &out) {
     String s = value.as<String>();
     return parseHex64(s.c_str(), out);
   }
+  if (value.is<int64_t>() && value.as<int64_t>() < 0) return false;
   if (value.is<uint64_t>() || value.is<int64_t>() || value.is<unsigned long>() ||
       value.is<long>() || value.is<unsigned int>() || value.is<int>()) {
     out = value.as<uint64_t>();
@@ -200,11 +206,13 @@ static bool wifiIsConnected() { return WiFi.status() == WL_CONNECTED; }
 
 static void scheduleRestart(uint32_t delayMs) {
   gRestartPending = true;
+  gFactoryPending = false;
   gActionAt = millis() + delayMs;
 }
 
 static void scheduleFactoryReset(uint32_t delayMs) {
   gFactoryPending = true;
+  gRestartPending = false;
   gActionAt = millis() + delayMs;
 }
 
@@ -255,6 +263,7 @@ static bool sendProtocolFrame(decode_type_t type, uint64_t value, uint16_t bits)
 
 static bool transmitSignal(JsonObject signal, uint8_t repeat) {
   if (repeat == 0 || repeat > 10) repeat = gCfg.irRepeat;
+  if (repeat == 0 || repeat > 10) repeat = 1;
 
   String kind = signal["kind"] | "protocol";
   if (kind == "raw") {
@@ -262,10 +271,13 @@ static bool transmitSignal(JsonObject signal, uint8_t repeat) {
     uint16_t buf[IHR_MAX_RAW_TIMINGS];
     uint8_t count = 0;
     for (JsonVariant v : arr) {
+      // Invalid/zero entries must not be silently skipped: doing so changes
+      // mark/space alternation and produces a different IR frame.
+      if (!v.is<uint32_t>()) return false;
       uint32_t us = v.as<uint32_t>();
-      if (us == 0 || us > 65535) continue;
+      if (us == 0 || us > 65535) return false;
+      if (count >= IHR_MAX_RAW_TIMINGS) return false;
       buf[count++] = static_cast<uint16_t>(us);
-      if (count >= IHR_MAX_RAW_TIMINGS) break;
     }
     if (count < 4) return false;
     uint16_t khz = signal["khz"] | 38;

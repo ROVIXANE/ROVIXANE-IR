@@ -127,6 +127,48 @@ static void testSignalsAndSending() {
   CHECK(IRsend::tx.raw[0] == 9000 && IRsend::tx.raw[5] == 1690,
         "raw timing values intact");
 
+  // Reject values that overflow 64 bits or are negative instead of wrapping.
+  const char *invalidU64 = R"({"format":"ihr-signals","profiles":[
+    {"id":"pbad","signals":[
+      {"id":"sbad","kind":"protocol","protocol":"NEC",
+       "value":"0x10000000000000000","bits":64,"repeat":1}
+    ]}]})";
+  CHECK(put("/api/signals", invalidU64).code == 200,
+        "signal database stores malformed signals without transmitting them");
+  CHECK(post("/api/send", "{\"profileId\":\"pbad\",\"signalId\":\"sbad\"}").code == 400,
+        "oversized HEX IR value rejected");
+
+  const char *wideValidU64 = R"({"format":"ihr-signals","profiles":[
+    {"id":"pwide","signals":[
+      {"id":"swide","kind":"protocol","protocol":"NEC",
+       "value":"0xFFFFFFFFFFFFFFFF","bits":64,"repeat":1}
+    ]}]})";
+  CHECK(put("/api/signals", wideValidU64).code == 200,
+        "full-width 64-bit signal accepted");
+  IRsend::tx = IrTxRecord();
+  CHECK(post("/api/send", "{\"profileId\":\"pwide\",\"signalId\":\"swide\"}").code == 200,
+        "full-width 64-bit code transmitted");
+  CHECK(IRsend::tx.value == UINT64_MAX, "64-bit code remains intact");
+
+  const char *negativeU64 = R"({"format":"ihr-signals","profiles":[
+    {"id":"pbad","signals":[
+      {"id":"sbad","kind":"protocol","protocol":"NEC",
+       "value":-1,"bits":32,"repeat":1}
+    ]}]})";
+  CHECK(put("/api/signals", negativeU64).code == 200,
+        "negative-value signal database stored for validation at send time");
+  CHECK(post("/api/send", "{\"profileId\":\"pbad\",\"signalId\":\"sbad\"}").code == 400,
+        "negative IR value rejected");
+
+  const char *invalidRaw = R"({"format":"ihr-signals","profiles":[
+    {"id":"pbad","signals":[
+      {"id":"sbad","kind":"raw","khz":38,"timings":[9000,4500,0,560]}
+    ]}]})";
+  CHECK(put("/api/signals", invalidRaw).code == 200,
+        "raw signal database accepted for send-time validation");
+  CHECK(post("/api/send", "{\"profileId\":\"pbad\",\"signalId\":\"sbad\"}").code == 400,
+        "raw frame with zero timing rejected instead of altered");
+
   CHECK(put("/api/signals", "{\"format\":\"ihr-signals\"}").code == 200,
         "empty database accepted and normalised");
   d = asJson(get("/api/signals"));

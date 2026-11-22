@@ -531,9 +531,20 @@
       if (kind === 'protocol') {
         s.protocol = $('mProtocol').value.trim().toUpperCase() || 'NEC';
         var rawVal = $('mValue').value.trim();
-        var num = (/^0x/i.test(rawVal) ? parseInt(rawVal, 16) : parseInt(rawVal, 10));
-        if (isNaN(num) || num < 0) { toast(t('errHexValue'), true); $('mValue').focus(); return; }
-        s.value = num; s.bits = Math.max(1, Math.min(64, parseInt($('mBits').value, 10) || 32));
+        if (/^0x[0-9a-f]{1,16}$/i.test(rawVal)) {
+          // Keep 64-bit IR codes as text; JavaScript Number rounds values above
+          // 2^53 and would otherwise save/send a different code.
+          s.value = '0x' + rawVal.slice(2).toUpperCase();
+        } else if (/^\\d+$/.test(rawVal)) {
+          var decimal = Number(rawVal);
+          if (!Number.isSafeInteger(decimal) || decimal > Number.MAX_SAFE_INTEGER) {
+            toast(t('errHexValue'), true); $('mValue').focus(); return;
+          }
+          s.value = decimal;
+        } else {
+          toast(t('errHexValue'), true); $('mValue').focus(); return;
+        }
+        s.bits = Math.max(1, Math.min(64, parseInt($('mBits').value, 10) || 32));
         delete s.khz; delete s.timings;
       } else {
         s.khz = Math.max(30, Math.min(60, parseInt($('mKhz').value, 10) || 38));

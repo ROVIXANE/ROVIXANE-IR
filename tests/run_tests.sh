@@ -13,4 +13,5 @@ command -v "$CXX" >/dev/null 2>&1 || CXX=clang++
   tests/host/test_firmware.cpp AppConfig.cpp Storage.cpp SignalStore.cpp
 
 ./tests/.test_firmware
+rm -f tests/.test_firmware
 sh tests/check_real_ir_headers.sh
