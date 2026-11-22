@@ -31,6 +31,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Regenerate embedded web assets
+        run: python3 tools/generate_assets.py
+
       - name: Run host checks (not a firmware compile)
         run: sh tests/run_tests.sh
 
@@ -43,6 +46,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Regenerate embedded web assets
+        run: python3 tools/generate_assets.py
 
       - name: Install Arduino CLI
         uses: arduino/setup-arduino-cli@v2
@@ -75,13 +81,19 @@ jobs:
 
       - name: Compile ESP8266 firmware
         run: |
+          set -eu
           BUILD_DIR="${RUNNER_TEMP}/arduino-build"
-          mkdir -p "${BUILD_DIR}"
+          SKETCH_DIR="${RUNNER_TEMP}/${SKETCH_NAME}"
+          mkdir -p "${BUILD_DIR}" "${SKETCH_DIR}"
+          cp -a . "${SKETCH_DIR}/"
+          # Arduino CLI requires the sketch folder and its main .ino to have the
+          # same name. Stage under the sketch's lowercase name (the checkout
+          # directory is named ROVIXANE-IR, while the source sketch is lowercase).
           arduino-cli compile \
             --fqbn "${BOARD_FQBN}" \
             --build-path "${BUILD_DIR}" \
             --warnings all \
-            .
+            "${SKETCH_DIR}"
           echo "BUILD_DIR=${BUILD_DIR}" >> "${GITHUB_ENV}"
 
       - name: Verify and stage firmware artifact
