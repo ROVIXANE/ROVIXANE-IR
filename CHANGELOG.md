@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Changed
+
+- Rebranded the project to **ROVIXANE IR — Universal Infrared Remote** (`ROVIXANE-IR`): README, badges, documentation, dashboard title, header, footer, PWA manifest, firmware display name, setup AP SSID, build/artifact names and release asset naming.
+- Future firmware assets will be named `rovixane-ir-nodemcuv2-vX.X.X.bin`; existing published v1.0.0 assets keep their original names.
+- Release automation no longer uploads to or overwrites an existing GitHub Release.
+
+### Notes
+
+- Firmware version remains `1.0.0`; no new release was published by this change.
+- GPIO assignments, IR send/learn logic, flash layout, OTA partitioning and stored data formats are unchanged.
+
 ## [1.0.0] - 2026-11-21
 
 ### Added

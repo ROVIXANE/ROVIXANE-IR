@@ -1,28 +1,103 @@
-# আইএইচআর ইউনিভার্সাল আইআর রিমোট (ESP8266)
+# ROVIXANE IR — Universal Infrared Remote
 
-[![CI](https://github.com/rmd734412-web/ihr-universal-ir-remote/actions/workflows/ci.yml/badge.svg)](https://github.com/rmd734412-web/ihr-universal-ir-remote/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/rmd734412-web/ihr-universal-ir-remote?label=release)](https://github.com/rmd734412-web/ihr-universal-ir-remote/releases/latest)
+[![CI](https://github.com/ROVIXANE/ROVIXANE-IR/actions/workflows/ci.yml/badge.svg)](https://github.com/ROVIXANE/ROVIXANE-IR/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/ROVIXANE/ROVIXANE-IR?label=release)](https://github.com/ROVIXANE/ROVIXANE-IR/releases/latest)
 
-NodeMCU ESP-12E দিয়ে তৈরি একটি **সম্পূর্ণ ওয়াই-ফাই আইআর রিমোট**। মোবাইল ব্রাউজার থেকে টিভি/এসির রিমোট চালানো, নতুন সংকেত শেখা, প্রোফাইল বানানো—সবই ইন্টারনেট ছাড়াই চলে।
+**ROVIXANE IR** হলো NodeMCU ESP8266 ESP-12E-এর উপর ভিত্তি করে তৈরি একটি ওপেন-সোর্স, অফলাইন-ফার্স্ট Wi-Fi ইনফ্রারেড রিমোট। ফোনের ব্রাউজার থেকে টিভি, এসি, ফ্যান বা অন্য যেকোনো IR ডিভাইসের বাটন চাপুন, আসল রিমোট থেকে নতুন সংকেত শিখুন, প্রোফাইল বানান—ইন্টারনেটের প্রয়োজন নেই।
 
-[রেজিস্টার/ওয়্যারিং কীভাবে লাগাবেন](WIRING.md) — সরাসরি এই লিংকটি দেখুন।
+**English:** ROVIXANE IR is an open-source, offline-first universal infrared remote controller built on the NodeMCU ESP8266 ESP-12E. It serves a mobile dashboard directly from the microcontroller, learns signals from an existing remote, stores reusable profiles, and keeps every asset locally in the firmware.
 
-![IHR Universal IR Remote — NodeMCU ESP-12E, TSOP38238 ও TSAL620 + BC547 ওয়্যারিং ডায়াগ্রাম](docs/images/ihr-ir-wiring.svg)
-
-> GPIO সংজ্ঞা `Compatibility.h`/firmware-এ যাচাই করা; কম্পোনেন্ট pinout, LED polarity ও R/C মান শুধু `WIRING.md`-এ আছে (**UNVERIFIED**)। মোবাইলে ছবিতে ট্যাপ করে জুম করুন; [SVG](docs/images/ihr-ir-wiring.svg) ও [PNG](docs/images/ihr-ir-wiring.png) — দুই ফরম্যাটেই আছে।
+> **প্রকাশিত অবস্থা:** GitHub-এ প্রকাশিত **v1.0.0** release এবং তার asset অপরিবর্তিত রাখা হয়েছে। এই working tree-তে করা বাংলা UX/UI, onboarding ও ডকুমেন্টেশন উন্নতি নতুন করে বিল্ড ও প্রকাশ না হলে বর্তমান v1.0.0 BIN-এ দেখা যাবে না।
 
 ---
 
-## ডাউনলোড ও প্রথম সেটআপ
+## দ্রুত লিংক
 
-**সবচেয়ে সহজ পথ:** [সর্বশেষ GitHub Release](https://github.com/rmd734412-web/ihr-universal-ir-remote/releases/latest) পেজ থেকে `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin` ডাউনলোড করুন। সঙ্গে `.sha256.txt` ফাইলটিও নামালে ডাউনলোড যাচাই করা যায়।
+| যা খুঁজছেন | লিংক |
+|---|---|
+| ফার্মওয়্যার ডাউনলোড | [GitHub Releases](https://github.com/ROVIXANE/ROVIXANE-IR/releases/latest) |
+| নতুন ব্যবহারকারীর ইনস্টলেশন | [docs/INSTALL.md](docs/INSTALL.md) |
+| ড্যাশবোর্ড ব্যবহার | [docs/DASHBOARD.md](docs/DASHBOARD.md) |
+| সাধারণ প্রশ্ন ও সমস্যা | [docs/FAQ.md](docs/FAQ.md) |
+| ওয়্যারিং ও GPIO | [WIRING.md](WIRING.md) |
+| নিরাপত্তা তথ্য | [SECURITY.md](SECURITY.md) |
+| অবদান | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| সংস্করণ ইতিহাস | [CHANGELOG.md](CHANGELOG.md) |
 
-- 📦 [Firmware Downloads / ফার্মওয়্যার ডাউনলোড](https://github.com/rmd734412-web/ihr-universal-ir-remote/releases/latest)
-- 📖 [INSTALL.md — Android/Termux থেকে ফ্ল্যাশ ও সেটআপ](docs/INSTALL.md)
-- 📱 [DASHBOARD.md — ড্যাশবোর্ড ব্যবহার](docs/DASHBOARD.md)
-- ❓ [FAQ.md — সাধারণ প্রশ্ন](docs/FAQ.md)
+---
 
-সংক্ষেপে:
+## পরিচিতি
+
+| বিবরণ | তথ্য |
+|---|---|
+| ব্র্যান্ড | ROVIXANE |
+| প্রকল্প | ROVIXANE-IR |
+| রিপোজিটরি | [github.com/ROVIXANE/ROVIXANE-IR](https://github.com/ROVIXANE/ROVIXANE-IR) |
+| হার্ডওয়্যার | NodeMCU ESP8266 ESP-12E |
+| বর্তমান প্রকাশিত সংস্করণ | v1.0.0 |
+| ইন্টারফেস | বাংলা ও ইংরেজি; ড্যাশবোর্ডে এক ক্লিকে বদলানো যায় |
+| সংযোগ | 2.4 GHz Wi-Fi, AP মোডে `ROVIXANE-IR-Setup`, IP `192.168.4.1` |
+| অফলাইন | HTML, CSS, JS, PWA manifest—সব ফার্মওয়্যারের ভেতরে |
+
+![ROVIXANE IR ওয়্যারিং ডায়াগ্রাম — NodeMCU ESP-12E, TSOP38238, TSAL620 ও BC547](docs/images/rovixane-ir-wiring.svg)
+
+> GPIO সংজ্ঞা firmware/`Compatibility.h`-এ যাচাই করা। কম্পোনেন্ট pinout, LED polarity ও R/C মান শুধু ডকুমেন্টেশনে আছে এবং **UNVERIFIED** হিসেবে চিহ্নিত। মোবাইলে ছবিতে ট্যাপ করে জুম করুন; [SVG](docs/images/rovixane-ir-wiring.svg) ও [PNG](docs/images/rovixane-ir-wiring.png) দুই ফরম্যাটেই আছে। বিস্তারিত: [WIRING.md](WIRING.md)।
+
+---
+
+## কী কী করতে পারবেন
+
+| বৈশিষ্ট্য | কীভাবে কাজ করে |
+|---|---|
+| রিমোট নিয়ন্ত্রণ | **Remotes** ট্যাব থেকে প্রোফাইল বেছে বাটন চাপুন |
+| নতুন সংকেত শেখা | **Learn signal** → শেখা শুরু করুন → আসল রিমোটের বাটন চাপুন |
+| সংকেত সংরক্ষণ | শেখার পর **Save as button** দিয়ে বাটন হিসেবে রাখুন |
+| প্রোটোকল ও Raw | NEC, LG, LG2, SONY, SAMSUNG, JVC, PANASONIC, RC5, RC6, DENON, COOLIX, MIDEA24 এবং Raw টাইমিং |
+| নিজস্ব বাটন | নাম, বাংলা নাম, আইকন, রঙ, HEX কোড, বিট সংখ্যা, ক্যারিয়ার ফ্রিকোয়েন্সি ও পুনরাবৃত্তি ঠিক করুন |
+| প্রোফাইল ব্যবস্থাপনা | নতুন প্রোফাইল, সম্পাদনা, অনুলিপি ও মুছে ফেলা |
+| Wi-Fi সেটআপ | প্রথম বুটে ওপেন setup AP; পরে বাড়ির 2.4 GHz নেটওয়ার্কে সংযোগ |
+| ব্যাকআপ ও পুনরুদ্ধার | **Download backup** / **Restore backup** দিয়ে JSON ফাইল |
+| রিস্টার্ট ও ফ্যাক্টরি রিসেট | ড্যাশবোর্ড থেকে অথবা D1/GPIO5 পিন দিয়ে |
+| ডায়াগনস্টিকস | ফার্মওয়্যার, আপটাইম, Heap মেমোরি, ফাইল সিস্টেম, IP, RSSI, রিসেট কারণ |
+| ভাষা | বাংলা/ইংরেজি টগল; পছন্দ ডিভাইসে সংরক্ষিত হয় |
+| সম্পূর্ণ অফলাইন | কোনো CDN, remote font বা বাইরের API নেই |
+
+---
+
+## প্রয়োজনীয় জিনিস
+
+### হার্ডওয়্যার
+
+- NodeMCU ESP8266 ESP-12E
+- TSOP38238 ইনফ্রারেড রিসিভার
+- TSAL620 ইনফ্রারেড LED
+- BC547 ট্রানজিস্টর
+- 1 kΩ রেজিস্টার (BC547 বেসের জন্য)
+- IR LED-র সাথে 47–220 Ω রেজিস্টার যোগ করার পরামর্শ; মান নির্ভরশীল ও **UNVERIFIED**
+- ঐচ্ছিক: 100 nF ক্যাপাসিটর, ফ্যাক্টরি রিসেটের push button
+
+### সফটওয়্যার
+
+- প্রস্তুত BIN ব্যবহার করলে Arduino IDE লাগবে না
+- নিজে কম্পাইল করতে চাইলে Arduino IDE 2.x
+- ESP8266 board package 3.1.2
+- ArduinoJson 7.4.2 এবং IRremoteESP8266 2.8.6
+- Termux/Android-এ ফ্ল্যাশ করলে `python3` ও `esptool`
+
+---
+
+## দ্রুত শুরু: প্রকাশিত BIN
+
+1. [সর্বশেষ Release](https://github.com/ROVIXANE/ROVIXANE-IR/releases/latest) খুলুন।
+2. NodeMCU BIN এবং মিলে যাওয়া `.sha256.txt` ডাউনলোড করুন।
+3. checksum যাচাই করুন:
+
+```sh
+cd ~/Downloads
+sha256sum -c ihr-universal-ir-remote-nodemcuv2-v1.0.0.sha256.txt
+```
+
+4. USB OTG দিয়ে বোর্ড সংযোগ করুন ও ফ্ল্যাশ করুন:
 
 ```sh
 pkg install python
@@ -33,203 +108,142 @@ python3 -m esptool --chip esp8266 --port /dev/ttyUSB0 --baud 115200 \
   ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin
 ```
 
-PORT-এর নাম `/dev/ttyACM0` হতে পারে। কানেকশন না ধরলে বোর্ডের **FLASH** বাটন চেপে রেখে কমান্ডটি চালান। USB OTG কেবল লাগবে। LittleFS/IOS upload লাগবে না—ওয়েব পেজগুলো BIN-এর ভেতরেই আছে।
+> **v1.0.0 asset নাম:** প্রকাশিত ফাইলের নাম `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin`—পুরনো নাম অপরিবর্তিত রাখা হয়েছে। ভবিষ্যত বিল্ডের নাম `rovixane-ir-nodemcuv2-vX.X.X.bin`।
 
-> ডেভেলপাররা চাইলে Actions ট্যাবের সবুজ CI রান থেকেও artifact নামাতে পারেন: **Build firmware (NodeMCU ESP-12E) → Artifacts → `ihr-universal-ir-remote-nodemcuv2-v1.0.0`**। সাধারণ ব্যবহারকারীদের জন্য Release-এই সঠিক উৎস।
-
-
----
-
-## ১. কী কী করতে পারবেন
-
-| কাজ | কীভাবে |
-|---|---|
-| ওয়াই-ফাই দিয়ে রিমোট চালানো | মোবাইলে ড্যাশবোর্ড খুলে বাটন চাপুন |
-| আইআর সংকেত শেখা | **Learn** ট্যাব → Start learning → রিমোটের বাটন চাপুন |
-| সংকেত সংরক্ষণ | শেখার পর **Save as button** |
-| LG ও অন্যান্য টিভি | LG, NEC, Sony, Samsung, JVC, Panasonic, RC5, RC6, Denon, Coolix, Midea24 + raw |
-| নিজের মতো বাটন | যেকোনো নাম, আইকন, রঙ ও কোড দিয়ে বাটন বানানো |
-| বাটন সম্পাদনা | বাটনের উপরে ডান কোণে ✎ চাপুন (নাম/রঙ/কোড বদলানো) |
-| বাটন মুছে ফেলা | ✎ দিয়ে সম্পাদনার সময় বা প্রোফাইল মুছে |
-| একাধিক প্রোফাইল | **+ Profile**, Duplicate, Edit, Delete |
-| ওয়াই-ফাই নাম/পাসওয়ার্ড বদল | **Settings** → Save settings → Restart |
-| ওপেন বা পাসওয়ার্ড-সহ ওয়াই-ফাই | AP password খালি রাখলে ওপেন, নাহলে ৮–৬৩ অক্ষর |
-| ব্যাকআপ / রিস্টোর | **Export JSON** / **Restore JSON** |
-| সুন্দর মোবাইল ড্যাশবোর্ড | অ্যান্ড্রয়েড/আইফোন—দুটোতেই কাজ করে |
-| বাংলা ও ইংরেজি | উপরের ডান কোণে **বাং** বাটন (সেটিংসেও আছে) |
-| অফলাইন ইন্টারফেস | সব HTML/CSS/JS ডিভাইসের ভেতরেই আছে, ইন্টারনেট লাগবে না |
+PORT `/dev/ttyACM0` হতে পারে। “Connecting……”-এ আটকে গেলে বোর্ডের **FLASH** বাটন চেপে রেখে কমান্ড চালান। LittleFS/IOS upload লাগবে না—ওয়েব পেজগুলো BIN-এর ভেতরেই আছে। বিস্তারিত: [INSTALL.md](docs/INSTALL.md)।
 
 ---
 
-## ২. প্রয়োজনীয় জিনিস
+## প্রথম বুট ও Wi-Fi সেটআপ
 
-### হার্ডওয়্যার
-- NodeMCU ESP8266 ESP-12E
-- TSOP38238 আইআর রিসিভার
-- TSAL620 আইআর LED
-- BC547 ট্রানজিস্টর
-- 1kΩ রেজিস্টার (বেসের জন্য)
-- **একটি 47–220Ω রেজিস্টার LED-র সঙ্গে যোগ করার পরামর্শ** (IR LED-র নিরাপদ রেঞ্জের জন্য; বিস্তারিত [WIRING.md](WIRING.md)-এ)
-- ঐচ্ছিক: 100nF ক্যাপাসিটর (TSOP-এর পাশে), ছোট push button (ফ্যাক্টরি রিসেটের জন্য)
+1. বোর্ডে পাওয়ার দিন; প্রায় ৫–১২ সেকেন্ড অপেক্ষা করুন।
+2. ফোনে `ROVIXANE-IR-Setup` Wi-Fi নেটওয়ার্কে সংযোগ করুন। এটি প্রথম সেটআপের জন্য ওপেন রাখা হয়।
+3. Android “No internet” বললে **Stay connected** / **Use this network as-is** বেছে নিন।
+4. ব্রাউজারে `http://192.168.4.1` খুলুন।
+5. **Settings** → `Wi-Fi network (SSID)` ও `Wi-Fi password` দিন → **Save settings** → **Restart**।
+6. ফোনকে আপনার নিজের 2.4 GHz Wi-Fi তে সংযোগ করে router-এর client list বা Serial Monitor থেকে IP বের করুন।
 
-### সফটওয়্যার
-- প্রস্তুত BIN চাইলে কোনো IDE লাগবে না—উপরের **ডাউনলোড ও প্রথম সেটআপ** অংশ দেখুন।
-- নিজে কম্পাইল/আপলোড করতে চাইলে: Arduino IDE 2.x
-- ESP8266 board package **3.1.2** (Board Manager থেকে)
-- লাইব্রেরি (Library Manager থেকে): **ArduinoJson 7.4.2**, **IRremoteESP8266 2.8.6**
-- ভিতরের লাইব্রেরি (আলাদা ইনস্টল লাগবে না): LittleFS, ESP8266WiFi, ESP8266WebServer, DNSServer
+Wi-Fi ব্যর্থ হলে প্রায় ১২ সেকেন্ড পর setup AP ফিরে আসে, তাই ডিভাইস “হারিয়ে” যায় না।
 
 ---
 
-## ৩. খুব সহজে শুরু করুন
+## Arduino IDE থেকে source বিল্ড
 
-**নতুন ব্যবহারকারী:** উপরের [INSTALL.md](docs/INSTALL.md) গাইডটি অনুসরণ করুন। নিচের Arduino IDE ধাপগুলো শুধু তাদের জন্য যারা source থেকে নিজে কম্পাইল/আপলোড করতে চান।
-
-### বিকল্প — Arduino IDE সেটআপ
-1. Arduino IDE খুলুন → **File → Preferences** → “Additional boards manager URLs”-এ দিন:
+1. Arduino IDE 2.x-এ **File → Preferences → Additional boards manager URLs**-এ দিন:
    `http://arduino.esp8266.com/stable/package_esp8266com_index.json`
-2. **Tools → Board → Boards Manager** →Search দিয়ে `esp8266` → **esp8266 by ESP8266 Community (3.1.2)** ইনস্টল করুন।
-3. **Tools → Manage Libraries** → `ArduinoJson` (7.4.2) ও `IRremoteESP8266` (2.8.6) ইনস্টল করুন।
+2. **Boards Manager** → `esp8266 by ESP8266 Community 3.1.2` ইনস্টল করুন।
+3. **Library Manager** → `ArduinoJson 7.4.2`, `IRremoteESP8266 2.8.6` ইনস্টল করুন।
+4. রিপোজিটরি ফোল্ডার খুলুন; `rovixane-ir.ino` অটো খুলবে।
+5. Board: **NodeMCU 1.0 (ESP-12E Module)**, Flash Size: **4MB (FS:1MB)**, CPU: **80 MHz**, Upload Speed: **115200**।
+6. Upload করুন; Serial Monitor 115200-এ `1.0.0 ready` দেখলে firmware চলছে।
 
-### ধাপ ১ — কোড আপলোড
-1. Arduino IDE-তে **File → Open** দিয়ে এই ফোল্ডারটি খুলুন (`ihr-universal-ir-remote`)。
-   ভেতরে `ihr-universal-ir-remote.ino` ফাইলটি অটো খুলবে।
-2. Tools মেনুতে সেট করুন:
+`data/`-এ কোনো.web ফাইল বদলে থাকলে আগে চালান:
 
-   | সেটিং | মান |
-   |---|---|
-   | Board | NodeMCU 1.0 (ESP-12E Module) |
-   | Upload Speed | 115200 |
-   | CPU Frequency | 80 MHz |
-   | Flash Size | 4MB (FS: 1MB) |
-
-3. USB কেবল দিয়ে NodeMCU কম্পিউটারে দিন → **→ (Upload)** চাপুন।
-   “Connecting…”-এ আটকে গেলে বোর্ডের **FLASH** বাটন কিছুক্ষণ চেপে রাখুন।
-4. আপলোড শেষ হলে **Serial Monitor** খুলুন (115200)। `1.0.0 ready` লেখা দেখলেই বোঝা যাবে চলছে।
-
-> কোনো LittleFS/IOS upload লাগবে না। ওয়েব পেজগুলো ফার্মওয়্যারের ভেতরেই আছে।
-
-### ধাপ ২ — মোবাইলে ড্যাশবোর্ড খুলুন
-1. আপনার ফোনের WiFi-তে নতুন নেটওয়ার্ক `IHR-IR-Setup` দেখা যাবে → সেটিতে কানেক্ট করুন (পাসওয়ার্ড লাগবে না)।
-2. কিছু ফোনে APK পপ-আপ আসবে; সেটিতে **OK/Stay connected** চাপুন। পপ-আপ না এলে ব্রাউজারে যান: **http://192.168.4.1**
-3. ড্যাশবোর্ড এসে গেলেই কাজ শুরু।
-
----
-
-## ৪. নিজের ওয়াই-ফাইতে চালানো
-
-1. ড্যাশবোর্ডে **Settings** ট্যাব খুলুন।
-2. **WiFi network (SSID)** → আপনার রাউটারের নাম।
-3. **WiFi password** → রাউটারের পাসওয়ার্ড (ওপেন নেটওয়ার্ক হলে খালি রাখুন)।
-4. **Save settings** চাপুন → তারপর **Restart** চাপুন।
-5. কয়েক সেকেন্ড পর ফোনটি আপনার রাউটারে কানেক্ট করুন। রাউটারের অ্যাডমিন পেজে ডিভাইসটির IP দেখুন (যেমন `192.168.1.50`) অথবা Serial Monitor-এ IP লেখা দেখুন।
-6. ব্রাউজারে `http://192.168.1.50` (আপনার IP) লিখে ড্যাশবোর্ড খুলুন।
-
-যদি রাউটারের পাসওয়ার্ড ভুল হয় বা রাউটার না থাকে, **১২ সেকেন্ড পর আবার `IHR-IR-Setup` এপি ফিরে আসবে**—তাই ডিভাইস “হারিয়ে” যাবে না।
-
----
-
-## ৫. রিমোট ব্যবহারের ধারণা
-
-### ধাপে ধাপে
-
-1. **Remotes** ট্যাব → **+ Profile** দিয়ে একটি প্রোফাইল বানান (যেমন “Living Room LG”)।
-2. প্রোফাইলের নাম/আইকন/রঙ **Edit** দিয়ে বদলানো যায়। **Duplicate** দিয়ে নকলও বানানো যায়।
-3. **+ Add button** দিয়ে নতুন বাটন যোগ করুন। অথবা **Learn** ট্যাব থেকে বাটন শিখুন।
-4. বাটন চাপলেই IR সিগনাল যাবে। নাম যেকোনো দিন—volume up, power, arrow ইত্যাদি।
-5. বাটনের ✎ চাপলে নাম, বাংলা নাম, আইকন, রঙ, প্রোটোকল, HEX কোড, bits, repeat—সব বদলানো যায়।
-
-### সংকেত শেখা (সবচেয়ে গুরুত্বপূর্ণ)
-1. **Learn** ট্যাব → **Start learning**।
-2. আপনার আসল রিমোটটি TSOP38238 রিসিভারের দিকে (প্রায় ১–২ ইঞ্চি) তাক করে বাটন চাপুন।
-3. ১–২ সেকেন্ড পর “Protocol / HEX / Bits / Raw timings” দেখা যাবে।
-4. **Save as button** চাপুন → নাম ও রঙ ঠিক করে সংরক্ষণ করুন।
-
-> `LG TV (examples)` প্রোফাইলের কোডগুলো **শুধু উদাহরণ** (সব টিভিতে একই নয়)। আপনার টিভির জন্য **Learn** দিয়ে নিজের কোড শিখলেই নিশ্চিত কাজ করবে।
-
-### ভাষা বদল
-উপরের ডান কোণে **বাং / EN** বাটন চাপলেই সাথে সাথে বদলে যাবে। Settings → Language-তেও আছে।
-
----
-
-## ৬. ব্যাকআপ, রিস্টোর, রিস্টার্ট
-
-- **Export JSON**: সব প্রোফাইল, বাটন ও সেটিংস একটা `.json` ফাইলে ডাউনলোড হয় (ফোনে থাকে)।
-- **Restore JSON**: সেই ফাইল আবার বেছে নিলে সব ফিরে আসে।
-- **Restart**: ডিভাইস রিস্টার্ট হয় (ওয়াই-ফাই/লগইন বদলের পর দরকার)।
-- **Factory reset**: সব প্রোফাইল ও সেটিংস মুছে যায়। ভুলে গেলে বোর্ডের **D1 (GPIO5)** পিনটিকে GND-র সঙ্গে **৩ সেকেন্ড** ধরে রাখুন—একই কাজ হবে (ঐচ্ছিক বাটন)।
-
-> লগইন চালু করে পাসওয়ার্ড ভুলে গেছেন? ৩ সেকেন্ডের ফ্যাক্টরি রিসেটই একমাত্র রাস্তা।
-
----
-
-## ৭. সমস্যা হলে
-
-আরও বিস্তারিত সমাধান: [FAQ.md](docs/FAQ.md)।
-
-| সমস্যা | করণীয় |
-|---|---|
-| ফোনে `IHR-IR-Setup` দেখছি না | বোর্ডে পাওয়ার আছে কি না দেখুন; Serial Monitor-এ `ready` আছে কি না; ১২ সেকেন্ড অপেক্ষা করুন |
-| `192.168.4.1` খুলছে না | ফোনের WiFi সেটিংসে “Stay connected”/“Use as-is” চাপুন; ব্রাউজার ক্যাশে ক্লিয়ার করুন |
-| বাটন চাপলে টিভি সাড়া দেয় না | LED-র দিক (polarity) ও BC547-এর C/B/E ঠিক আছে কি দেখুন ([WIRING.md](WIRING.md))। ফোনের ক্যামেরা দিয়ে LED-এর ছোট আলো দেখে পরীক্ষা করুন |
-| Learn-এ কিছু ধরা পড়ছে না | TSOP-এর ১=OUT, ২=GND, ৩=VCC ক্রম ঠিক করুন; VCC-র পাশে 100nF দিন; সরাসরি রোদ এড়িয়ে চালান |
-| টিভি কম দূর থেকে কাজ করে | LED-র সঙ্গে 47–220Ω রেজিস্টার যোগ করুন, TSAL620 কে টিভির সামনের সেন্সরের দিকে তাক করুন |
-| বাংলা লেখা বিকৃত | ফোন/ব্রাউজার আপডেট করুন; ফন্ট ইন্টারনেট থেকে আসে না, সিস্টেম ফন্ট ব্যবহার হয় |
-| কোড আপলোড হয় না | Board=NodeMCU 1.0, COM port ঠিক আছে কি দেখুন; FLASH বাটন চেপে আপলোড করুন |
-
----
-
-## ৮. ফাইল কী কী
-
-| ফাইল | কাজ |
-|---|---|
-| `ihr-universal-ir-remote.ino` | মূল firmware (WiFi, সার্ভার, IR send/learn) |
-| `AppConfig.*`, `Storage.*`, `SignalStore.*` | সেটিংস ও সংকেত LittleFS-এ সংরক্ষণ |
-| `WebAssets.h` | ওয়েব পেজগুলো ফ্ল্যাশে রাখার জন্য অটো-জেনারেটেড ফাইল |
-| `data/index.html`, `app.css`, `app.js` | ড্যাশবোর্ডের আসল source |
-| `data/devices.json` | প্রথম বুটে লোড হওয়া LG উদাহরণ প্রোফাইল |
-| `tools/generate_assets.py` | `data/` বদলের পর `WebAssets.h` বানানোর টুল |
-| `WIRING.md` | বিস্তারিত ওয়্যারিং গাইড |
-| `docs/INSTALL.md` | ফার্মওয়্যার ফ্ল্যাশ, প্রথম সেটআপ ও আপডেট গাইড |
-| `docs/DASHBOARD.md` | ড্যাশবোর্ড ও রিমোট ব্যবহারের গাইড |
-| `docs/FAQ.md` | সাধারণ প্রশ্ন ও সমস্যার সমাধান |
-| `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md` | অবদান, নিরাপত্তা ও সংস্করণ তথ্য |
-| `RELEASE_NOTES.md` | GitHub Release-এর মুক্তি নোট |
-| `tests/` | কম্পিউটারে চালানো যাচাই (হার্ডওয়্যার লাগবে না) |
-
-`data/`-এ কিছু বদলে থাকলে চালান:
 ```sh
 python3 tools/generate_assets.py
 ```
-এরপর আবার আপলোড করুন।
 
-কোড যাচাই করতে (ঐচ্ছিক):
+---
+
+## ড্যাশবোর্ড পরিচিতি
+
+- **Remotes:** প্রোফাইল বেছে বাটন চাপুন; ✎ দিয়ে বাটন সম্পাদনা করুন।
+- **Learn signal:** আসল রিমোট TSOP38238-এর দিকে ধরে বাটন চাপুন; প্রোটোকল, HEX, বিট, ক্যারিয়ার ফ্রিকোয়েন্সি ও Raw টাইমিং দেখা যাবে।
+- **Settings:** ডিভাইসের নাম, setup AP, Wi-Fi, ক্যাপ্টিভ পোর্টাল, লগইন, পুনরাবৃত্তি ও ভাষা।
+- **Backup & restore:** JSON ব্যাকআপ ডাউনলোড/পুনরুদ্ধার, রিস্টার্ট ও ফ্যাক্টরি রিসেট।
+- **Diagnostics:** ফার্মওয়্যার, আপটাইম, Heap মেমোরি, ফাইল সিস্টেম, IP, RSSI ও রিস্টার্ট কারণ।
+
+> `LG TV (examples)` প্রোফাইলের কোড শুধু উদাহরণ; সব টিভিতে একই নয়। নিজের ডিভাইসের জন্য **Learn signal** দিয়ে কোড যাচাই করুন।
+
+বিস্তারিত: [DASHBOARD.md](docs/DASHBOARD.md)।
+
+---
+
+## ব্যাকআপ, আপডেট ও পুনরুদ্ধার
+
+- **Download backup:** প্রোফাইল, বাটন ও সেটিংস এক `.json` ফাইলে রাখে।
+- **Restore backup:** আগের ব্যাকআপ ফাইল আবার লোড করে।
+- Firmware আপডেটে LittleFS фай `/config.json` ও `/signals.json` সাধারণত সংরক্ষিত থাকে; তবুও আপডেটের আগে ব্যাকআপ নিন।
+- **Factory reset** সব প্রোফাইল, বাটন ও সেটিংস মুছে দেয়। প্রয়োজনে D1/GPIO5 কে GND-র সাথে ৩ সেকেন্ড ধরে রাখুন।
+
+---
+
+## ডকুমেন্টেশন
+
+| ডকুমেন্ট | কী আছে |
+|---|---|
+| [INSTALL.md](docs/INSTALL.md) | Release বেছে নেওয়া, checksum, Termux/Arduino IDE ফ্ল্যাশ, প্রথম সেটআপ, recovery |
+| [DASHBOARD.md](docs/DASHBOARD.md) | ট্যাব, বাটন, শেখা, সেটিংস, ডায়াগনস্টিকস, মোবাইল ব্যবহার |
+| [FAQ.md](docs/FAQ.md) | Wi-Fi, IR, ব্যাকআপ, ভাষা, বিল্ড ও নিরাপত্তা সংক্রান্ত প্রশ্ন |
+| [WIRING.md](WIRING.md) | GPIO সংযোগ ও কম্পোনেন্ট তথ্য; unverified অংশ স্পষ্ট |
+| [SECURITY.md](SECURITY.md) | দুর্বলতা রিপোর্ট ও নিরাপদ ব্যবহার |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | অবদানের নিয়ম |
+| [CHANGELOG.md](CHANGELOG.md) / [RELEASE_NOTES.md](RELEASE_NOTES.md) | সংস্করণ তথ্য |
+
+---
+
+## প্রকল্পের গঠন
+
+| ফাইল / ফোল্ডার | কাজ |
+|---|---|
+| `rovixane-ir.ino` | Wi-Fi, web server, IR send/learn, API |
+| `AppConfig.*`, `Storage.*`, `SignalStore.*` | সেটিংস ও সংকেত LittleFS-এ রাখে |
+| `Compatibility.h` | GPIO/pin compatibility macros |
+| `WebAssets.h` | `data/` থেকে অটো-জেনারেটেড web asset header |
+| `data/index.html`, `app.css`, `app.js` | ড্যাশবোর্ড source |
+| `data/manifest.webmanifest` | PWA metadata |
+| `data/devices.json` | প্রথম বুটের LG উদাহরণ প্রোফাইল |
+| `tools/generate_assets.py` | `WebAssets.h` তৈরির টুল |
+| `tests/` | host tests, asset contract checks, real IR header check |
+| `.github/workflows/ci.yml` | firmware build, verification, release guard |
+
+---
+
+## যাচাই ও উন্নয়ন
+
 ```sh
-sh tests/run_tests.sh
+python3 tools/generate_assets.py   # data/ বদলের পর
+sh tests/run_tests.sh              # asset + host tests
 ```
 
+`tests/run_tests.sh` যাচাই করে:
+
+- `WebAssets.h` exactly matches `data/` generator output
+- DOM id, API route, translation key ও PWA wiring
+- starter signal database schema
+- host-side firmware behavior
+- real `IRremoteESP8266 v2.8.6` header contract
+
+> এই local environment-এ `arduino-cli` নেই; তাই এখান থেকে বাস্তব ESP8266 firmware compile দাবি করা হয় না। CI-তে source compile ও BIN verification কনফিগার করা আছে। বাস্তব হার্ডওয়্যার পরীক্ষা ব্যবহারকারীকেই করতে হয়।
+
 ---
 
-## ৯. ছোট প্রযুক্তিগত তথ্য
+## সমস্যা হলে
 
-- পিন: **D2/GPIO4** = IR send, **D5/GPIO14** = IR receive, **D1/GPIO5** = Optional reset button, **D4/GPIO2** = বিল্ট-ইন LED।
-- FIRMWARE version: `1.0.0`
-- সব ডেটা `/config.json` ও `/signals.json`-এ থাকে (atomic write, পাওয়ার গেলে নষ্ট হয় না)।
-- ওয়েব সার্ভার: port 80, ক্যাপ্টিভ DNS: port 53, AP IP: `192.168.4.1`।
-- API: `/api/config`, `/api/signals`, `/api/send`, `/api/learn/start|status|cancel`, `/api/status`, `/api/restart`, `/api/factory-reset`।
+| লক্ষণ | প্রথম ধাপ |
+|---|---|
+| `ROVIXANE-IR-Setup` দেখা যাচ্ছে না | পাওয়ার, `ready` লগ ও ১২ সেকেন্ড অপেক্ষা যাচাই করুন |
+| `192.168.4.1` খুলছে না | setup AP-তে থাকুন, “Stay connected” বাছুন, cache clear করুন |
+| বাটনে টিভি সাড়া দেয় না | IR LED দিক, BC547 C/B/E ও 47–220 Ω রেজিস্টার যাচাই করুন |
+| Learn-এ কিছু ধরা পড়ছে না | TSOP pinout, 100 nF ক্যাপাসিটর ও রোদ/শক্তিশালী আলো এড়িয়ে চেষ্টা করুন |
+| বাংলা লেখা বিকৃত | ব্রাউজার/ফোন আপডেট করুন; কোনো remote font লোড হয় না |
+
+আরও: [FAQ.md](docs/FAQ.md)।
 
 ---
 
-## ১০. সীমাবদ্ধতা ও নিরাপত্তা
+## সীমাবদ্ধতা ও নিরাপত্তা
 
-- শুধু **2.4 GHz** Wi-Fi সমর্থিত; 5 GHz নেটওয়ার্ক দেখা যাবে না।
-- IR শেখার জন্য ট্রান্সমিটার/রিসিভারের সামনে পরিষ্কার দৃশ্য লাগবে; রোদ বা শক্তিশালী লাইট বাধা দিতে পারে।
-- শুধু NEC, LG, Sony, Samsung, JVC, Panasonic, RC5, RC6, Denon, Coolix, Midea24 ও raw timing সমর্থিত।
-- সেটআপ AP প্রথম বারের জন্য ওপেন রাখা হয়; অন্যরা দেখতে পারলে Settings-এ লগইন চালু করুন।
-- ড্যাশবোর্ড শুধু লোকাল নেটওয়ার্কের জন্য; ইন্টারনেটে expose করবেন না।
-- একটি IR LED-র সঙ্গে অবশ্যই রেজিস্টার ব্যবহার করুন। মেডিকেল, মেইন-সুইচিং বা নিরাপত্তা-সংক্রান্ত ডিভাইস নিয়ন্ত্রণে ব্যবহার করবেন না।
-- GitHub Actions শুধু সফটওয়্যার বিল্ড ও যাচাই করে; বাস্তব হার্ডওয়্যার পরীক্ষা ব্যবহারকারীকেই করতে হয়।
+- শুধু **2.4 GHz** Wi-Fi; 5 GHz সমর্থিত নয়।
+- IR শেখার জন্য পরিষ্কার দৃশ্য লাগবে; রোদ বা শক্তিশালী লাইট বাধা দিতে পারে।
+- শুধু উপরের তালিকাভুক্ত প্রোটোকল ও Raw timing সমর্থিত।
+- Setup AP প্রথম বুটে ওপেন; অন্যরা দেখতে পারলে Settings-এ লগইন চালু করুন।
+- ড্যাশবোর্ড শুধু local network-এর জন্য; HTTPS/internet firewall নেই, ইন্টারনেটে expose করবেন না।
+- একটি IR LED-র সাথে অবশ্যই রেজিস্টার ব্যবহার করুন। মেডিকেল, mains switching, heating, security বা safety-critical ডিভাইসে ব্যবহার করবেন না।
+- GitHub Actions শুধু সফটওয়্যার যাচাই করে; wiring, IR range ও বাস্তব আচরণ hardware owner-কে যাচাই করতে হয়।
 
-বিস্তারিত: [SECURITY.md](SECURITY.md), [FAQ.md](docs/FAQ.md)।
+---
 
-**লাইসেন্স:** MIT — [LICENSE](LICENSE) দেখুন।
+## অবদান ও লাইসেন্স
+
+অবদানের জন্য [CONTRIBUTING.md](CONTRIBUTING.md), নিরাপত্তা রিপোর্টের জন্য [SECURITY.md](SECURITY.md) দেখুন। এই প্রকল্প **MIT** লাইসেন্সের অধীনে; বিস্তারিত [LICENSE](LICENSE)।

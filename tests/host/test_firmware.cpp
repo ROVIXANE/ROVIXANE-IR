@@ -1,6 +1,6 @@
 // Host integration tests: run the REAL firmware sources against simulated
 // Arduino / ESP8266 / IR libraries. No hardware is required.
-#include "../../ihr-universal-ir-remote.ino"
+#include "../../rovixane-ir.ino"
 
 #include <cassert>
 #include <cstdio>
@@ -40,7 +40,12 @@ static void testWeb() {
   CHECK(r.body.indexOf("<!DOCTYPE html>") == 0, "dashboard is HTML");
   CHECK(r.body.indexOf("/app.css") >= 0, "dashboard links CSS");
   CHECK(r.body.indexOf("/app.js") >= 0, "dashboard links JS");
+  CHECK(r.body.indexOf("/manifest.webmanifest") >= 0, "dashboard links PWA manifest");
   CHECK(r.body.length() == gServer.expectedLength(), "dashboard length announced");
+
+  r = get("/manifest.webmanifest");
+  CHECK(r.code == 200 && r.body.indexOf("ROVIXANE IR") >= 0,
+        "PWA manifest is served with ROVIXANE branding");
 
   r = get("/app.css");
   CHECK(r.code == 200 && r.body.length() == kWebAppCssLen, "CSS is served fully");
@@ -52,8 +57,8 @@ static void testWeb() {
 
 static void testConfig() {
   JsonDocument d = asJson(get("/api/config"));
-  CHECK(d["deviceName"] == "IHR IR Remote", "default device name");
-  CHECK(d["apSsid"] == "IHR-IR-Setup", "default AP SSID");
+  CHECK(d["deviceName"] == ROVIXANE_IR_DISPLAY_NAME, "default device name");
+  CHECK(d["apSsid"] == ROVIXANE_IR_AP_SSID, "default AP SSID");
   CHECK(d["apPassword"] == "", "default AP is open");
   CHECK(d["locale"] == "en", "default locale is English");
   CHECK(d["httpAuth"] == false, "login disabled by default");
@@ -156,7 +161,8 @@ static void testLearning() {
 
 static void testStatusAndNetwork() {
   JsonDocument d = asJson(get("/api/status"));
-  CHECK(d["version"] == IHR_FIRMWARE_VERSION, "firmware version in status");
+  CHECK(d["version"] == ROVIXANE_IR_FIRMWARE_VERSION, "firmware version in status");
+  CHECK(d["product"] == ROVIXANE_IR_PRODUCT_NAME, "product name in status");
   CHECK(d["locale"] == "en", "locale in status");
   CHECK(d["fsTotal"] == 4u * 1024u * 1024u, "filesystem size reported");
   CHECK(gApMode == true, "AP starts when no WiFi credentials are saved");
@@ -176,7 +182,7 @@ static void testStatusAndNetwork() {
   CHECK(d["apMode"] == true, "status reports AP mode");
   CHECK(d["ip"] == "192.168.4.1", "AP IP reported");
   CHECK(d["wifiSsid"] == "HomeRouter", "status reports configured WiFi SSID");
-  CHECK(d["apSsid"] == "IHR-IR-Setup", "status reports config AP SSID");
+  CHECK(d["apSsid"] == ROVIXANE_IR_AP_SSID, "status reports config AP SSID");
 
   // Saved network returns: setup AP and captive DNS must be removed.
   WiFi.staConnected = true;

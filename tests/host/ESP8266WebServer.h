@@ -72,7 +72,7 @@ class ESP8266WebServer {
     _response.code = 401;
     _response.contentType = "text/plain";
     _response.body = "Unauthorized";
-    _response.headers["WWW-Authenticate"] = "Basic realm=\"IHR IR Remote\"";
+    _response.headers["WWW-Authenticate"] = "Basic realm=\"ROVIXANE IR\"";
   }
 
   HttpResponse dispatch(uint8_t method, const char *path, const String &body = String(),

@@ -19,7 +19,7 @@ fi
 mkdir -p "$HDR"
 cp "$ROOT/tests/host/"*.h "$HDR/"
 rm -f "$HDR/IRremoteESP8266.h" "$HDR/IRrecv.h" "$HDR/IRsend.h"
-printf '#include "Arduino.h"\n#include "%s/ihr-universal-ir-remote.ino"\n' "$ROOT" > "$HDR/probe.cpp"
+printf '#include "Arduino.h"\n#include "%s/rovixane-ir.ino"\n' "$ROOT" > "$HDR/probe.cpp"
 
 CXX=${CXX:-g++}
 command -v "$CXX" >/dev/null 2>&1 || CXX=clang++

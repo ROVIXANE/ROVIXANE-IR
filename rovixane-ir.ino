@@ -1,5 +1,7 @@
 /*
-  IHR Universal IR Remote - firmware for NodeMCU ESP8266 (ESP-12E)
+  ROVIXANE IR — Universal Infrared Remote
+  Firmware for NodeMCU ESP8266 (ESP-12E)
+  https://github.com/ROVIXANE/ROVIXANE-IR
   -----------------------------------------------------------------
   - Sends and learns IR signals (LG / NEC / Sony / Samsung / JVC /
     Panasonic / RC5 / RC6 / Denon / Coolix / Midea24 / raw).
@@ -452,7 +454,7 @@ static void sendProgmem(const char *data, size_t length, const char *type,
 }
 
 static void fillConfigDoc(JsonDocument &doc, const AppConfig &cfg) {
-  doc["version"] = IHR_FIRMWARE_VERSION;
+  doc["version"] = ROVIXANE_IR_FIRMWARE_VERSION;
   doc["deviceName"] = cfg.deviceName;
   doc["ap"]["ssid"] = cfg.apSsid;
   doc["ap"]["password"] = cfg.apPassword;
@@ -487,6 +489,10 @@ static void handleCss() {
 static void handleJs() {
   if (!authOk()) return;
   sendProgmem(kWebAppJs, kWebAppJsLen, "application/javascript; charset=utf-8", true);
+}
+static void handleManifest() {
+  if (!authOk()) return;
+  sendProgmem(kWebManifest, kWebManifestLen, "application/manifest+json; charset=utf-8", true);
 }
 
 static void handleConfigGet() {
@@ -672,7 +678,8 @@ static void handleLearnStatus() {
 static void handleStatus() {
   if (!authOk()) return;
   JsonDocument doc;
-  doc["version"] = IHR_FIRMWARE_VERSION;
+  doc["version"] = ROVIXANE_IR_FIRMWARE_VERSION;
+  doc["product"] = ROVIXANE_IR_PRODUCT_NAME;
   doc["uptimeSec"] = static_cast<uint32_t>(millis() / 1000UL);
   doc["freeHeap"] = ESP.getFreeHeap();
   doc["fsUsed"] = IhrStorage::usedBytes();
@@ -725,6 +732,7 @@ static void setupRoutes() {
   gServer.on("/", HTTP_GET, handleRoot);
   gServer.on("/app.css", HTTP_GET, handleCss);
   gServer.on("/app.js", HTTP_GET, handleJs);
+  gServer.on("/manifest.webmanifest", HTTP_GET, handleManifest);
   gServer.on("/api/config", HTTP_GET, handleConfigGet);
   gServer.on("/api/config", HTTP_POST, handleConfigPost);
   gServer.on("/api/signals", HTTP_GET, handleSignalsGet);
@@ -764,7 +772,8 @@ void setup() {
   startWifi();
   gServer.begin();
 
-  Serial.printf("[BOOT] %s ready, IP %s\n", IHR_FIRMWARE_VERSION,
+  Serial.printf("[BOOT] %s %s ready, IP %s\n", ROVIXANE_IR_DISPLAY_NAME,
+                ROVIXANE_IR_FIRMWARE_VERSION,
                 (gApMode ? WiFi.softAPIP() : WiFi.localIP()).toString().c_str());
 }
 

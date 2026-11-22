@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve IHR Universal IR Remote. Please keep changes small, beginner-friendly and compatible with the existing NodeMCU ESP-12E architecture.
+Thanks for helping improve ROVIXANE IR — Universal Infrared Remote. Please keep changes small, beginner-friendly and compatible with the existing NodeMCU ESP-12E architecture. The canonical repository is [ROVIXANE/ROVIXANE-IR](https://github.com/ROVIXANE/ROVIXANE-IR).
 
 ## Ground rules
 
@@ -61,7 +61,7 @@ If you add a feature, update:
 
 ## Releases
 
-Releases are automated from `main`. The release job runs only after host checks and the firmware build both succeed. It verifies the BIN header and uploads a checksum file. Do not manually attach unverified binaries.
+Releases are automated from `main`. The release job runs only after host checks and the firmware build both succeed. It verifies the BIN header, uses `rovixane-ir-nodemcuv2-vX.X.X` asset names and uploads a checksum file. Existing published releases (including v1.0.0 and its legacy-named assets) are never modified; do not manually attach unverified binaries or rewrite published releases.
 
 ## Code style
 

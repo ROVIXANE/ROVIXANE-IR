@@ -5,9 +5,14 @@
 
 // ---------------------------------------------------------------------------
 // Project identity
+// ROVIXANE IR — Universal Infrared Remote
+// https://github.com/ROVIXANE/ROVIXANE-IR
 // ---------------------------------------------------------------------------
-#define IHR_FIRMWARE_VERSION "1.0.0"
-#define IHR_CONFIG_VERSION 1
+#define ROVIXANE_IR_FIRMWARE_VERSION "1.0.0"
+#define ROVIXANE_IR_DISPLAY_NAME "ROVIXANE IR"
+#define ROVIXANE_IR_AP_SSID "ROVIXANE-IR-Setup"
+#define ROVIXANE_IR_PRODUCT_NAME "ROVIXANE IR — Universal Infrared Remote"
+#define IHR_CONFIG_VERSION 1  // persisted schema, kept for compatibility
 
 // ---------------------------------------------------------------------------
 // Board: NodeMCU 1.0 (ESP-12E), Arduino Core 3.1.2

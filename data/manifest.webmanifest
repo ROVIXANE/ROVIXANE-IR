@@ -1,0 +1,15 @@
+{
+  "name": "ROVIXANE IR — Universal Infrared Remote",
+  "short_name": "ROVIXANE IR",
+  "description": "NodeMCU ESP8266 ESP-12E-এর জন্য অফলাইন সার্বজনীন ইনফ্রারেড রিমোট ড্যাশবোর্ড।",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b1120",
+  "theme_color": "#0f172a",
+  "lang": "bn",
+  "dir": "ltr",
+  "categories": ["utilities"]
+}

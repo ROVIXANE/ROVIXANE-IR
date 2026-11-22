@@ -22,6 +22,7 @@ FILES = [
     ("kWebIndexHtml", "index.html", "Dashboard HTML"),
     ("kWebAppCss", "app.css", "Dashboard CSS"),
     ("kWebAppJs", "app.js", "Dashboard JavaScript"),
+    ("kWebManifest", "manifest.webmanifest", "PWA manifest"),
     ("kStarterDevicesJson", "devices.json", "Starter signal database"),
 ]
 

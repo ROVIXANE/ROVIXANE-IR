@@ -6,8 +6,8 @@
 
 struct AppConfig {
   uint8_t version = IHR_CONFIG_VERSION;
-  char deviceName[32]   = "IHR IR Remote";
-  char apSsid[33]       = "IHR-IR-Setup";
+  char deviceName[32]   = ROVIXANE_IR_DISPLAY_NAME;
+  char apSsid[33]       = ROVIXANE_IR_AP_SSID;
   char apPassword[64]   = "";          // empty => OPEN AP
   char wifiSsid[33]     = "";
   char wifiPassword[65] = "";

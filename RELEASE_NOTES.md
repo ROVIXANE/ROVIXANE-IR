@@ -1,10 +1,12 @@
-# IHR Universal IR Remote v1.0.0
+# ROVIXANE IR — Universal Infrared Remote v1.0.0
 
 First public firmware release.
 
+> **Naming note:** The published v1.0.0 release and its assets are intentionally left unchanged, including the legacy `ihr-universal-ir-remote-*` filenames and the `IHR-IR-Setup` SSID used by that firmware. Future releases follow `ROVIXANE-IR-vX.X.X` / `rovixane-ir-nodemcuv2-vX.X.X.bin` naming and use `ROVIXANE-IR-Setup`.
+
 ## What this release contains
 
-- Real compiled NodeMCU ESP8266 firmware (not a placeholder): `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin`
+- Real compiled NodeMCU ESP8266 firmware (not a placeholder): `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin` (published v1.0.0 asset, legacy name)
 - SHA-256 checksum file: `ihr-universal-ir-remote-nodemcuv2-v1.0.0.sha256.txt`
 - First-run setup card, clearer connection status, per-button delete, supported-protocol picker, and automatic setup-AP teardown after Wi-Fi recovery
 - Source code and full documentation in this repository
@@ -33,7 +35,7 @@ Other ESP8266 boards may work electrically, but this release is built and verifi
 - 47–220Ω resistor in series with the IR LED (recommended)
 - USB cable and a phone with Wi-Fi and a web browser
 
-See [WIRING.md](https://github.com/rmd734412-web/ihr-universal-ir-remote/blob/main/WIRING.md) for a beginner-friendly, illustrated-by-text wiring guide.
+See [WIRING.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/WIRING.md) for a beginner-friendly, illustrated-by-text wiring guide.
 
 ## Install from Android / Termux without Arduino IDE
 
@@ -67,13 +69,13 @@ See [WIRING.md](https://github.com/rmd734412-web/ihr-universal-ir-remote/blob/ma
 
    Replace `/dev/ttyUSB0` with the port shown on your phone. If flashing does not start, hold the board's **FLASH** button while running the command.
 
-6. Reconnect power. Your phone should see the Wi-Fi network `IHR-IR-Setup`.
+6. Reconnect power. Your phone should see the Wi-Fi network `IHR-IR-Setup` (the SSID used by the published v1.0.0 firmware; newer firmware uses `ROVIXANE-IR-Setup`).
 7. Connect to it and open **http://192.168.4.1** in a browser. Choose **Stay connected** if Android asks.
 8. In **Settings**, enter your home Wi-Fi name and password, save, and restart. The device falls back to `IHR-IR-Setup` after about 12 seconds if it cannot connect.
 
 No LittleFS upload is needed. The entire dashboard is compiled into the firmware.
 
-More detail: [INSTALL.md](https://github.com/rmd734412-web/ihr-universal-ir-remote/blob/main/docs/INSTALL.md).
+More detail: [INSTALL.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/docs/INSTALL.md).
 
 ## First-time setup and daily use
 
@@ -82,7 +84,7 @@ More detail: [INSTALL.md](https://github.com/rmd734412-web/ihr-universal-ir-remo
 - **Settings**: Wi-Fi, language (বাংলা / English), login, restart, backup/restore, factory reset.
 - **Status**: shows Wi-Fi mode, IP address and whether the access point is active.
 
-Step-by-step guides: [DASHBOARD.md](https://github.com/rmd734412-web/ihr-universal-ir-remote/blob/main/docs/DASHBOARD.md), [FAQ.md](https://github.com/rmd734412-web/ihr-universal-ir-remote/blob/main/docs/FAQ.md).
+Step-by-step guides: [DASHBOARD.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/docs/DASHBOARD.md), [FAQ.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/docs/FAQ.md).
 
 ## Known limitations
 
@@ -100,4 +102,4 @@ Step-by-step guides: [DASHBOARD.md](https://github.com/rmd734412-web/ihr-univers
 
 ## Full documentation
 
-Start at [README.md](https://github.com/rmd734412-web/ihr-universal-ir-remote/blob/main/README.md). Contributions are welcome; see [CONTRIBUTING.md](https://github.com/rmd734412-web/ihr-universal-ir-remote/blob/main/CONTRIBUTING.md). Report security concerns privately as described in [SECURITY.md](https://github.com/rmd734412-web/ihr-universal-ir-remote/blob/main/SECURITY.md).
+Start at [README.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/README.md). Contributions are welcome; see [CONTRIBUTING.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/CONTRIBUTING.md). Report security concerns privately as described in [SECURITY.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/SECURITY.md).

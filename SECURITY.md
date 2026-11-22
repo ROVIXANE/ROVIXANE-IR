@@ -21,7 +21,7 @@ You should receive an acknowledgement within a reasonable time. Please allow tim
 
 ## Device security notes
 
-- The setup access point `IHR-IR-Setup` is intentionally open so first-time users can connect. Enable dashboard login in **Settings** if other people can see the device.
+- The setup access point `ROVIXANE-IR-Setup` is intentionally open so first-time users can connect. Enable dashboard login in **Settings** if other people can see the device.
 - The dashboard is local-only HTTP. It does not provide HTTPS, user accounts or internet-facing protection. Do not port-forward it or expose it to the public internet.
 - Do not enter a password you use elsewhere. A compromised local device could reveal it.
 - Export backups contain profiles, settings and possibly login configuration. Store them privately and never paste them into issues.

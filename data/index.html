@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <meta name="color-scheme" content="dark">
-<title>IHR Universal IR Remote</title>
+<meta name="description" content="Offline universal infrared remote dashboard for NodeMCU ESP8266 ESP-12E.">
+<title>ROVIXANE IR — Universal Infrared Remote</title>
+<link rel="manifest" href="/manifest.webmanifest">
 <link rel="stylesheet" href="/app.css">
 </head>
 <body>
@@ -13,36 +15,38 @@
   <div class="brand">
     <span class="logo" aria-hidden="true">&#9678;</span>
     <div>
-      <strong data-i18n="appName">IHR IR Remote</strong>
+      <strong data-i18n="appName">ROVIXANE IR</strong>
       <small id="deviceName">NodeMCU ESP-12E</small>
     </div>
   </div>
   <div class="top-actions">
-    <span id="connPill" class="pill" data-i18n="connecting">Connecting…</span>
-    <button id="langBtn" class="icon-btn" type="button" aria-label="Switch language">&#2547;</button>
+    <span id="connPill" class="pill" data-i18n="connecting">Connecting to Wi-Fi…</span>
+    <button id="langBtn" class="icon-btn" type="button" data-i18n-aria="ariaLanguage" aria-label="Switch language">&#2547;</button>
   </div>
 </header>
 
-<nav class="tabs" role="tablist" aria-label="Main">
+<nav class="tabs" role="tablist" data-i18n-aria="ariaMainNav" aria-label="Main navigation">
   <button class="tab active" type="button" data-tab="remotes" data-i18n="tabRemotes">Remotes</button>
-  <button class="tab" type="button" data-tab="learn" data-i18n="tabLearn">Learn</button>
+  <button class="tab" type="button" data-tab="learn" data-i18n="tabLearn">Learn signal</button>
   <button class="tab" type="button" data-tab="settings" data-i18n="tabSettings">Settings</button>
   <button class="tab" type="button" data-tab="diag" data-i18n="tabDiag">Diagnostics</button>
 </nav>
 
 <main>
-  <section id="tab-remotes" class="panel active" aria-label="Remotes">
+  <section id="tab-remotes" class="panel active" data-i18n-aria="ariaRemotesPanel" aria-label="Remote profiles panel">
     <div id="setupCard" class="card stack setup hidden">
       <h2 data-i18n="setupTitle">First-time setup</h2>
       <ol class="setup-steps">
-        <li data-i18n="setupStep1">Connect your phone to the IHR-IR-Setup Wi-Fi network.</li>
-        <li data-i18n="setupStep2">Open Settings and enter your Wi-Fi name and password.</li>
-        <li data-i18n="setupStep3">Save, restart, then reconnect your phone to your own Wi-Fi.</li>
+        <li data-i18n="setupStep1">Connect your phone to the ROVIXANE-IR-Setup Wi-Fi network.</li>
+        <li data-i18n="setupStep2">Open http://192.168.4.1 in your browser.</li>
+        <li data-i18n="setupStep3">Open Settings and enter your Wi-Fi network name and password.</li>
+        <li data-i18n="setupStep4">Save, restart, then reconnect your phone to your own Wi-Fi network.</li>
       </ol>
+      <p class="muted small" data-i18n="setupNote">If your phone says there is no internet, keep using this network so setup can continue.</p>
       <button id="setupGoSettings" class="btn primary" type="button" data-i18n="setupGoSettings">Open Settings</button>
     </div>
     <div class="row">
-      <select id="profileSelect" aria-label="Remote profile"></select>
+      <select id="profileSelect" data-i18n-aria="ariaProfileSelect" aria-label="Select a remote profile"></select>
       <button id="addProfileBtn" class="btn ghost" type="button" data-i18n="addProfile">+ Profile</button>
     </div>
     <div class="profile-bar">
@@ -50,52 +54,53 @@
       <button id="dupProfileBtn" class="btn ghost" type="button" data-i18n="duplicate">Duplicate</button>
       <button id="delProfileBtn" class="btn ghost danger" type="button" data-i18n="delete">Delete</button>
     </div>
-    <p id="emptyHint" class="hint hidden" data-i18n="emptyHint">No buttons yet. Add one or learn from your remote.</p>
+    <p id="emptyHint" class="hint hidden" data-i18n="emptyHint">No buttons yet. Add a button or learn one from your remote.</p>
     <div id="signalGrid" class="grid"></div>
     <button id="addSignalBtn" class="btn primary wide" type="button" data-i18n="addSignal">+ Add button</button>
   </section>
 
-  <section id="tab-learn" class="panel" aria-label="Learn">
+  <section id="tab-learn" class="panel" data-i18n-aria="ariaLearnPanel" aria-label="Signal learning panel">
     <div class="card">
-      <h2 data-i18n="learnTitle">Learn a signal</h2>
-      <p class="muted" data-i18n="learnHelp">Point your remote at the TSOP38238 receiver and press a button. Captured protocol, HEX value, bit length and raw timings are shown below.</p>
+      <h2 data-i18n="learnTitle">Learn remote signal</h2>
+      <p class="muted" data-i18n="learnHelp">Point your remote at the TSOP38238 receiver and press a button. The dashboard shows the decoded protocol, HEX value, bit length, carrier frequency and Raw timing capture.</p>
       <div class="row wrap">
         <button id="learnStart" class="btn primary" type="button" data-i18n="startLearning">Start learning</button>
         <button id="learnCancel" class="btn ghost" type="button" data-i18n="cancel">Cancel</button>
       </div>
-      <pre id="learnResult" class="result hidden"></pre>
+      <pre id="learnResult" class="result hidden" aria-live="polite"></pre>
       <button id="learnSave" class="btn primary hidden" type="button" data-i18n="saveAsButton">Save as button</button>
     </div>
   </section>
 
-  <section id="tab-settings" class="panel" aria-label="Settings">
-    <form id="configForm" class="card stack">
+  <section id="tab-settings" class="panel" data-i18n-aria="ariaSettingsPanel" aria-label="Settings panel">
+    <form id="configForm" class="card stack" novalidate>
       <h2 data-i18n="settingsTitle">Settings</h2>
       <label data-i18n="deviceNameLbl">Device name<input id="cfgDeviceName" name="deviceName" maxlength="31" required></label>
-      <label data-i18n="apSsidLbl">Config AP SSID<input id="cfgApSsid" name="apSsid" maxlength="31" required></label>
-      <label data-i18n="apPassLbl">Config AP password (empty = open AP)<input id="cfgApPass" name="apPassword" type="password" maxlength="63" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"></label>
-      <label data-i18n="wifiSsidLbl">WiFi network (SSID)<input id="cfgWifiSsid" name="wifiSsid" maxlength="31"></label>
-      <label data-i18n="wifiPassLbl">WiFi password<input id="cfgWifiPass" name="wifiPassword" type="password" maxlength="63"></label>
+      <label data-i18n="apSsidLbl">Setup AP name (SSID)<input id="cfgApSsid" name="apSsid" maxlength="31" required></label>
+      <label data-i18n="apPassLbl">Setup AP password (empty = open AP)<input id="cfgApPass" name="apPassword" type="password" maxlength="63" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"></label>
+      <label data-i18n="wifiSsidLbl">Wi-Fi network (SSID)<input id="cfgWifiSsid" name="wifiSsid" maxlength="31"></label>
+      <label data-i18n="wifiPassLbl">Wi-Fi password<input id="cfgWifiPass" name="wifiPassword" type="password" maxlength="63" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"></label>
       <div class="row wrap">
         <label class="check"><input id="cfgCaptive" name="captivePortal" type="checkbox"><span data-i18n="captiveLbl">Captive portal</span></label>
-        <label class="check"><input id="cfgAuth" name="httpAuth" type="checkbox"><span data-i18n="httpAuthLbl">Require login</span></label>
+        <label class="check"><input id="cfgAuth" name="httpAuth" type="checkbox"><span data-i18n="httpAuthLbl">Require dashboard login</span></label>
       </div>
       <label data-i18n="httpUserLbl">Login user<input id="cfgUser" name="httpUser" maxlength="31"></label>
-      <label data-i18n="httpPassLbl">Login password<input id="cfgHttpPass" name="httpPassword" type="password" maxlength="63"></label>
-      <label data-i18n="repeatLbl">Default repeats (1-10)<input id="cfgRepeat" name="irRepeat" type="number" min="1" max="10"></label>
-      <label data-i18n="localeLbl">Language<select id="cfgLocale" name="locale"><option value="en">English</option><option value="bn">&#2476;&#2494;&#2434;&#2509;&#2482;&#2494;</option></select></label>
+      <label data-i18n="httpPassLbl">Login password<input id="cfgHttpPass" name="httpPassword" type="password" maxlength="63" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"></label>
+      <label data-i18n="repeatLbl">Default repeats (1–10)<input id="cfgRepeat" name="irRepeat" type="number" min="1" max="10"></label>
+      <label data-i18n="localeLbl">Interface language<select id="cfgLocale" name="locale"><option value="en" data-i18n="langEnglish">English</option><option value="bn" data-i18n="langBangla">Bangla</option></select></label>
       <button class="btn primary" type="submit" data-i18n="saveSettings">Save settings</button>
-      <p class="muted small" data-i18n="applyHint">WiFi / AP / login changes apply after restart.</p>
+      <p class="muted small" data-i18n="applyHint">Wi-Fi, AP and login changes apply after a restart.</p>
       <div id="restartNotice" class="notice hidden">
-        <span data-i18n="restartNotice">Settings saved. Restart to apply Wi-Fi / login changes.</span>
+        <span data-i18n="restartNotice">Settings saved. Restart to apply Wi-Fi or login changes.</span>
         <button id="noticeRestartBtn" class="btn primary hidden" type="button" data-i18n="restart">Restart</button>
       </div>
     </form>
     <div class="card stack">
       <h2 data-i18n="dataTitle">Backup &amp; restore</h2>
+      <p class="muted small" data-i18n="backupHint">Export a JSON backup before changing settings or updating firmware.</p>
       <div class="row wrap">
-        <button id="exportBtn" class="btn ghost" type="button" data-i18n="exportJson">Export JSON</button>
-        <button id="restoreBtn" class="btn ghost" type="button" data-i18n="restoreJson">Restore JSON</button>
+        <button id="exportBtn" class="btn ghost" type="button" data-i18n="exportJson">Download backup</button>
+        <button id="restoreBtn" class="btn ghost" type="button" data-i18n="restoreJson">Restore backup</button>
       </div>
       <div class="row wrap">
         <button id="restartBtn" class="btn ghost" type="button" data-i18n="restart">Restart</button>
@@ -104,17 +109,20 @@
     </div>
   </section>
 
-  <section id="tab-diag" class="panel" aria-label="Diagnostics">
+  <section id="tab-diag" class="panel" data-i18n-aria="ariaDiagnosticsPanel" aria-label="Diagnostics panel">
     <div class="card stack">
       <h2 data-i18n="diagTitle">Diagnostics</h2>
+      <p class="muted small" data-i18n="diagHint">Live status reported by the device.</p>
       <pre id="diagOut" class="result" data-i18n="loading">Loading…</pre>
       <button id="diagRefresh" class="btn ghost" type="button" data-i18n="refresh">Refresh</button>
     </div>
   </section>
 </main>
 
-<div id="toast" class="toast hidden" role="status"></div>
-<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+<footer class="app-footer" data-i18n="footerText">ROVIXANE IR — Universal Infrared Remote</footer>
+
+<div id="toast" class="toast hidden" role="status" data-i18n-aria="ariaToast" aria-label="Notifications" aria-live="polite" aria-atomic="true"></div>
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-card">
     <div id="modalBody"></div>
     <div class="row end">

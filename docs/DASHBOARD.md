@@ -1,111 +1,141 @@
-# Dashboard Guide
+# ড্যাশবোর্ড গাইড
 
-The dashboard is a mobile-first web app stored inside the firmware. It works offline and needs no internet connection once the BIN is flashed.
+ROVIXANE IR ড্যাশবোর্ড একটি mobile-first ওয়েব অ্যাপ, যা firmware-এর ভেতরেই থাকে। BIN ফ্ল্যাশ করার পর ইন্টারনেটের প্রয়োজন হয় না—ফোনের router বা setup AP-র মাধ্যমে সরাসরি ডিভাইসেই পেজ খুলে।
 
-Open it at `http://192.168.4.1` during setup, or at your device’s home-network IP later.
-
----
-
-## First screen
-
-The app opens on the **Remotes** tab. A starter `LG TV (examples)` profile is installed on first boot so you can try buttons immediately. Those example codes are not guaranteed to match your TV; use **Learn** for reliable codes.
-
-Top-right controls:
-
-- **বাং / EN** — switch Bengali and English instantly.
-- Connection/status area — shows AP mode, home Wi-Fi mode and IP address.
-
-Use large buttons with your thumb. Scroll profiles horizontally; tap a button to send its IR code.
+> এই গাইড working tree-র বাংলা UX/UI-কে ভিত্তি ধরে লেখা। প্রকাশিত v1.0.0 BIN অপরিবর্তিত, তাই কিছু নতুন বাংলা শব্দ বা onboarding লেখা পুরনো BIN-এ দেখা যাবে না।
 
 ---
 
-## Tabs
+## ড্যাশবোর্ড কীভাবে খুলবেন
+
+- প্রথম বুটে: `ROVIXANE-IR-Setup` Wi-Fi-তে সংযোগ করে `http://192.168.4.1` খুলুন।
+- বাড়ির Wi-Fi-তে সরানোর পর: router-এ পাওয়া IP দিয়ে `http://<device-ip>` খুলুন।
+
+উপরে ডান কোণে **বাং** বাটন দিয়ে বাংলা/ইংরেজি বদলান। ভাষা পছন্দ ডিভাইসে সংরক্ষিত হয়; Settings → `Interface language`-তেও একই অপশন আছে।
+
+---
+
+## প্রথম স্ক্রিন
+
+অ্যাপ **Remotes** ট্যাব দিয়ে খোলে। প্রথম বুটে `LG TV (examples)` / `এলজি টিভি (উদাহরণস্বরূপ)` নামে একটি উদাহরণ প্রোফাইল থাকে। এর কোডগুলো শুধু উদাহরণ—আপনার টিভির সাথে মিলবে না হতে পারে। নির্ভরযোগ্য কোডের জন্য **Learn signal** ব্যবহার করুন।
+
+যখন setup AP চলছে বা Wi-Fi কনফিগার করা হয়নি, তখন উপরে **First-time setup** কার্ড দেখা যায়। এতে রয়েছে:
+
+1. `ROVIXANE-IR-Setup` Wi-Fi-তে সংযোগ করুন;
+2. `http://192.168.4.1` খুলুন;
+3. Settings-এ Wi-Fi নাম ও পাসওয়ার্ড দিন;
+4. সংরক্ষণ করে রিস্টার্ট করুন, তারপর নিজের Wi-Fi-তে ফিরে আসুন;
+5. ফোন ইন্টারনেট নেই বললে এই নেটওয়ার্কেই থাকুন।
+
+**Open Settings** বাটন সরাসরি Settings ট্যাবে নিয়ে যায়।
+
+---
+
+## ট্যাবসমূহ
 
 ### Remotes
 
-- **+ Profile** — create a new remote (TV, AC, fan, set-top box or anything else).
-- **Edit** — rename a profile or change its icon and colour.
-- **Duplicate** — copy a profile and its buttons.
-- **Delete** — remove a profile.
-- **+ Add button** — create a custom button with name, icon, colour, protocol, HEX code, bit count and repeat count.
+- **+ Profile** — টিভি, এসি, ফ্যান, set-top box ইত্যাদির জন্য নতুন প্রোফাইল তৈরি করে।
+- **Edit** — প্রোফাইলের নাম, icon ও রঙ বদলায়।
+- **Duplicate** — প্রোফাইল ও তার বাটনগুলোর একটি অনুলিপি তৈরি করে।
+- **Delete** — প্রোফাইল ও তার সব বাটন মুছে দেয় (confirmation চায়)।
+- **+ Add button** — নতুন বাটন যোগ করে।
 
-Tapping a button sends the stored signal using GPIO4/D2 through the BC547 + IR LED driver.
+প্রতিটি বাটনে একটি বড় আইকন ও নাম থাকে। বাটন চাপলে প্রোফাইলের নির্বাচিত প্রোটোকল বা Raw টাইমিং D2/GPIO4 দিয়ে পাঠানো হয়। বাটনের উপরের ✎ চিহ্ন দিয়ে নাম, বাংলা নাম, আইকন, রঙ, প্রোটোকল, HEX মান, বিট সংখ্যা, ক্যারিয়ার ফ্রিকোয়েন্সি, Raw টাইমিং ও পুনরাবৃত্তি বদলানো যায়।
 
-Buttons can be renamed, recoloured, re-coded and deleted from the **✎** editor. This is how you build custom remotes for devices not in the starter data.
+### Learn signal
 
-### Learn
+1. **Learn signal** ট্যাব খুলুন।
+2. **Start learning** চাপুন।
+3. আসল রিমোটটি TSOP38238 রিসিভারের দিকে প্রায় ২–১০ সেমি দূরে ধরে একটি বাটন চাপুন।
+4. ড্যাশবোর্ডে **Protocol**, **HEX value**, **Bit length**, **Carrier frequency** ও প্রয়োজনে **Raw timing** দেখা যাবে।
+5. **Save as button** চাপুন; নাম ও রঙ ঠিক করে বর্তমান প্রোফাইলে সংরক্ষণ করুন।
 
-1. Go to **Learn** → **Start learning**.
-2. Point your original remote at the TSOP38238 receiver, about 2–10 cm away.
-3. Press one button on the original remote.
-4. The dashboard shows **Protocol**, **HEX**, **Bits** and, for unknown protocols, raw timings.
-5. Tap **Save as button**, choose a name and colour, and pick the target profile.
+টিপস:
 
-Tips:
-
-- Work away from direct sunlight and strong fluorescent lights.
-- Keep the remote close and aim at the sensor lens.
-- If decoding fails, try another button or move to a shaded area.
-- Save learned signals immediately; they are kept in `/signals.json`.
+- সরাসরি রোদ, শক্তিশালী আলো ও অন্য IR উৎস এড়িয়ে চলুন;
+- রিমোট সেন্সরের lens-এর দিকে সোজা ধরুন;
+- ডিকোড না হলে অন্য বাটন চেষ্টা করুন;
+- শেখা সংকেত সাথে সাথে সংরক্ষণ করুন—এগুলো `/signals.json`-এ থাকে।
 
 ### Settings
 
-- **WiFi network (SSID)** / **WiFi password** — join your router.
-- **Language** — Bengali or English.
-- **Login / password** — optional dashboard protection.
-- **Save settings** — writes `/config.json`.
-- **Restart** — reboots the ESP8266.
-- **Export JSON** — downloads a full backup of profiles, buttons and settings.
-- **Restore JSON** — imports a previous backup.
-- **Factory reset** — erases profiles, buttons and settings.
-
-### Status
-
-Shows the current connection state:
-
-| State | Meaning |
+| সেটিং | কাজ |
 |---|---|
-| Setup AP | Broadcasting `IHR-IR-Setup` at `192.168.4.1` |
-| Connecting | Trying the saved Wi-Fi network |
-| Connected | Joined your router; shows the assigned IP |
-| Fallback | Could not join; returning to setup AP |
+| Device name | ড্যাশবোর্ডে দেখা যাওয়া ডিভাইসের নাম |
+| Setup AP name (SSID) | প্রথম সেটআপের Wi-Fi নাম |
+| Setup AP password | খালি রাখলে AP উন্মুক্ত; নাহলে ৮–৬৩ অক্ষর |
+| Wi-Fi network (SSID) | বাড়ির 2.4 GHz নেটওয়ার্ক |
+| Wi-Fi password | ঐ নেটওয়ার্কের পাসওয়ার্ড |
+| Captive portal | AP-তে সংযোগ করলে browser auto-open |
+| Require dashboard login | ড্যাশবোর্ডে username/password চায় |
+| Login user / password | লগইন চালু থাকলে ব্যবহার হয় |
+| Default repeats (1–10) | বাটন চাপলে সংকেত কতবার পাঠানো হবে |
+| Interface language | বাংলা বা ইংরেজি |
+
+**Save settings** চাপার পর Wi-Fi, AP বা লগইন পরিবর্তন প্রয়োগ করতে **Restart** লাগতে পারে। সেটিংস `/config.json`-এ লেখা হয়।
+
+### Backup & restore
+
+- **Download backup** — প্রোফাইল, বাটন ও সেটিংস একটি JSON ফাইলে ডাউনলোড করে।
+- **Restore backup** — আগের ব্যাকআপ বেছে নিয়ে সব ফিরিয়ে আনে।
+- **Restart** — ডিভাইস রিস্টার্ট করে; Wi-Fi/লগইন বদলের পর দরকার।
+- **Factory reset** — সব প্রোফাইল, বাটন ও সেটিংস মুছে দেয়।
+
+> ব্যাকআপ ফাইলে আপনার কনফিগারেশন থাকে। লগইন চালু থাকলে সেটি publicly share করবেন না।
+
+### Diagnostics
+
+**Diagnostics** ট্যাবে ডিভাইসের live অবস্থা দেখা যায়:
+
+| ঘাত | অর্থ |
+|---|---|
+| Firmware | চলমান firmware সংস্করণ |
+| Uptime | শেষ বুট থেকে অতিবাহিত সেকেন্ড |
+| Free Heap memory | মুক্ত Heap memory (byte) |
+| File system | LittleFS-এ ব্যবহৃত / মোট byte |
+| IP address | বর্তমান IP |
+| Wi-Fi state | Setup AP বা বাড়ির Wi-Fi |
+| RSSI | Wi-Fi সংকেত শক্তি (dBm) |
+| Last reset reason | সর্বশেষ রিস্টার্টের কারণ |
+| Interface language | বর্তমান ভাষা |
+
+উপরের **connection pill** দ্রুত অবস্থা দেখায়: setup AP, সংযোগ হচ্ছে, অথবা বাড়ির Wi-Fi।pill-এ hover/long-press করলে IP বা SSID দেখা যায়।
 
 ---
 
-## Categories
+## ডিভাইসের ধরন অনুযায়ী প্রোফাইল
 
-The starter profile is a TV example, but profiles are generic. Use names, icons and colours to organise:
+প্রোফাইল কোনো নির্দিষ্ট ডিভাইসের জন্য বাঁধা নয়। নাম, আইকন ও রঙ দিয়ে যেকোনো IR ডিভাইসের গ্রুপ তৈরি করুন:
 
-- **TV** — learned power, volume, channel, input buttons
-- **AC** — learned mode, temperature, fan-speed buttons
-- **Fan** — learned speed and oscillation buttons
-- **Set-top box / projector / audio** — any IR device you can learn from
+- **টিভি** — পাওয়ার, ভলিউম, চ্যানেল, input;
+- **এসি** — মোড, তাপমাত্রা, ফ্যান স্পিড;
+- **ফ্যান** — স্পিড ও oscillation;
+- **Set-top box / projector / audio** — যেকোনো IR রিমোট থেকে শিখুন।
 
-This firmware supports IR protocols compiled into the build: NEC, LG, Sony, Samsung, JVC, Panasonic, RC5, RC6, Denon, Coolix, Midea24 and raw capture. Wi-Fi–only or Bluetooth–only devices cannot be controlled.
-
----
-
-## Backup and restore
-
-1. **Settings → Export JSON** saves a file on your phone.
-2. Keep a copy somewhere safe.
-3. After a firmware update or factory reset, choose **Restore JSON** and select that file.
-
-Never post the backup publicly if you enabled dashboard login, because it contains configuration data.
+সমর্থিত প্রোটোকল: NEC, LG, LG2, SONY, SAMSUNG, JVC, PANASONIC, RC5, RC6, DENON, COOLIX, MIDEA24 এবং Raw timing। শুধু Wi-Fi বা Bluetooth-নির্ভর ডিভাইস এই রিমোট দিয়ে চালানো যাবে না।
 
 ---
 
-## Factory reset
+## মোবাইল ও accessibility
 
-You can reset in either way:
-
-- **Settings → Factory reset** in the dashboard, or
-- hold **D1 / GPIO5** to **GND** for 3 seconds.
-
-After reboot the setup AP returns. If you use the physical D1/GPIO5 button instead, the built-in LED blinks while the button is held.
+- বাটন ও input-এ পর্যাপ্ত touch target রাখা হয়েছে;
+- সংকীর্ণ স্ক্রিনে ট্যাব ও বাটন নতুন করে সাজানো হয়;
+- বাংলা লেখার জন্য system Bengali font ও বেশি line-height ব্যবহার হয়;
+- লম্বা বাটনের নাম কয়েক লাইনে দেখা যায়;
+- মডাল ছোট স্ক্রিনে bottom sheet হিসেবে খোলে;
+- কীবোর্ডে **Esc** দিয়ে মডাল বন্ধ করা যায়;
+- ব্রাউজার zoom ব্যবহার করলেও layout ব্যবহারযোগ্য থাকে।
 
 ---
 
-## Keyboard and accessibility
+## রিস্টার্ট ও ফ্যাক্টরি রিসেট
 
-The interface uses large touch targets and high-contrast colours. It is designed for phones first, but works in desktop browsers too. If text looks too small, zoom in with your browser; the layout remains usable because controls wrap to one column on narrow screens.
+দুইভাবে ফ্যাক্টরি রিসেট করা যায়:
+
+- **Settings → Factory reset**, অথবা
+- **D1 / GPIO5** কে **GND**-র সাথে ৩ সেকেন্ড ধরে রাখুন।
+
+রিস্টার্টের পর setup AP ফিরে আসে। Physical button ব্যবহার করলে চাপা থাকাকালীন বিল্ট-ইন LED জ্বলজ্বল করে।
+
+আরও সাহায্য: [FAQ.md](FAQ.md), [INSTALL.md](INSTALL.md)।

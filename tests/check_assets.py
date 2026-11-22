@@ -20,7 +20,8 @@ def read(name):
 
 
 html, js, css = read("index.html"), read("app.js"), read("app.css")
-ino = (ROOT / "ihr-universal-ir-remote.ino").read_text(encoding="utf-8")
+manifest = json.loads(read("manifest.webmanifest"))
+ino = (ROOT / "rovixane-ir.ino").read_text(encoding="utf-8")
 
 # 1. WebAssets.h must be exactly what the generator produces from data/.
 spec = importlib.util.spec_from_file_location("ihr_asset_generator",
@@ -62,13 +63,24 @@ def dict_keys(lang):
 
 en, bn = dict_keys("en"), dict_keys("bn")
 used_keys = set(re.findall(r'data-i18n="([^"]+)"', html))
+used_keys |= set(re.findall(r'data-i18n-(?:aria|title|placeholder)="([^"]+)"', html))
 used_keys |= set(re.findall(r"\bt\('([^']+)'\)", js))
 for lang, keys in (("en", en), ("bn", bn)):
     gap = sorted(used_keys - keys)
     check(not gap, f"{lang} translation missing: {gap}")
 check(en == bn, "Bangla and English dictionaries have different keys")
 
-# 5. Starter database schema.
+# 5. PWA manifest branding and wiring.
+check(manifest.get("name") == "ROVIXANE IR — Universal Infrared Remote",
+      "PWA manifest full product name")
+check(manifest.get("short_name") == "ROVIXANE IR", "PWA manifest short name")
+check('rel="manifest" href="/manifest.webmanifest"' in html,
+      "dashboard links the PWA manifest")
+check('gServer.on("/manifest.webmanifest"' in ino,
+      "firmware registers the PWA manifest route")
+
+# 6. Starter database schema. "ihr-signals" is a persisted format identifier;
+#    it must stay stable so existing signal databases keep working.
 starter = json.loads(read("devices.json"))
 check(starter.get("format") == "ihr-signals", "starter format field")
 check(len(starter.get("profiles", [])) > 0, "starter database must have profiles")
@@ -85,7 +97,7 @@ for profile in starter["profiles"]:
             check(isinstance(sig.get("timings"), list) and len(sig["timings"]) >= 4,
                   "raw signal timings valid")
 
-# 6. Truly offline: no remote scripts, styles, fonts or images.
+# 7. Truly offline: no remote scripts, styles, fonts or images.
 for name, text in (("index.html", html), ("app.css", css), ("app.js", js)):
     check(not re.search(r"(?:src|href)\s*=\s*[\"']https?://", text),
           f"{name} loads a remote resource")

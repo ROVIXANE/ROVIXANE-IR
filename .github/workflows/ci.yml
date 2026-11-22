@@ -1,4 +1,4 @@
-name: CI
+name: ROVIXANE-IR CI
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  SKETCH_NAME: ihr-universal-ir-remote
+  SKETCH_NAME: rovixane-ir
   BOARD_ID: nodemcuv2
   BOARD_FQBN: esp8266:esp8266:nodemcuv2:xtal=80,eesz=4M1M,led=2,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200
   ESP8266_CORE_VERSION: 3.1.2
@@ -88,7 +88,7 @@ jobs:
         id: stage
         run: |
           set -eu
-          VERSION="$(sed -n 's/^#define IHR_FIRMWARE_VERSION "\([^"]*\)".*/\1/p' Compatibility.h | head -n 1)"
+          VERSION="$(sed -n 's/^#define ROVIXANE_IR_FIRMWARE_VERSION "\([^"]*\)".*/\1/p' Compatibility.h | head -n 1)"
           test -n "${VERSION}"
 
           SRC="${BUILD_DIR}/${SKETCH_NAME}.ino.bin"
@@ -96,6 +96,7 @@ jobs:
           test -s "${SRC}"
           test -s "${ELF}"
 
+          # ROVIXANE-IR asset convention: rovixane-ir-nodemcuv2-vX.X.X.bin
           ARTIFACT="${SKETCH_NAME}-${BOARD_ID}-v${VERSION}"
           OUT="dist/${ARTIFACT}"
           mkdir -p "${OUT}"
@@ -133,7 +134,7 @@ jobs:
           } >> "${GITHUB_STEP_SUMMARY}"
 
   release:
-    name: Publish verified GitHub Release
+    name: Publish verified GitHub Release (ROVIXANE-IR)
     needs:
       - host-checks
       - firmware-build
@@ -165,7 +166,7 @@ jobs:
           ls -lh "${BIN}" "release-assets/${ARTIFACT_NAME}.sha256.txt"
           cat "release-assets/${ARTIFACT_NAME}.sha256.txt"
 
-      - name: Create or update GitHub Release
+      - name: Create GitHub Release (published releases are never modified)
         env:
           GH_TOKEN: ${{ github.token }}
           ARTIFACT_NAME: ${{ needs.firmware-build.outputs.artifact_name }}
@@ -175,16 +176,20 @@ jobs:
           TAG="v${FIRMWARE_VERSION}"
           BIN="release-assets/${ARTIFACT_NAME}.bin"
           CHECKSUM="release-assets/${ARTIFACT_NAME}.sha256.txt"
-          TITLE="IHR Universal IR Remote v${FIRMWARE_VERSION}"
+          # Release naming convention: ROVIXANE-IR-vX.X.X (tag stays vX.X.X).
+          TITLE="ROVIXANE-IR-${TAG} — Universal Infrared Remote"
 
+          # v1.0.0 is already published. Never upload, replace or delete assets
+          # from an existing release: that would rewrite release history.
           if gh release view "${TAG}" >/dev/null 2>&1; then
-            echo "Release ${TAG} exists; refreshing verified assets."
-            gh release upload "${TAG}" "${BIN}" "${CHECKSUM}" --clobber
+            echo "Release ${TAG} already exists; leaving its published assets unchanged."
+            echo "RELEASE_ACTION=existing release kept unchanged" >> "${GITHUB_ENV}"
           else
             echo "Creating release ${TAG}."
             gh release create "${TAG}" "${BIN}" "${CHECKSUM}" \
               --title "${TITLE}" \
               --notes-file RELEASE_NOTES.md
+            echo "RELEASE_ACTION=new release created" >> "${GITHUB_ENV}"
           fi
 
       - name: Write release summary
@@ -192,8 +197,9 @@ jobs:
           FIRMWARE_VERSION: ${{ needs.firmware-build.outputs.firmware_version }}
         run: |
           {
-            echo "### Release published"
+            echo "### Release check complete"
             echo ""
+            echo "- Repository: https://github.com/ROVIXANE/ROVIXANE-IR"
             echo "- Tag: \`v${FIRMWARE_VERSION}\`"
-            echo "- Download: https://github.com/rmd734412-web/ihr-universal-ir-remote/releases/tag/v${FIRMWARE_VERSION}"
+            echo "- Status: ${RELEASE_ACTION}"
           } >> "${GITHUB_STEP_SUMMARY}"

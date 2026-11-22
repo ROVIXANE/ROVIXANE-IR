@@ -25,8 +25,8 @@ bool load(AppConfig &cfg) {
 
   cfg = AppConfig();
   cfg.version = doc["version"] | IHR_CONFIG_VERSION;
-  strlcpy(cfg.deviceName,   doc["deviceName"]   | "IHR IR Remote", sizeof(cfg.deviceName));
-  strlcpy(cfg.apSsid,       doc["ap"]["ssid"]    | "IHR-IR-Setup",  sizeof(cfg.apSsid));
+  strlcpy(cfg.deviceName,   doc["deviceName"]   | ROVIXANE_IR_DISPLAY_NAME, sizeof(cfg.deviceName));
+  strlcpy(cfg.apSsid,       doc["ap"]["ssid"]    | ROVIXANE_IR_AP_SSID,  sizeof(cfg.apSsid));
   strlcpy(cfg.apPassword,   doc["ap"]["password"]| "",             sizeof(cfg.apPassword));
   strlcpy(cfg.wifiSsid,     doc["wifi"]["ssid"]   | "",             sizeof(cfg.wifiSsid));
   strlcpy(cfg.wifiPassword, doc["wifi"]["password"]| "",            sizeof(cfg.wifiPassword));

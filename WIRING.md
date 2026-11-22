@@ -10,12 +10,12 @@
 
 নিচের ডায়াগ্রামটি `Compatibility.h`-এর `IHR_PIN_*` সংজ্ঞা, ফার্মওয়্যার ও এই গাইডের সংযোগ-বিবরণ থেকে তৈরি। **কোনো GPIO পিন বদলানো হয়নি**—চিত্রে যেভাবে দেখানো হয়েছে, source-এও ঠিক সেভাবেই আছে।
 
-![IHR Universal IR Remote wiring diagram — NodeMCU ESP-12E, TSOP38238 receiver, TSAL620 + BC547 transmitter](docs/images/ihr-ir-wiring.svg)
+![ROVIXANE IR — Universal Infrared Remote wiring diagram — NodeMCU ESP-12E, TSOP38238 receiver, TSAL620 + BC547 transmitter](docs/images/rovixane-ir-wiring.svg)
 
 | ফরম্যাট | ফাইল | ব্যবহার |
 |---|---|---|
-| Scalable SVG | [ihr-ir-wiring.svg](docs/images/ihr-ir-wiring.svg) | GitHub-এ ইনলাইন দেখা যায়; জুম করলেও অস্পষ্ট হয় না (মোবাইলে ছবিতে ট্যাপ করে জুম করুন) |
-| PNG প্রিভিউ (2800 × 2020) | [ihr-ir-wiring.png](docs/images/ihr-ir-wiring.png) | যেসব জায়গায় SVG দেখা যায় না |
+| Scalable SVG | [rovixane-ir-wiring.svg](docs/images/rovixane-ir-wiring.svg) | GitHub-এ ইনলাইন দেখা যায়; জুম করলেও অস্পষ্ট হয় না (মোবাইলে ছবিতে ট্যাপ করে জুম করুন) |
+| PNG প্রিভিউ (2800 × 2020) | [rovixane-ir-wiring.png](docs/images/rovixane-ir-wiring.png) | যেসব জায়গায় SVG দেখা যায় না |
 
 **যাচাইয়ের সীমা (source বনাম ডকুমেন্ট):**
 
@@ -149,7 +149,7 @@ TSOP38238-এর **গোল অংশ (লেন্স)** আপনার দ�
 
 1. USB কেবল লাগান। বোর্ডের পাওয়ার LED জ্বলবে।
 2. Serial Monitor-এ `1.0.0 ready` দেখুন।
-3. ফোনে `IHR-IR-Setup` খুঁজে `http://192.168.4.1` খুলুন।
+3. ফোনে `ROVIXANE-IR-Setup` খুঁজে `http://192.168.4.1` খুলুন।
 4. **Learn** ট্যাব → Start learning → আপনার রিমোট দিয়ে একটি বাটন চাপুন। কিছু এলে রিসিভার ঠিক আছে।
 5. শেখা বাটনটি সংরক্ষণ করে চাপুন; টিভি সাড়া দিলে ট্রান্সমিটার ঠিক আছে।
 6. সাড়া না পেলে **ফোনের ক্যামেরা** খুলে TSAL620-এর দিকে তাক করুন এবং বাটন চাপুন—হালকা বেগুনি আলো দেখা গেলে LED চলছে (চোখে দেখা যায় না, ক্যামেরা দেখতে পায়)।

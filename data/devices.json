@@ -5,14 +5,14 @@
     {
       "id": "p_lg_tv_example",
       "name": "LG TV (examples)",
-      "nameBn": "এলজি টিভি (উদাহরণ)",
+      "nameBn": "এলজি টিভি (উদাহরণস্বরূপ)",
       "icon": "📺",
       "color": "#4f8cff",
       "signals": [
         {
           "id": "s_lg_power_example",
-          "label": "Power?",
-          "labelBn": "পাওয়ার?",
+          "label": "Power",
+          "labelBn": "পাওয়ার",
           "icon": "⏻",
           "color": "#ff6b6b",
           "kind": "protocol",
@@ -24,8 +24,8 @@
         },
         {
           "id": "s_lg_volup_example",
-          "label": "Vol +?",
-          "labelBn": "ভলিউম +?",
+          "label": "Volume +",
+          "labelBn": "ভলিউম বাড়ান",
           "icon": "🔊",
           "color": "#37d67a",
           "kind": "protocol",
@@ -37,8 +37,8 @@
         },
         {
           "id": "s_lg_voldown_example",
-          "label": "Vol -?",
-          "labelBn": "ভলিউম -?",
+          "label": "Volume −",
+          "labelBn": "ভলিউম কমান",
           "icon": "🔈",
           "color": "#37d67a",
           "kind": "protocol",
@@ -50,8 +50,8 @@
         },
         {
           "id": "s_lg_source_example",
-          "label": "Source?",
-          "labelBn": "সোর্স?",
+          "label": "Input source",
+          "labelBn": "ইনপুট উৎস",
           "icon": "☰",
           "color": "#ffc857",
           "kind": "protocol",
