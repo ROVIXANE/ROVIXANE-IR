@@ -1,8 +1,8 @@
-# ড্যাশবোর্ড গাইড
+# ড্যাশবোর্ড গাইড (V2)
 
-ROVIXANE IR ড্যাশবোর্ড একটি mobile-first ওয়েব অ্যাপ, যা firmware-এর ভেতরেই থাকে। BIN ফ্ল্যাশ করার পর ইন্টারনেটের প্রয়োজন হয় না—ফোনের router বা setup AP-র মাধ্যমে সরাসরি ডিভাইসেই পেজ খুলে।
+ROVIXANE IR ড্যাশবোর্ড একটি mobile-first ওয়েব অ্যাপ, যা firmware-এর ভেতরেই থাকে। BIN ফ্ল্যাশ করার পর ইন্টারনেটের প্রয়োজন হয় না—setup AP বা বাড়ির Wi-Fi দিয়ে সরাসরি ডিভাইসেই পেজ খুলে।
 
-> এই গাইড working tree-র বাংলা UX/UI-কে ভিত্তি ধরে লেখা। প্রকাশিত v1.0.0 BIN অপরিবর্তিত, তাই কিছু নতুন বাংলা শব্দ বা onboarding লেখা পুরনো BIN-এ দেখা যাবে না।
+> এই গাইড **v2.0.0**-এর UI বর্ণনা করে। প্রকাশিত v1.0.0 BIN আলাদা এবং অপরিবর্তিত।
 
 ---
 
@@ -11,131 +11,151 @@ ROVIXANE IR ড্যাশবোর্ড একটি mobile-first ওয়�
 - প্রথম বুটে: `ROVIXANE-IR-Setup` Wi-Fi-তে সংযোগ করে `http://192.168.4.1` খুলুন।
 - বাড়ির Wi-Fi-তে সরানোর পর: router-এ পাওয়া IP দিয়ে `http://<device-ip>` খুলুন।
 
-উপরে ডান কোণে **বাং** বাটন দিয়ে বাংলা/ইংরেজি বদলান। ভাষা পছন্দ ডিভাইসে সংরক্ষিত হয়; Settings → `Interface language`-তেও একই অপশন আছে।
+প্রথম বুটে **Create admin password** স্ক্রিন আসবে। কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন। এর আগে ডিভাইস write-protected থাকে—IR পাঠানো, সেটিংস/সংকেত সংরক্ষণ ও OTA কাজ করবে না।
+
+উপরে ডান কোণে **বাং / EN** বাটন দিয়ে ভাষা বদলান; ডার্ক/লাইট theme Settings-এ আছে। পছন্দ ডিভাইসে (এবং ভাষা/থিম ব্রাউজারে) সংরক্ষিত থাকে।
 
 ---
 
-## প্রথম স্ক্রিন
+## হোম স্ক্রিন
 
-অ্যাপ **Remotes** ট্যাব দিয়ে খোলে। প্রথম বুটে `LG TV (examples)` / `এলজি টিভি (উদাহরণস্বরূপ)` নামে একটি উদাহরণ প্রোফাইল থাকে। এর কোডগুলো শুধু উদাহরণ—আপনার টিভির সাথে মিলবে না হতে পারে। নির্ভরযোগ্য কোডের জন্য **Learn signal** ব্যবহার করুন।
+উপর থেকে নিচে:
 
-যখন setup AP চলছে বা Wi-Fi কনফিগার করা হয়নি, তখন উপরে **First-time setup** কার্ড দেখা যায়। এতে রয়েছে:
+1. **Setup card** — শুধু প্রথম বুটে; পাসওয়ার্ড তৈরি বা Wi-Fi সেটআপের আহ্বান।
+2. **Search** — রিমোট বা বাটনের নাম লিখে সাথে সাথে ফিল্টার।
+3. **Favorites** — তারকা चिह्नিত রিমোট/বাটন (থাকলে)।
+4. **Recent** — সম্প্রতি চালানো বাটন।
+5. **Quick buttons** — প্রায়ই ব্যবহৃত বাটনের ছোট গ্রিড।
+6. **All remotes** — সব প্রোফাইলের কার্ড। **Add remote** দিয়ে নতুন রিমোট।
 
-1. `ROVIXANE-IR-Setup` Wi-Fi-তে সংযোগ করুন;
-2. `http://192.168.4.1` খুলুন;
-3. Settings-এ Wi-Fi নাম ও পাসওয়ার্ড দিন;
-4. সংরক্ষণ করে রিস্টার্ট করুন, তারপর নিজের Wi-Fi-তে ফিরে আসুন;
-5. ফোন ইন্টারনেট নেই বললে এই নেটওয়ার্কেই থাকুন।
-
-**Open Settings** বাটন সরাসরি Settings ট্যাবে নিয়ে যায়।
+প্রতিটি রিমোট কার্ডে আইকন, নাম, ধরন (TV/AC/Fan/STB/Custom) ও বাটন সংখ্যা দেখা যায়। কার্ডে ট্যাপ করলে সেই রিমোট খোলে। কার্ডের মেনু থেকে favorite, edit, duplicate, export বা delete করা যায়।
 
 ---
 
-## ট্যাবসমূহ
+## রিমোট স্ক্রিন
 
-### Remotes
+রিমোট খুললে উপরে back, নাম, favorite (☆) ও more (⋯) থাকে। ধরন অনুযায়ী লেআউট স্বয়ংক্রিয়ভাবে দেখানো হয়:
 
-- **+ Profile** — টিভি, এসি, ফ্যান, set-top box ইত্যাদির জন্য নতুন প্রোফাইল তৈরি করে।
-- **Edit** — প্রোফাইলের নাম, icon ও রঙ বদলায়।
-- **Duplicate** — প্রোফাইল ও তার বাটনগুলোর একটি অনুলিপি তৈরি করে।
-- **Delete** — প্রোফাইল ও তার সব বাটন মুছে দেয় (confirmation চায়)।
-- **+ Add button** — নতুন বাটন যোগ করে।
+| ধরন | সাধারণ বাটন |
+|---|---|
+| **TV** | Power, mute, volume, channel, input, navigation/D-pad, OK, back/home/menu, number pad, media |
+| **STB** | Power, guide, navigation, volume/channel, numbers, info/exit, media |
+| **Fan** | Power, speed, mode, oscillation, timer, light |
+| **AC** | Power, temp −/+, mode, fan, swing, turbo, eco, sleep, timer + state panel |
+| **Custom** | আপনি যে বাটন যোগ করেছেন |
 
-প্রতিটি বাটনে একটি বড় আইকন ও নাম থাকে। বাটন চাপলে প্রোফাইলের নির্বাচিত প্রোটোকল বা Raw টাইমিং D2/GPIO4 দিয়ে পাঠানো হয়। বাটনের উপরের ✎ চিহ্ন দিয়ে নাম, বাংলা নাম, আইকন, রঙ, প্রোটোকল, HEX মান, বিট সংখ্যা, ক্যারিয়ার ফ্রিকোয়েন্সি, Raw টাইমিং ও পুনরাবৃত্তি বদলানো যায়।
+- **বাটন চাপ** — ম্যাপ করা সংকেত IR LED দিয়ে পাঠায়; Unmapped বাটনে ট্যাপ করলে learn sheet খোলে।
+- **✎ / long-press** — ওই বাটনের edit sheet: নাম, বাংলা নাম, আইকন, গ্রিড প্রস্থ (w), সংকেত বদল/শেখা, favorite ও delete।
+- **⋯ মেনু** — রিমোট rename, icon/colour, duplicate, export, delete; **Edit buttons** চালু করলে **＋ Add button** দেখা যায়।
+- **AC panel** — তাপমাত্রা, মোড ও ফ্যান স্পিডের state দেখায়। প্রতিটি AC কমান্ড আসলে আপনার শেখা/ম্যাপ করা কোড; অসমর্থিত প্রোটোকল বানিয়ে দেখানো হয় না।
 
-### Learn signal
+> স্টার্টার `LG TV (examples)` প্রোফাইলের কোড `verified:false`। UI অযাচাইকৃত ম্যাপ করা বাটনে ছোট সতর্কতা চিহ্ন দেখায়। নিজের রিমোট দিয়ে learn না করা পর্যন্ত এগুলোকে নির্ভরযোগ্য ধরবেন না।
 
-1. **Learn signal** ট্যাব খুলুন।
-2. **Start learning** চাপুন।
-3. আসল রিমোটটি TSOP38238 রিসিভারের দিকে প্রায় ২–১০ সেমি দূরে ধরে একটি বাটন চাপুন।
-4. ড্যাশবোর্ডে **Protocol**, **HEX value**, **Bit length**, **Carrier frequency** ও প্রয়োজনে **Raw timing** দেখা যাবে।
-5. **Save as button** চাপুন; নাম ও রঙ ঠিক করে বর্তমান প্রোফাইলে সংরক্ষণ করুন।
+---
 
-টিপস:
+## প্রতি-বাটন শেখা (recommended)
 
-- সরাসরি রোদ, শক্তিশালী আলো ও অন্য IR উৎস এড়িয়ে চলুন;
-- রিমোট সেন্সরের lens-এর দিকে সোজা ধরুন;
-- ডিকোড না হলে অন্য বাটন চেষ্টা করুন;
-- শেখা সংকেত সাথে সাথে সংরক্ষণ করুন—এগুলো `/signals.json`-এ থাকে।
+1. রিমোট খুলুন এবং যে বাটন শিখতে চান সেটি ট্যাপ করুন (unmapped হলে), অথবা বাটনের edit sheet → **Learn**।
+2. আসল রিমোটটি TSOP38238-এর দিকে ২–১০ সেমি দূরে ধরে বাটনটি চাপুন।
+3. ড্যাশবোর্ড **Protocol**, **HEX**, **bits** অথবা **RAW timings** দেখাবে।
+4. **Save to button** চাপুন। ম্যাপিং সাথে সাথে `/signals.json`-এ সংরক্ষিত হয়।
 
-### Settings
+নোট:
+
+- সমর্থিত প্রোটোকল ডিকোড হলে protocol/HEX হিসেবে; অসমর্থিত কিন্তু বৈধ Raw capture হলে raw timings হিসেবে সংরক্ষিত হয়।
+- খুব বড়/overflowed বা অবৈধ capture স্পষ্ট error দেখিয়ে বাতিল হয়—ভুল সংকেত নীরবে সেভ হয় না।
+- রোদ, শক্তিশালী আলো ও অন্য IR উৎস এড়িয়ে চলুন; রিমোটের lens সোজা ধরুন।
+
+**Learn** ট্যাব-এ আলাদা generic learner-ও আছে: **Start learning** → বাটন চাপুন → ফল দেখুন → **Save as button** দিয়ে বর্তমান রিমোটে নতুন বাটন হিসেবে রাখুন।
+
+---
+
+## Favorites, recents ও profile
+
+- যেকোনো রিমোট বা বাটনে ☆ চাপলে সেটি Favorites-এ যায়; হোমে দ্রুত access।
+- সংকেত পাঠালে বাটনটি Recent-এ যায়।
+- **Duplicate** পুরো প্রোফাইল ও বাটন কপি করে—একই TV-র দ্বিতীয় রুমের জন্য সুবিধাজনক।
+- **Export remote** একটি প্রোফাইল JSON ফাইল নামায়; **Import remote** দিয়ে ফেরানো যায়।
+- **Set as default** করলে হোমে সেটি আগে দেখানো যায় (UI অনুযায়ী)।
+- Delete confirmation ছাড়া কিছু মুছে না।
+
+---
+
+## Custom remote builder
+
+1. **Add remote** → ধরন **Custom**।
+2. নাম, আইকন (ইমোজি), রঙ ও গ্রিড প্রস্থ বাছুন।
+3. সংরক্ষণের পর রিমোট খুলুন → ⋯ → **Edit buttons** → **＋ Add button**।
+4. প্রতিটি বাটনের নাম, বাংলা নাম, আইকন, প্রস্থ ও সংকেত দিন; অথবা **Learn** দিয়ে সরাসরি শিখুন।
+5. বাটনগুলো drag/order না থাকলেও যোগ করার ক্রমেই সাজানো থাকে; edit sheet থেকে পরিবর্তন/মুছে ফেলা যায়।
+
+কাস্টম রিমোটের সম্পূর্ণ button layout DB-তে সংরক্ষিত হয়, তাই firmware restart বা backup/restore-এর পরও একই থাকে।
+
+---
+
+## Settings
 
 | সেটিং | কাজ |
 |---|---|
-| Device name | ড্যাশবোর্ডে দেখা যাওয়া ডিভাইসের নাম |
-| Setup AP name (SSID) | প্রথম সেটআপের Wi-Fi নাম |
+| Device name | ড্যাশবোর্ড/status-এ দেখা নাম |
+| Language | English / বাংলা |
+| Theme | Dark / Light |
+| Setup AP name | প্রথম সেটআপের Wi-Fi নাম |
 | Setup AP password | খালি রাখলে AP উন্মুক্ত; নাহলে ৮–৬৩ অক্ষর |
-| Wi-Fi network (SSID) | বাড়ির 2.4 GHz নেটওয়ার্ক |
-| Wi-Fi password | ঐ নেটওয়ার্কের পাসওয়ার্ড |
-| Captive portal | AP-তে সংযোগ করলে browser auto-open |
-| Require dashboard login | ড্যাশবোর্ডে username/password চায় |
-| Login user / password | লগইন চালু থাকলে ব্যবহার হয় |
-| Default repeats (1–10) | বাটন চাপলে সংকেত কতবার পাঠানো হবে |
-| Interface language | বাংলা বা ইংরেজি |
+| Open setup AP | AP password ছাড়া খোলা রাখার স্পষ্ট toggle |
+| Home Wi-Fi name/password | বাড়ির 2.4 GHz নেটওয়ার্ক |
+| Captive portal | AP-তে সংযোগে browser auto-open |
+| Require dashboard login | Basic auth চালু/বন্ধ (fresh device-এ বাধ্যতামূলক) |
+| Login user / new password | লগইন তথ্য; খালি রাখলে পুরোনো পাসওয়ার্ড থাকে |
+| Default repeats (1–10) | প্রতি চাপে সংকেত কতবার |
+| Save settings | `/config.json`-এ atomic write |
 
-**Save settings** চাপার পর Wi-Fi, AP বা লগইন পরিবর্তন প্রয়োগ করতে **Restart** লাগতে পারে। সেটিংস `/config.json`-এ লেখা হয়।
+পাসওয়ার্ড কখনও response-এ ফেরত আসে না; UI `********` ও `*Set` flag দেখে। Wi-Fi, AP বা login বদলালে **Restart** প্রয়োজন হতে পারে—UI notice দেখাবে।
+
+### Firmware update (OTA)
+
+1. **Settings → Firmware update**।
+2. `rovixane-ir-nodemcuv2-vX.X.X.bin` বাছুন → **Upload firmware**।
+3. Progress bar ১০০% হলে ডিভাইস verified finalize করে নিজে রিস্টার্ট হয়।
+4. ভুল ফাইল/magic, সাইজ overflow, নেটওয়ার্ক বিচ্ছিন্নতা বা auth/CSRF failure হলে আপডেট commit হয় না; পুরোনো firmware চালু থাকে।
+
+আপডেটের আগে **Download backup** নিন এবং আপডেট চলাকালীন পাওয়ার/নেটওয়ার্ক স্থির রাখুন।
 
 ### Backup & restore
 
-- **Download backup** — প্রোফাইল, বাটন ও সেটিংস একটি JSON ফাইলে ডাউনলোড করে।
-- **Restore backup** — আগের ব্যাকআপ বেছে নিয়ে সব ফিরিয়ে আনে।
-- **Restart** — ডিভাইস রিস্টার্ট করে; Wi-Fi/লগইন বদলের পর দরকার।
-- **Factory reset** — সব প্রোফাইল, বাটন ও সেটিংস মুছে দেয়।
-
-> ব্যাকআপ ফাইলে আপনার কনফিগারেশন থাকে। লগইন চালু থাকলে সেটি publicly share করবেন না।
+- **Download backup** — রিমোট, বাটন ম্যাপিং ও সেটিংস এক JSON-এ; পাসওয়ার্ড ইচ্ছাকৃতভাবে বাদ।
+- **Restore backup** — ফাইল লোড করে; masked/অনুপস্থিত গোপন তথ্য বর্তমান মান অক্ষত রাখে।
+- **Import remote** — শুধু একটি প্রোফাইল JSON যোগ করে।
 
 ### Diagnostics
 
-**Diagnostics** ট্যাবে ডিভাইসের live অবস্থা দেখা যায়:
-
-| ঘাত | অর্থ |
-|---|---|
-| Firmware | চলমান firmware সংস্করণ |
-| Uptime | শেষ বুট থেকে অতিবাহিত সেকেন্ড |
-| Free Heap memory | মুক্ত Heap memory (byte) |
-| File system | LittleFS-এ ব্যবহৃত / মোট byte |
-| IP address | বর্তমান IP |
-| Wi-Fi state | Setup AP বা বাড়ির Wi-Fi |
-| RSSI | Wi-Fi সংকেত শক্তি (dBm) |
-| Last reset reason | সর্বশেষ রিস্টার্টের কারণ |
-| Interface language | বর্তমান ভাষা |
-
-উপরের **connection pill** দ্রুত অবস্থা দেখায়: setup AP, সংযোগ হচ্ছে, অথবা বাড়ির Wi-Fi।pill-এ hover/long-press করলে IP বা SSID দেখা যায়।
-
----
-
-## ডিভাইসের ধরন অনুযায়ী প্রোফাইল
-
-প্রোফাইল কোনো নির্দিষ্ট ডিভাইসের জন্য বাঁধা নয়। নাম, আইকন ও রঙ দিয়ে যেকোনো IR ডিভাইসের গ্রুপ তৈরি করুন:
-
-- **টিভি** — পাওয়ার, ভলিউম, চ্যানেল, input;
-- **এসি** — মোড, তাপমাত্রা, ফ্যান স্পিড;
-- **ফ্যান** — স্পিড ও oscillation;
-- **Set-top box / projector / audio** — যেকোনো IR রিমোট থেকে শিখুন।
-
-সমর্থিত প্রোটোকল: NEC, LG, LG2, SONY, SAMSUNG, JVC, PANASONIC, RC5, RC6, DENON, COOLIX, MIDEA24 এবং Raw timing। শুধু Wi-Fi বা Bluetooth-নির্ভর ডিভাইস এই রিমোট দিয়ে চালানো যাবে না।
-
----
-
-## মোবাইল ও accessibility
-
-- বাটন ও input-এ পর্যাপ্ত touch target রাখা হয়েছে;
-- সংকীর্ণ স্ক্রিনে ট্যাব ও বাটন নতুন করে সাজানো হয়;
-- বাংলা লেখার জন্য system Bengali font ও বেশি line-height ব্যবহার হয়;
-- লম্বা বাটনের নাম কয়েক লাইনে দেখা যায়;
-- মডাল ছোট স্ক্রিনে bottom sheet হিসেবে খোলে;
-- কীবোর্ডে **Esc** দিয়ে মডাল বন্ধ করা যায়;
-- ব্রাউজার zoom ব্যবহার করলেও layout ব্যবহারযোগ্য থাকে।
+Firmware version, schema version, uptime, free heap, filesystem used/total, IP, Wi-Fi mode/RSSI, reset reason ও OTA support দেখা যায়। **Refresh** দিয়ে live মান আপডেট করুন।
 
 ---
 
 ## রিস্টার্ট ও ফ্যাক্টরি রিসেট
 
-দুইভাবে ফ্যাক্টরি রিসেট করা যায়:
+- **Settings → Restart** — Wi-Fi/login/AP পরিবর্তন প্রয়োগ করতে।
+- **Settings → Factory reset** — সব রিমোট, বাটন, layout ও সেটিংস মুছে দেয় (আগে confirmation লাগে)।
+- **D1 / GPIO5** কে **GND**-র সাথে ৩ সেকেন্ড ধরে রাখলেও factory reset হয়।
 
-- **Settings → Factory reset**, অথবা
-- **D1 / GPIO5** কে **GND**-র সাথে ৩ সেকেন্ড ধরে রাখুন।
+Factory reset-এর পর ডিভাইস আবার setup mode-এ ফিরে যায় এবং `ROVIXANE-IR-Setup` AP চালু হয়।
 
-রিস্টার্টের পর setup AP ফিরে আসে। Physical button ব্যবহার করলে চাপা থাকাকালীন বিল্ট-ইন LED জ্বলজ্বল করে।
+---
 
-আরও সাহায্য: [FAQ.md](FAQ.md), [INSTALL.md](INSTALL.md)।
+## সমর্থিত প্রোটোকল
+
+NEC, LG, LG2, SONY, SAMSUNG, JVC, PANASONIC, RC5, RC6, DENON, COOLIX, MIDEA24 এবং Raw timing। শুধু Wi-Fi/Bluetooth-নির্ভর ডিভাইস এই রিমোট দিয়ে চালানো যাবে না।
+
+---
+
+## মোবাইল ও accessibility
+
+- বড় touch target, responsive grid ও bottom navigation;
+- সংকীর্ণ স্ক্রিনে bottom sheet মডাল;
+- **Esc** দিয়ে sheet বন্ধ, focus trap ও `aria-live` status;
+- বাংলা system font ও বেশি line-height;
+- ডার্ক/লাইট theme এবং হালকা animation (reduced-motion respect);
+- ব্রাউজার zoom-এ layout ব্যবহারযোগ্য।
+
+আরও সাহায্য: [FAQ.md](FAQ.md), [INSTALL.md](INSTALL.md), [SECURITY.md](../SECURITY.md)।
