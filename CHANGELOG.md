@@ -2,18 +2,43 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [2.0.0] - 2026-11-23
+
+### Added
+
+- Full universal remote dashboard: home/search/favorites/recents, TV, set-top box, fan, air-conditioner and custom remote layouts, plus per-button learning, editing, duplicate and delete.
+- First-run setup mode: a fresh device requires an admin password through `POST /api/setup` before any write, IR transmit or OTA action is allowed.
+- Favorites and recent-button views, profile defaults and profile management.
+- Custom remote builder: name, icon, colour, grid width and a full stored button layout.
+- IR learning per button, including protocol/HEX/bits or raw timings, with visible rejection of overflowed or invalid captures.
+- Streaming OTA firmware update from the phone browser with `.bin` check, ESP8266 magic-byte check, size guard, auth and CSRF protection, and safe abort on failure.
+- Crash-safe storage: atomic `.tmp` install, previous-good `.bak`, automatic recovery on boot, and a 20 KB database limit shared by storage and API.
+- Diagnostics: schema version, uptime, heap, filesystem, Wi-Fi mode/RSSI, reset reason and OTA availability.
+- Dark/light theme, English/Bangla switch, PWA manifest and mobile-first responsive layout.
+- Host tests covering setup gating, auth/CSRF/content-type failures, masked secrets, strict IR validation, learning, OTA failure paths, `.bak` recovery and factory reset.
 
 ### Changed
 
-- Rebranded the project to **ROVIXANE IR — Universal Infrared Remote** (`ROVIXANE-IR`): README, badges, documentation, dashboard title, header, footer, PWA manifest, firmware display name, setup AP SSID, build/artifact names and release asset naming.
-- Future firmware assets will be named `rovixane-ir-nodemcuv2-vX.X.X.bin`; existing published v1.0.0 assets keep their original names.
-- Release automation no longer uploads to or overwrites an existing GitHub Release.
+- Firmware version is now `2.0.0`; release assets use `rovixane-ir-nodemcuv2-v2.0.0.bin` and tag `v2.0.0`.
+- Configuration schema is nested with flat V1 compatibility; secrets are masked in API responses and preserved when omitted or restored as `********`.
+- IR engine moved to `IrEngine.h` with strict 0–16 digit HEX parsing, negative-value rejection, raw timing range checks and protocol map.
+- Signal storage moved to schema v2 with categories, buttons, labels and strict PUT validation; invalid replacements never become the live database.
+- Web assets are regenerated from `data/` and served from PROGMEM; unknown paths still fall back to the captive dashboard.
+- CI now stages the sketch under `rovixane-ir/` before compiling, so the repository folder name no longer breaks Arduino CLI.
+- README, install, dashboard, FAQ and security docs describe V2 and the new setup/OTA flows.
+- Merged upstream `main` (Android debug build scaffolding, upstream IR hardening and asset regeneration steps) without changing published releases.
+
+### Security
+
+- Destructive and state-changing routes require authentication, a `X-ROVIXANE-CSRF: 1` header and (where a body is used) a JSON content type.
+- Passwords are never returned by `GET /api/config`; backups intentionally exclude them.
+- Oversized request bodies and stored databases are rejected instead of silently erased.
+- OTA accepts only `.bin` images starting with the ESP8266 magic byte and never restarts on a failed write.
 
 ### Notes
 
-- Firmware version remains `1.0.0`; no new release was published by this change.
-- GPIO assignments, IR send/learn logic, flash layout, OTA partitioning and stored data formats are unchanged.
+- Published v1.0.0 release and its legacy `ihr-universal-ir-remote-*` assets are left unchanged.
+- Firmware builds and host tests are verified in CI. Physical IR range, wiring and OTA were not tested on hardware in this environment.
 
 ## [1.0.0] - 2026-11-21
 

@@ -37,7 +37,7 @@ html_ids = set(re.findall(r'\bid="([^"]+)"', html))
 js_ids = set(re.findall(r"\$\('([^']+)'\)", js))
 js_ids |= set(re.findall(r"getElementById\('([^']+)'\)", js))
 js_created_ids = set(re.findall(r'\bid="([^"]+)"', js))
-js_created_ids |= set(re.findall(r"(?:fieldInput|fieldSelect)\('([^']+)'", js))
+js_created_ids |= set(re.findall(r"(?:inputField|selectField)\('([^']+)'", js))
 missing = sorted(js_ids - html_ids - js_created_ids)
 check(not missing, f"app.js references missing DOM ids: {missing}")
 
@@ -47,28 +47,22 @@ ino_routes = set(re.findall(r'gServer\.on\("([^"]+)"', ino))
 missing = sorted(used_routes - ino_routes)
 check(not missing, f"firmware is missing API routes: {missing}")
 
-# 4. Every translation key used in HTML/JS must exist in both languages.
-def dict_keys(lang):
-    start = js.index(lang + ": {")
-    depth, i = 0, start + len(lang) + 1
-    while i < len(js):
-        if js[i] == "{":
-            depth += 1
-        elif js[i] == "}":
-            depth -= 1
-            if depth == 0:
-                return set(re.findall(r"\b([A-Za-z][A-Za-z0-9]*)\s*:", js[start + 2:i]))
-        i += 1
-    return set()
-
-en, bn = dict_keys("en"), dict_keys("bn")
+# 4. Translation table is key -> [English, Bangla]. Every key must have both
+#    strings, and every key used by the dashboard must exist in the table.
+start = js.index("var I18N = {")
+end = js.index("\n  };", start)
+i18n_body = js[start:end]
+pairs = re.findall(r"\b([A-Za-z][A-Za-z0-9]*)\s*:\s*\[([^\]]*)\]", i18n_body)
+keys = set()
+for key, value in pairs:
+    keys.add(key)
+    strings = re.findall(r"'(?:[^'\\]|\\.)*'", value)
+    check(len(strings) == 2, f"translation {key} must have English and Bangla strings")
 used_keys = set(re.findall(r'data-i18n="([^"]+)"', html))
 used_keys |= set(re.findall(r'data-i18n-(?:aria|title|placeholder)="([^"]+)"', html))
 used_keys |= set(re.findall(r"\bt\('([^']+)'\)", js))
-for lang, keys in (("en", en), ("bn", bn)):
-    gap = sorted(used_keys - keys)
-    check(not gap, f"{lang} translation missing: {gap}")
-check(en == bn, "Bangla and English dictionaries have different keys")
+gap = sorted(used_keys - keys)
+check(not gap, f"translation missing: {gap}")
 
 # 5. PWA manifest branding and wiring.
 check(manifest.get("name") == "ROVIXANE IR — Universal Infrared Remote",

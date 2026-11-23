@@ -38,13 +38,14 @@ class IRrecv {
   }
 
   static void testFeed(decode_type_t type, uint64_t value, uint16_t bits,
-                       uint16_t *raw, uint16_t rawlen) {
+                       uint16_t *raw, uint16_t rawlen, bool overflow = false) {
     decode_results r;
     r.decode_type = type;
     r.value = value;
     r.bits = bits;
     r.rawlen = rawlen;
     r.rawbuf = raw;
+    r.overflow = overflow;
     feed[feedCount++] = r;
   }
   static void testReset() { feedCount = 0; }

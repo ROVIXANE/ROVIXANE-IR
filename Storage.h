@@ -4,9 +4,13 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
-// Thin LittleFS wrapper. All writes are atomic: write "<path>.tmp", close,
-// remove the old file, then rename. This avoids half-written JSON after a
-// power loss, which is the most common cause of a corrupt config on ESP8266.
+// Crash-safe LittleFS wrapper.
+//
+// A write goes to "<path>.tmp". The previous file is moved to "<path>.bak"
+// before the rename, so a power loss can leave the main path missing but never
+// both copies missing. Reads transparently fall back to ".bak" and the next
+// successful write repairs the main file. (The old implementation deleted the
+// main file before renaming, which could lose both copies.)
 namespace IhrStorage {
 
 bool begin();
@@ -16,11 +20,11 @@ bool remove(const char *path);
 bool readJson(const char *path, JsonDocument &doc);
 bool writeJson(const char *path, const JsonDocument &doc);
 
-// Raw file helpers used for the signals database (kept verbatim so the UI's
-// import/export is byte-for-byte reversible).
+// Raw file helpers used for the signals database and import/export.
 bool readText(const char *path, String &out);
 bool writeText(const char *path, const String &data);
 
+size_t fileSize(const char *path);
 size_t usedBytes();
 size_t totalBytes();
 

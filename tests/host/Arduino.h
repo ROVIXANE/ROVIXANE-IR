@@ -55,6 +55,17 @@ class String : public std::string {
     return p == npos ? -1 : static_cast<int>(p);
   }
   bool startsWith(const char *prefix) const { return rfind(prefix, 0) == 0; }
+  bool endsWith(const char *suffix) const {
+    size_t n = suffix ? strlen(suffix) : 0;
+    return n <= size() && compare(size() - n, n, suffix ? suffix : "") == 0;
+  }
+  String substring(size_t from, size_t to) const {
+    if (from > size()) from = size();
+    if (to > size()) to = size();
+    if (to < from) to = from;
+    return String(std::string(*this).substr(from, to - from));
+  }
+  String substring(size_t from) const { return substring(from, size()); }
   int toInt() const { return std::atoi(c_str()); }
 };
 
@@ -105,6 +116,11 @@ inline int hostDigitalRead() { return hostDigitalReadValue ? LOW : HIGH; }
 class Print {
  public:
   virtual ~Print() {}
+  virtual size_t write(uint8_t c) { fputc(c, stdout); return 1; }
+  virtual size_t write(const uint8_t *data, size_t len) {
+    fwrite(data, 1, len, stdout);
+    return len;
+  }
   size_t print(const char *s) { fputs(s, stdout); return strlen(s); }
   size_t print(const __FlashStringHelper *s) { return print(reinterpret_cast<const char *>(s)); }
   size_t print(const String &s) { return print(s.c_str()); }
@@ -134,6 +150,8 @@ inline HardwareSerial Serial;
 class ESPClass {
  public:
   uint32_t getFreeHeap() const { return 42000; }
+  uint32_t getFreeSketchSpace() const { return 500 * 1024; }
+  uint32_t getSketchSize() const { return 420 * 1024; }
   String getResetReason() const { return String("Software/System restart"); }
   void restart() { restarted = true; }
   bool restarted = false;

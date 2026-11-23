@@ -70,25 +70,37 @@ jobs:
           arduino-cli core list
           arduino-cli lib list
 
+      - name: Stage sketch directory
+        run: |
+          # arduino-cli requires the sketch folder name to match the .ino file.
+          # The repository folder is ROVIXANE-IR, so stage a clean copy under
+          # the real sketch name before compiling.
+          STAGE="${RUNNER_TEMP}/${SKETCH_NAME}"
+          rm -rf "${STAGE}"
+          mkdir -p "${STAGE}"
+          tar -cf - --exclude=.git --exclude=tests/.irlib --exclude=tests/.littlefs . \
+            | tar -xf - -C "${STAGE}"
+          test -f "${STAGE}/${SKETCH_NAME}.ino"
+          echo "SKETCH_DIR=${STAGE}" >> "${GITHUB_ENV}"
+
       - name: Verify IR protocol build options
         run: |
-          test -f "${SKETCH_NAME}.ino.globals.h"
-          grep -q -- '-D_IR_ENABLE_DEFAULT_=false' "${SKETCH_NAME}.ino.globals.h"
-          grep -q -- '-DDECODE_NEC=true' "${SKETCH_NAME}.ino.globals.h"
-          grep -q -- '-DSEND_NEC=true' "${SKETCH_NAME}.ino.globals.h"
-          grep -q -- '-DDECODE_LG=true' "${SKETCH_NAME}.ino.globals.h"
-          grep -q -- '-DSEND_LG=true' "${SKETCH_NAME}.ino.globals.h"
+          test -f "${SKETCH_DIR}/${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-D_IR_ENABLE_DEFAULT_=false' "${SKETCH_DIR}/${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DDECODE_NEC=true' "${SKETCH_DIR}/${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DSEND_NEC=true' "${SKETCH_DIR}/${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DDECODE_LG=true' "${SKETCH_DIR}/${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DSEND_LG=true' "${SKETCH_DIR}/${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DDECODE_MIDEA24=true' "${SKETCH_DIR}/${SKETCH_NAME}.ino.globals.h"
+          grep -q -- '-DSEND_RAW=true' "${SKETCH_DIR}/${SKETCH_NAME}.ino.globals.h"
 
       - name: Compile ESP8266 firmware
         run: |
           set -eu
           BUILD_DIR="${RUNNER_TEMP}/arduino-build"
-          SKETCH_DIR="${RUNNER_TEMP}/${SKETCH_NAME}"
-          mkdir -p "${BUILD_DIR}" "${SKETCH_DIR}"
-          cp -a . "${SKETCH_DIR}/"
-          # Arduino CLI requires the sketch folder and its main .ino to have the
-          # same name. Stage under the sketch's lowercase name (the checkout
-          # directory is named ROVIXANE-IR, while the source sketch is lowercase).
+          mkdir -p "${BUILD_DIR}"
+          # The sketch was staged under its own lowercase name above; arduino-cli
+          # requires the sketch folder and the .ino filename to match.
           arduino-cli compile \
             --fqbn "${BOARD_FQBN}" \
             --build-path "${BUILD_DIR}" \

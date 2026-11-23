@@ -1,17 +1,28 @@
-# ROVIXANE IR — Universal Infrared Remote v1.0.0
+# ROVIXANE-IR-v2.0.0 — Universal Infrared Remote
 
-First public firmware release.
+ROVIXANE IR v2.0.0 is a complete V2 of the ESP8266 universal IR remote: a mobile-first dashboard with TV, AC, fan, set-top-box and custom remotes, per-button learning, favorites, crash-safe storage, a first-run security setup, and phone-browser OTA updates.
 
-> **Naming note:** The published v1.0.0 release and its assets are intentionally left unchanged, including the legacy `ihr-universal-ir-remote-*` filenames and the `IHR-IR-Setup` SSID used by that firmware. Future releases follow `ROVIXANE-IR-vX.X.X` / `rovixane-ir-nodemcuv2-vX.X.X.bin` naming and use `ROVIXANE-IR-Setup`.
+> The previously published v1.0.0 release and its legacy `ihr-universal-ir-remote-*` assets are intentionally left unchanged. v2.0.0 assets follow the `rovixane-ir-nodemcuv2-v2.0.0.*` naming.
 
 ## What this release contains
 
-- Real compiled NodeMCU ESP8266 firmware (not a placeholder): `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin` (published v1.0.0 asset, legacy name)
-- SHA-256 checksum file: `ihr-universal-ir-remote-nodemcuv2-v1.0.0.sha256.txt`
-- First-run setup card, clearer connection status, per-button delete, supported-protocol picker, and automatic setup-AP teardown after Wi-Fi recovery
-- Source code and full documentation in this repository
+- NodeMCU ESP8266 firmware: `rovixane-ir-nodemcuv2-v2.0.0.bin`
+- SHA-256 checksum: `rovixane-ir-nodemcuv2-v2.0.0.sha256.txt`
+- Source, tests and documentation in this repository
 
-The firmware was compiled by GitHub Actions with Arduino CLI 1.6.0, ESP8266 core 3.1.2, ArduinoJson 7.4.2 and IRremoteESP8266 2.8.6. The BIN was checked for non-zero size and a valid ESP8266 image header before being attached here.
+The firmware is compiled by GitHub Actions with Arduino CLI 1.6.0, ESP8266 core 3.1.2, ArduinoJson 7.4.2 and IRremoteESP8266 2.8.6. The BIN is checked for non-zero size and a valid ESP8266 image header before publishing.
+
+## Highlights
+
+- **Universal remote UI:** home, search, favorites, recents and quick actions; TV/STB layouts with navigation, volume, channel, numbers and media keys.
+- **AC and fan remotes:** honest state UI (temperature/mode/fan) that sends your learned/mapped signals; no fabricated protocol encoding.
+- **Custom builder:** create a remote with its own name, icon, colour, grid width and button layout.
+- **Learn per button:** capture from the original remote and save protocol/HEX/bits or raw timings directly to a button. Invalid or overflowed captures are rejected visibly.
+- **First-run setup:** a fresh device is in setup mode until you create an admin password. Until then, writes, IR transmit and OTA are blocked.
+- **Security hardening:** HTTP Basic auth, `X-ROVIXANE-CSRF: 1`, JSON content type on mutations, masked secrets, no passwords in backups.
+- **Crash-safe storage:** atomic writes, `.bak` recovery and a shared 20 KB limit. A corrupt or oversized database is never silently erased.
+- **Streaming OTA:** upload a `.bin` from the phone; magic/size checks and safe abort. The device restarts only after a verified finalize.
+- **English/Bangla UI** with dark/light theme and an embedded PWA manifest.
 
 ## Supported board
 
@@ -35,15 +46,15 @@ Other ESP8266 boards may work electrically, but this release is built and verifi
 - 47–220Ω resistor in series with the IR LED (recommended)
 - USB cable and a phone with Wi-Fi and a web browser
 
-See [WIRING.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/WIRING.md) for a beginner-friendly, illustrated-by-text wiring guide.
+See [WIRING.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/WIRING.md) for wiring. Component pinouts and resistor values are documented, not hardware-verified.
 
-## Install from Android / Termux without Arduino IDE
+## Install from Android / Termux
 
-1. Download `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin` from the **Assets** section of this release.
-2. Optionally verify the download with the `.sha256.txt` file:
+1. Download `rovixane-ir-nodemcuv2-v2.0.0.bin` from the **Assets** section.
+2. Optionally verify the download:
 
    ```sh
-   sha256sum -c ihr-universal-ir-remote-nodemcuv2-v1.0.0.sha256.txt
+   sha256sum -c rovixane-ir-nodemcuv2-v2.0.0.sha256.txt
    ```
 
 3. Install esptool in Termux:
@@ -59,47 +70,38 @@ See [WIRING.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/WIRING.md) for
    ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null
    ```
 
-5. Flash at address `0x00000`:
+5. Flash the firmware (adjust the port if needed):
 
    ```sh
    python3 -m esptool --chip esp8266 --port /dev/ttyUSB0 --baud 115200 \
      write_flash --flash_size 4MB1M 0x00000 \
-     ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin
+     rovixane-ir-nodemcuv2-v2.0.0.bin
    ```
 
-   Replace `/dev/ttyUSB0` with the port shown on your phone. If flashing does not start, hold the board's **FLASH** button while running the command.
+6. Reconnect power. Your phone should see `ROVIXANE-IR-Setup`; open `http://192.168.4.1` and create the admin password.
 
-6. Reconnect power. Your phone should see the Wi-Fi network `IHR-IR-Setup` (the SSID used by the published v1.0.0 firmware; newer firmware uses `ROVIXANE-IR-Setup`).
-7. Connect to it and open **http://192.168.4.1** in a browser. Choose **Stay connected** if Android asks.
-8. In **Settings**, enter your home Wi-Fi name and password, save, and restart. The device falls back to `IHR-IR-Setup` after about 12 seconds if it cannot connect.
+If flashing stalls at “Connecting…”, hold the board’s **FLASH** button while starting the command. Do not upload a LittleFS image; all web assets are inside the firmware.
 
-No LittleFS upload is needed. The entire dashboard is compiled into the firmware.
+## Updating from v1.0.0
 
-More detail: [INSTALL.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/docs/INSTALL.md).
+- Keep a backup first: **Settings → Download backup**.
+- Flash the v2.0.0 BIN with esptool, or use **Settings → Firmware update** on a device already running V2.
+- `/config.json` and `/signals.json` are preserved when the filesystem is not erased. V1 flat config and signals are normalised to the V2 schema on load.
+- A fresh device starts in setup mode; existing V1 configurations with login disabled remain open (change that in Settings).
 
-## First-time setup and daily use
+## Security notes
 
-- **Remotes**: create a profile, add buttons, rename/edit/delete buttons.
-- **Learn**: point your original remote at the TSOP38238 receiver and save the decoded signal.
-- **Settings**: Wi-Fi, language (বাংলা / English), login, restart, backup/restore, factory reset.
-- **Status**: shows Wi-Fi mode, IP address and whether the access point is active.
+- The dashboard is served over **plain HTTP** because of ESP8266 limits. Use it only on a trusted LAN or the setup AP; do not expose it to the internet.
+- The setup AP is open until you set an AP password in Settings.
+- API mutations require authentication plus `X-ROVIXANE-CSRF: 1` and JSON content type. The dashboard does this automatically.
+- Password fields are masked in API responses and omitted from backups.
 
-Step-by-step guides: [DASHBOARD.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/docs/DASHBOARD.md), [FAQ.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/docs/FAQ.md).
+## Verification scope
 
-## Known limitations
+- GitHub Actions runs host tests and the real ESP8266 compile; the attached BIN is produced by that build.
+- IR range, receiver sensitivity, transistor wiring and OTA behaviour were **not** tested on physical hardware here. Verify them with your own board.
+- Starter LG volume/source codes are examples marked `verified:false`; learn your own codes before relying on them.
 
-- Only protocols compiled into this build are available: NEC, LG, Sony, Samsung, JVC, Panasonic, RC5, RC6, Denon, Coolix, Midea24 and raw timing capture.
-- IR learning needs line of sight and works best away from direct sunlight or strong fluorescent/LED lighting.
-- The setup access point is open by default so a first-time user can connect. Enable the dashboard login on untrusted networks.
-- Physical IR transmit/receive range was not hardware-tested in CI. Electrical wiring and real-device range must be checked by the builder.
-- This is a 2.4 GHz Wi-Fi device; 5 GHz-only networks are not supported by the ESP8266.
+## License
 
-## Safety and legal notes
-
-- Do not connect the IR LED directly to 3.3 V without a current-limiting resistor.
-- Do not use this project to control medical, safety-critical, mains switching or security equipment.
-- Use factory reset if you forget the dashboard password: hold D1/GPIO5 to GND for 3 seconds.
-
-## Full documentation
-
-Start at [README.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/README.md). Contributions are welcome; see [CONTRIBUTING.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/CONTRIBUTING.md). Report security concerns privately as described in [SECURITY.md](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/SECURITY.md).
+MIT. See [LICENSE](https://github.com/ROVIXANE/ROVIXANE-IR/blob/main/LICENSE).

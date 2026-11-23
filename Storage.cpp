@@ -4,6 +4,9 @@
 
 namespace IhrStorage {
 
+static String bakPath(const char *path) { return String(path) + ".bak"; }
+static String tmpPath(const char *path) { return String(path) + ".tmp"; }
+
 bool begin() {
   if (LittleFS.begin()) return true;
   Serial.println(F("[FS] mount failed - formatting LittleFS"));
@@ -17,19 +20,23 @@ bool begin() {
 bool exists(const char *path) { return LittleFS.exists(path); }
 
 bool remove(const char *path) {
-  if (!LittleFS.exists(path)) return true;
-  if (!LittleFS.remove(path)) {
-    Serial.printf("[FS] remove failed: %s\n", path);
-    return false;
+  bool ok = true;
+  const char *suffixes[] = {"", ".bak", ".tmp"};
+  for (const char *suffix : suffixes) {
+    String p = String(path) + suffix;
+    if (LittleFS.exists(p.c_str()) && !LittleFS.remove(p.c_str())) {
+      Serial.printf("[FS] remove failed: %s\n", p.c_str());
+      ok = false;
+    }
   }
-  return true;
+  return ok;
 }
 
-bool readJson(const char *path, JsonDocument &doc) {
+static bool readJsonOne(const char *path, JsonDocument &doc) {
   File f = LittleFS.open(path, "r");
   if (!f) return false;
-  if (f.size() > IHR_MAX_JSON_BYTES) {
-    Serial.printf("[FS] %s is too large (%u bytes)\n", path,
+  if (f.size() == 0 || f.size() > IHR_MAX_JSON_BYTES) {
+    Serial.printf("[FS] %s has invalid size (%u bytes)\n", path,
                   static_cast<unsigned>(f.size()));
     f.close();
     return false;
@@ -43,8 +50,43 @@ bool readJson(const char *path, JsonDocument &doc) {
   return true;
 }
 
+bool readJson(const char *path, JsonDocument &doc) {
+  doc.clear();
+  if (readJsonOne(path, doc)) return true;
+  String bak = bakPath(path);
+  doc.clear();
+  if (readJsonOne(bak.c_str(), doc)) {
+    Serial.printf("[FS] recovered %s from %s\n", path, bak.c_str());
+    return true;
+  }
+  return false;
+}
+
+// Move the destination out of the way, install the new file, then drop the
+// backup. Any failure restores the previous file.
+static bool installFile(const char *path, const String &tmp) {
+  String bak = bakPath(path);
+  bool hadOld = LittleFS.exists(path);
+  if (hadOld) {
+    if (LittleFS.exists(bak.c_str())) LittleFS.remove(bak.c_str());
+    if (!LittleFS.rename(path, bak.c_str())) {
+      Serial.printf("[FS] cannot back up %s\n", path);
+      LittleFS.remove(tmp.c_str());
+      return false;
+    }
+  }
+  if (!LittleFS.rename(tmp.c_str(), path)) {
+    Serial.printf("[FS] rename to %s failed\n", path);
+    if (hadOld) LittleFS.rename(bak.c_str(), path);
+    LittleFS.remove(tmp.c_str());
+    return false;
+  }
+  if (hadOld) LittleFS.remove(bak.c_str());
+  return true;
+}
+
 bool writeJson(const char *path, const JsonDocument &doc) {
-  String tmp = String(path) + ".tmp";
+  String tmp = tmpPath(path);
   File f = LittleFS.open(tmp.c_str(), "w");
   if (!f) {
     Serial.printf("[FS] cannot open %s for writing\n", tmp.c_str());
@@ -52,39 +94,37 @@ bool writeJson(const char *path, const JsonDocument &doc) {
   }
   size_t written = serializeJson(doc, f);
   f.close();
-  if (written == 0) {
+  if (written == 0 || written > IHR_MAX_JSON_BYTES) {
+    Serial.printf("[FS] refusing %u-byte write to %s\n",
+                  static_cast<unsigned>(written), path);
     LittleFS.remove(tmp.c_str());
     return false;
   }
-  if (LittleFS.exists(path) && !LittleFS.remove(path)) {
-    Serial.printf("[FS] cannot replace %s\n", path);
-    LittleFS.remove(tmp.c_str());
-    return false;
-  }
-  if (!LittleFS.rename(tmp.c_str(), path)) {
-    Serial.printf("[FS] rename to %s failed\n", path);
-    LittleFS.remove(tmp.c_str());
-    return false;
-  }
-  return true;
+  return installFile(path, tmp);
 }
 
 bool readText(const char *path, String &out) {
-  File f = LittleFS.open(path, "r");
-  if (!f) return false;
-  if (f.size() > IHR_MAX_JSON_BYTES) {
+  const char *candidates[] = {path, nullptr};
+  String bak = bakPath(path);
+  candidates[1] = bak.c_str();
+  for (int i = 0; i < 2; ++i) {
+    File f = LittleFS.open(candidates[i], "r");
+    if (!f) continue;
+    if (f.size() > IHR_MAX_JSON_BYTES) {
+      f.close();
+      continue;
+    }
+    out.reserve(f.size() + 1);
+    out = f.readString();
     f.close();
-    return false;
+    return true;
   }
-  out.reserve(f.size() + 1);
-  out = f.readString();
-  f.close();
-  return true;
+  return false;
 }
 
 bool writeText(const char *path, const String &data) {
-  if (data.length() > IHR_MAX_JSON_BYTES) return false;
-  String tmp = String(path) + ".tmp";
+  if (data.length() == 0 || data.length() > IHR_MAX_JSON_BYTES) return false;
+  String tmp = tmpPath(path);
   File f = LittleFS.open(tmp.c_str(), "w");
   if (!f) return false;
   size_t written = f.print(data);
@@ -93,15 +133,15 @@ bool writeText(const char *path, const String &data) {
     LittleFS.remove(tmp.c_str());
     return false;
   }
-  if (LittleFS.exists(path) && !LittleFS.remove(path)) {
-    LittleFS.remove(tmp.c_str());
-    return false;
-  }
-  if (!LittleFS.rename(tmp.c_str(), path)) {
-    LittleFS.remove(tmp.c_str());
-    return false;
-  }
-  return true;
+  return installFile(path, tmp);
+}
+
+size_t fileSize(const char *path) {
+  File f = LittleFS.open(path, "r");
+  if (!f) return 0;
+  size_t n = f.size();
+  f.close();
+  return n;
 }
 
 size_t usedBytes() {

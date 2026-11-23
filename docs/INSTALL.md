@@ -2,7 +2,7 @@
 
 এই গাইডটি আপনাকে একটি খালি NodeMCU ESP8266 ESP-12E বোর্ড থেকে শুরু করে ফোন-নিয়ন্ত্রিত **ROVIXANE IR** রিমোট পর্যন্ত নিয়ে যাবে। প্রস্তুত firmware BIN ব্যবহার করলে Arduino IDE বা প্রোগ্রামিং জ্ঞানের প্রয়োজন নেই।
 
-> **গুরুত্বপূর্ণ:** প্রকাশিত **v1.0.0** release ও তার asset অপরিবর্তিত। এই working tree-র বাংলা UX/UI উন্নতি পরবর্তীতে নতুন করে বিল্ড ও প্রকাশ না হলে বর্তমান BIN-এ থাকবে না। নিচের hardware/onboarding ধাপগুলো প্রকাশিত firmware-এর জন্যও প্রযোজ্য।
+> **সংস্করণ:** এই গাইড **v2.0.0**-এর জন্য। প্রকাশিত **v1.0.0** release ও তার legacy asset অপরিবর্তিত। v2.0.0 BIN-এর নাম `rovixane-ir-nodemcuv2-v2.0.0.bin` এবং প্রথম বুটে অ্যাডমিন পাসওয়ার্ড সেট করা বাধ্যতামূলক।
 
 ---
 
@@ -30,9 +30,8 @@
 ## ২. সঠিক firmware BIN বেছে নিন
 
 1. [ROVIXANE-IR Releases](https://github.com/ROVIXANE/ROVIXANE-IR/releases/latest) খুলুন।
-2. **Assets** থেকে NodeMCU BIN ডাউনলোড করুন। প্রকাশিত v1.0.0-এর নাম:
-   `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin` (পুরনো নাম, অপরিবর্তিত)।
-   ভবিষ্যত রিলিজে নাম হবে `rovixane-ir-nodemcuv2-vX.X.X.bin`।
+2. **Assets** থেকে NodeMCU BIN ডাউনলোড করুন: `rovixane-ir-nodemcuv2-v2.0.0.bin`।
+   পুরোনো প্রকাশিত v1.0.0-এর নাম `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin` (ইতিহাস অপরিবর্তিত)।
 3. মিলে যাওয়া `.sha256.txt` ফাইলটিও ডাউনলোড করুন।
 
 BIN টি এই কনফিগারেশনের জন্য তৈরি:
@@ -52,7 +51,7 @@ Termux-এ:
 
 ```sh
 cd ~/Downloads
-sha256sum -c ihr-universal-ir-remote-nodemcuv2-v1.0.0.sha256.txt
+sha256sum -c rovixane-ir-nodemcuv2-v2.0.0.sha256.txt
 ```
 
 `OK` মানে ফাইলটি GitHub Actions-এ তৈরি প্রকাশিত বিল্ডের সাথে মিলে যাচ্ছে।
@@ -90,7 +89,7 @@ ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null
 ```sh
 python3 -m esptool --chip esp8266 --port /dev/ttyUSB0 --baud 115200 \
   write_flash --flash_size 4MB1M 0x00000 \
-  ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin
+  rovixane-ir-nodemcuv2-v2.0.0.bin
 ```
 
 আপনার ফোনে যে port দেখা গেছে সেটি দিন।
@@ -126,9 +125,10 @@ python3 -m esptool --chip esp8266 --port /dev/ttyUSB0 --baud 115200 \
 2. ফোনের Wi-Fi তালিকায় `ROVIXANE-IR-Setup` খুঁজে সংযোগ করুন। এটি প্রথম সেটআপের জন্য ওপেন।
 3. Android “No internet” / “ইন্টারনেট নেই” বললে **Stay connected** / **Use this network as-is** বেছে নিন।
 4. ব্রাউজারে খুলুন: **http://192.168.4.1**
-5. ROVIXANE IR ড্যাশবোর্ড এসে গেলে **Settings** ট্যাব খুলুন।
+5. **Create admin password** স্ক্রিনে কমপক্ষে ৮ অক্ষরের একটি পাসওয়ার্ড দিন → **Create password**।
+6. লগইন হয়ে গেলে **Settings** ট্যাব খুলুন।
 
-> প্রথম সেটআপ কার্ডে একই ধাপগুলো দেখা যায়। ফোন যদি এই নেটওয়ার্ক ছেড়ে দেয়, তবুও ব্রাউজারে `http://192.168.4.1` লিখে ঢুকে Settings-এ যেতে পারবেন।
+> সেটআপের আগে ডিভাইসটি write-protected: IR পাঠানো, config/signals লেখা ও OTA বন্ধ থাকে। এটি ইচ্ছাকৃত নিরাপত্তা বৈশিষ্ট্য, বাগ নয়। পাসওয়ার্ড ভুলে গেলে D1/GPIO5 দিয়ে factory reset করুন।
 
 বিল্ট-ইন LED সাধারণ অবস্থায় জ্বালা থাকে না; IR শেখা বা physical factory-reset button চাপা অবস্থায় জ্বলজ্বল করে।
 
@@ -157,12 +157,21 @@ ESP8266 শুধু **2.4 GHz** সমর্থিত। রাউটারে 
 
 ## ৭. firmware আপডেট
 
-1. Releases থেকে নতুন যাচাইকৃত BIN নামান।
-2. আগে **Settings → Download backup** দিয়ে JSON ব্যাকআপ রাখুন।
-3. উপরের esptool কমান্ড দিয়ে নতুন BIN `0x00000`-এ ফ্ল্যাশ করুন।
-4. রিস্টার্টের পর প্রয়োজনে **Settings → Restore backup** দিয়ে ব্যাকআপ ফিরিয়ে আনুন।
+### বিকল্প ১: ফোনের ব্রাউজার থেকে OTA (v2.0.0+)
 
-প্রোফাইল ও সেটিংস LittleFS-এ (`/config.json`, `/signals.json`) থাকে; সাধারণ firmware update এগুলো মুছে না। **Factory reset** মুছে দেয়।
+1. Releases থেকে নতুন `.bin` নামান; আগে **Settings → Download backup** দিয়ে JSON ব্যাকআপ রাখুন।
+2. একই Wi-Fi-তে থেকে ড্যাশবোর্ড খুলুন → **Settings → Firmware update**।
+3. `.bin` ফাইল বাছুন → **Upload & install**। আপলোড streaming, তাই পুরো ফাইল RAM-এ রাখতে হয় না।
+4. ১০০% হলে ডিভাইস নিজে রিস্টার্ট হয়। ভুল magic, সাইজ বা সংযোগ ব্যর্থ হলে আপডেট commit হয় না এবং পুরোনো firmware চালু থাকে।
+
+OTA-তে login (Basic auth), `X-ROVIXANE-CSRF: 1` ও multipart upload লাগে; ড্যাশবোর্ড নিজে যোগ করে। ফাইল অবশ্যই `.bin` হতে হবে এবং ESP8266 image (`0xE9` দিয়ে শুরু) হতে হবে।
+
+### বিকল্প ২: USB + esptool
+
+1. উপরের esptool কমান্ড দিয়ে নতুন BIN `0x00000`-এ ফ্ল্যাশ করুন।
+2. রিস্টার্টের পর প্রয়োজনে **Settings → Restore backup** দিয়ে ব্যাকআপ ফিরিয়ে আনুন।
+
+প্রোফাইল ও সেটিংস LittleFS-এ (`/config.json`, `/signals.json`, `.bak`) থাকে; সাধারণ firmware update এগুলো মুছে না। **Factory reset** মুছে দেয়। V1 থেকে এলে flat config/signals স্বয়ংক্রিয়ভাবে V2 schema-তে normalise হয়।
 
 ---
 
@@ -189,8 +198,9 @@ ESP8266 শুধু **2.4 GHz** সমর্থিত। রাউটারে 
 | Starter signal database schema | host test দিয়ে যাচাই |
 | IRremoteESP8266 v2.8.6 header contract | host test দিয়ে যাচাই |
 | Release BIN source compile + checksum | CI দিয়ে যাচাই |
+| Setup gating, auth/CSRF, masked secrets, OTA failure paths, `.bak` recovery | host test দিয়ে যাচাই |
 | বাস্তব GPIO, TSOP pinout, LED polarity, R/C মান | **UNVERIFIED** — আপনাকে যাচাই করতে হবে |
-| IR range, ফোনের camera test, বাড়ির Wi-Fi আচরণ | hardware-নির্ভর; CI এটি দাবি করে না |
+| IR range, ফোনের camera test, বাস্তব OTA/flash, বাড়ির Wi-Fi আচরণ | hardware-নির্ভর; CI এটি দাবি করে না |
 | এই local environment-এ ESP8266 compile | `arduino-cli` না থাকায় এখানে দাবি করা হয় না |
 
 নিরাপত্তা ও সীমাবদ্ধতার জন্য [SECURITY.md](../SECURITY.md) এবং [FAQ.md](FAQ.md) দেখুন।
