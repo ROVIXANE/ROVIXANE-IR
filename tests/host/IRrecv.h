@@ -25,7 +25,9 @@ struct decode_results {
 
 class IRrecv {
  public:
-  explicit IRrecv(uint16_t, uint16_t bufsize = kRawBuf) { (void)bufsize; }
+  explicit IRrecv(uint16_t, uint16_t bufsize = kRawBuf, uint8_t timeout = 15,
+                    bool saveBuffer = false) {
+    (void)bufsize; (void)timeout; (void)saveBuffer; }
   void enableIRIn(bool = false) { enabled = true; }
   void resume() { resumeCalls++; }
   void disableIRIn() { enabled = false; }
