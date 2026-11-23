@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Generate WebAssets.h from data/ for Arduino IDE / ArduinoDroid builds.
+r"""Generate WebAssets.h from data/ for Arduino IDE / Android builds.
 
 No Node/npm and no LittleFS upload plugin are needed: the dashboard and
 starter database are compiled into firmware flash as PROGMEM arrays.
 
-Every byte is emitted as ``static_cast<char>(0xNN)``. This is deliberate:
-UTF-8 Bengali text and emoji contain bytes above 0x7F, and a plain
-``0xE0`` initializer would be a narrowing conversion from int to char on
-strict C++ compilers such as GCC.
+Each byte is emitted as a ``\xNN`` escape inside an 32-byte string literal.
+That keeps the generated header small and compile-fast while preserving
+arbitrary UTF-8 (Bengali) content byte-for-byte. Adjacent C++ string literals
+are concatenated, so ``sizeof(name) - 1`` is the exact payload length.
 
 Usage:
   python3 tools/generate_assets.py
@@ -27,16 +27,23 @@ FILES = [
 ]
 
 
+def c_string_bytes(payload: bytes, per_line: int = 32):
+    """Return C++ adjacent string literals, escaping every byte."""
+    lines = []
+    for offset in range(0, len(payload), per_line):
+        chunk = payload[offset:offset + per_line]
+        escaped = "".join(f"\\x{byte:02X}" for byte in chunk)
+        lines.append(f'  "{escaped}"')
+    if not payload:
+        lines.append('  ""')
+    return lines
+
+
 def emit_array(name, payload, comment):
     lines = [f"// {comment} ({len(payload)} bytes)",
-             f"const char {name}[] PROGMEM = {{"]
-    for i in range(0, len(payload), 20):
-        chunk = payload[i:i + 20]
-        lines.append("  " +
-                     ",".join(f"static_cast<char>(0x{b:02X})" for b in chunk) +
-                     ",")
-    lines.append("  static_cast<char>(0x00)")
-    lines.append("};")
+             f"const char {name}[] PROGMEM ="]
+    lines.extend(c_string_bytes(payload))
+    lines[-1] += ";"
     lines.append(f"const size_t {name}Len = sizeof({name}) - 1;")
     lines.append("")
     return lines

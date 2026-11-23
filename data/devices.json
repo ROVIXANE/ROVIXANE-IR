@@ -1,13 +1,15 @@
 {
   "format": "ihr-signals",
-  "version": 1,
+  "version": 2,
   "profiles": [
     {
       "id": "p_lg_tv_example",
       "name": "LG TV (examples)",
-      "nameBn": "এলজি টিভি (উদাহরণস্বরূপ)",
+      "nameBn": "এলজি টিভি (উদাহরণ)",
       "icon": "📺",
       "color": "#4f8cff",
+      "category": "tv",
+      "favorite": true,
       "signals": [
         {
           "id": "s_lg_power_example",
@@ -30,7 +32,7 @@
           "color": "#37d67a",
           "kind": "protocol",
           "protocol": "LG",
-          "value": "0x20DF4FB0",
+          "value": "0x20DF40BF",
           "bits": 28,
           "repeat": 1,
           "verified": false
@@ -43,7 +45,7 @@
           "color": "#37d67a",
           "kind": "protocol",
           "protocol": "LG",
-          "value": "0x20DF807F",
+          "value": "0x20DFC03F",
           "bits": 28,
           "repeat": 1,
           "verified": false
