@@ -31,6 +31,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Regenerate embedded web assets
+        run: python3 tools/generate_assets.py
+
       - name: Run host checks (not a firmware compile)
         run: sh tests/run_tests.sh
 
@@ -43,6 +46,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Regenerate embedded web assets
+        run: python3 tools/generate_assets.py
 
       - name: Install Arduino CLI
         uses: arduino/setup-arduino-cli@v2
@@ -90,8 +96,11 @@ jobs:
 
       - name: Compile ESP8266 firmware
         run: |
+          set -eu
           BUILD_DIR="${RUNNER_TEMP}/arduino-build"
           mkdir -p "${BUILD_DIR}"
+          # The sketch was staged under its own lowercase name above; arduino-cli
+          # requires the sketch folder and the .ino filename to match.
           arduino-cli compile \
             --fqbn "${BOARD_FQBN}" \
             --build-path "${BUILD_DIR}" \

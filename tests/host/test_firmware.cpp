@@ -214,13 +214,51 @@ static void testSignalsAndSending() {
   CHECK(IRsend::tx.raw[0] == 9000 && IRsend::tx.raw[5] == 1690,
         "raw timing values intact");
 
+  // Oversized/negative/zero values must never become a different IR frame.
+  const char *overflowHex = R"({"format":"ihr-signals","profiles":[
+    {"id":"pbad","signals":[
+      {"id":"sbad","label":"Overflow","kind":"protocol","protocol":"NEC",
+       "value":"0x10000000000000000","bits":64,"repeat":1}]}]})";
+  CHECK(put("/api/signals", overflowHex).code == 200,
+        "oversized HEX value stored for send-time validation");
+  CHECK(post("/api/send", "{\"profileId\":\"pbad\",\"signalId\":\"sbad\"}").code == 400,
+        "oversized HEX IR value rejected at send time");
+
+  const char *negativeValue = R"({"format":"ihr-signals","profiles":[
+    {"id":"pbad","signals":[
+      {"id":"sbad","label":"Negative","kind":"protocol","protocol":"NEC",
+       "value":-1,"bits":32,"repeat":1}]}]})";
+  CHECK(put("/api/signals", negativeValue).code == 200,
+        "negative protocol value stored for send-time validation");
+  CHECK(post("/api/send", "{\"profileId\":\"pbad\",\"signalId\":\"sbad\"}").code == 400,
+        "negative IR value rejected at send time");
+
+  const char *zeroTiming = R"({"format":"ihr-signals","profiles":[
+    {"id":"pbad","signals":[
+      {"id":"sbad","label":"Zero","kind":"raw","khz":38,"timings":[9000,4500,0,560]}]}]})";
+  CHECK(put("/api/signals", zeroTiming).code == 200,
+        "zero raw timing stored for send-time validation");
+  CHECK(post("/api/send", "{\"profileId\":\"pbad\",\"signalId\":\"sbad\"}").code == 400,
+        "zero raw timing rejected instead of shifting the frame");
+
+  const char *wideValid = R"({"format":"ihr-signals","profiles":[
+    {"id":"pwide","signals":[
+      {"id":"swide","label":"Wide","kind":"protocol","protocol":"NEC",
+       "value":"0xFFFFFFFFFFFFFFFF","bits":64,"repeat":1}]}]})";
+  CHECK(put("/api/signals", wideValid).code == 200, "full-width 64-bit database accepted");
+  IRsend::tx = IrTxRecord();
+  CHECK(post("/api/send", "{\"profileId\":\"pwide\",\"signalId\":\"swide\"}").code == 200,
+        "full-width 64-bit code transmitted");
+  CHECK(IRsend::tx.value == UINT64_MAX, "64-bit code remains intact");
+
   // Invalid replacements must never become the live database.
   const char *badRaw = R"({"format":"ihr-signals","profiles":[
     {"id":"p1","name":"Bad","signals":[
       {"id":"s1","label":"Bad raw","kind":"raw","timings":[9000,-1,560,560]}]}]})";
   CHECK(put("/api/signals", badRaw).code == 400, "negative raw timing rejected");
   d = asJson(get("/api/signals"));
-  CHECK(d["profiles"].size() == 1 && d["profiles"][0]["signals"].size() == 2,
+  CHECK(d["profiles"].size() == 1 && d["profiles"][0]["id"] == "pwide"
+        && d["profiles"][0]["signals"].size() == 1,
         "previous database kept after rejected write");
   CHECK(put("/api/signals", "{not json").code == 400, "malformed JSON rejected");
   d = asJson(get("/api/signals"));
