@@ -170,7 +170,7 @@ python3 tools/generate_assets.py
 
 - **Download backup:** প্রোফাইল, বাটন ও সেটিংস এক `.json` ফাইলে; পাসওয়ার্ড ইচ্ছাকৃতভাবে বাদ।
 - **Restore backup:** ফাইল লোড করে; masked/অনুপস্থিত গোপন তথ্য বর্তমান মান অক্ষত রাখে।
-- **OTA:** Settings → Firmware update → `.bin` বেছে নিন। আপলোড streaming, তাই পুরো ফাইল RAM-এ থাকে না। ভুল magic/সাইজ/সংযোগ হলে আপডেট commit হয় না, ডিভাইস রিস্টার্টও হয় না।
+- **OTA:** Settings → Firmware update → `.bin` বেছে নিন। আপলোড streaming, তাই পুরো ফাইল RAM-এ থাকে না। magic ও সাইজ পরীক্ষা হয়, কিন্তু firmware স্বাক্ষর যাচাই হয় না; শুধু বিশ্বস্ত release ও checksum যাচাই করে ব্যবহার করুন এবং USB recovery প্রস্তুত রাখুন।
 - **Crash-safe DB:** লেখার সময় `.tmp`, আগের ভালো ফাইলের `.bak`; boot-এ corrupt JSON হলে `.bak` থেকে পুনরুদ্ধার। বড়/ভাঙা user DB কখনও নিজে থেকে মুছে ফেলা হয় না।
 - **Factory reset** সব প্রোফাইল, বাটন, সেটিংস ও বাটন-লেআউট মুছে দেয়। প্রয়োজনে D1/GPIO5 কে GND-র সাথে ৩ সেকেন্ড ধরে রাখুন।
 
@@ -279,3 +279,11 @@ sh tests/run_tests.sh              # asset + host tests
 ## অবদান ও লাইসেন্স
 
 অবদানের জন্য [CONTRIBUTING.md](CONTRIBUTING.md), নিরাপত্তা রিপোর্টের জন্য [SECURITY.md](SECURITY.md) দেখুন। এই প্রকল্প **MIT** লাইসেন্সের অধীনে; বিস্তারিত [LICENSE](LICENSE)।
+
+### Android companion
+
+The Android app connects to the device dashboard rather than bundling it. Join the device Wi-Fi, open the app and press **Connect** (default `http://192.168.4.1/`). For station mode, enter the device's LAN URL. The app supports the dashboard's Basic-auth prompt and file picker; the connection is unencrypted when using HTTP. Build artifacts are available from the Android GitHub Actions workflow.
+
+See [SECURITY.md](SECURITY.md#storage-recovery) for non-destructive storage recovery and hardware smoke tests.
+
+**First-time storage initialization:** If a new or erased LittleFS partition cannot mount, hold the D1/GPIO5 config button to GND while powering on, for at least three seconds. This explicitly erases and formats LittleFS. Do not do this if existing data may need recovery; see [storage recovery](SECURITY.md#storage-recovery).

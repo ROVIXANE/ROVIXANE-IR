@@ -141,7 +141,7 @@ inline void handleUpload(ESP8266WebServer &server, bool allowed) {
     s.active = false;
     s.done = true;
     s.ok = true;
-    Serial.printf("[OTA] verified image, %u bytes written\n",
+    Serial.printf("[OTA] image accepted, %u bytes written\n",
                   static_cast<unsigned>(s.written));
     return;
   }

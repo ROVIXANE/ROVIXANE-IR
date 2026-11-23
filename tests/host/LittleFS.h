@@ -5,6 +5,11 @@
 #include <filesystem>
 #include <map>
 
+namespace LittleFSFaults {
+inline bool failMount = false;
+inline size_t writeLimit = static_cast<size_t>(-1);
+}
+
 struct FSInfo {
   size_t usedBytes = 0;
   size_t totalBytes = 4 * 1024 * 1024;
@@ -41,12 +46,15 @@ class File : public Print {
   }
   int peek() { return _pos < _buf.size() ? static_cast<unsigned char>(_buf[_pos]) : -1; }
   size_t write(uint8_t c) {
+    if (_buf.size() >= LittleFSFaults::writeLimit) return 0;
     _buf.push_back(static_cast<char>(c));
     return 1;
   }
   size_t write(const uint8_t *data, size_t len) {
-    _buf.append(reinterpret_cast<const char *>(data), len);
-    return len;
+    size_t room = LittleFSFaults::writeLimit > _buf.size() ? LittleFSFaults::writeLimit - _buf.size() : 0;
+    size_t accepted = std::min(len, room);
+    _buf.append(reinterpret_cast<const char *>(data), accepted);
+    return accepted;
   }
   size_t print(const char *s) { _buf.append(s); return strlen(s); }
   size_t print(const String &s) { _buf.append(s); return s.length(); }
@@ -78,9 +86,17 @@ inline void clearRoot() {
 }
 }  // namespace LittleFSImpl
 
+struct LittleFSConfig {
+  explicit LittleFSConfig(bool autoFormat = true) : autoFormat(autoFormat) {}
+  bool autoFormat;
+};
+
 class LittleFSClass {
  public:
+  bool setConfig(const LittleFSConfig &config) { autoFormat = config.autoFormat; return true; }
+  bool autoFormat = true;
   bool begin() {
+    if (LittleFSFaults::failMount) return false;
     LittleFSImpl::ensureRoot();
     return true;
   }
