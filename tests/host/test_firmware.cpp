@@ -305,6 +305,14 @@ static void testLearning() {
   CHECK(d["capture"]["kind"] == "error", "overflowed raw capture rejected visibly");
   CHECK(d["capture"]["overflow"] == true, "overflow flag reported");
 
+  static uint16_t longRaw[IHR_MAX_RAW_TIMINGS + 2] = {};
+  CHECK(post("/api/learn/start", "{}").code == 200, "long learning started");
+  IRrecv::testFeed(UNKNOWN, 0, 0, longRaw, IHR_MAX_RAW_TIMINGS + 2);
+  loop();
+  d = asJson(get("/api/learn/status"));
+  CHECK(d["capture"]["kind"] == "error", "truncated raw capture rejected");
+  CHECK(d["capture"]["truncated"] == true, "truncation reported");
+
   CHECK(post("/api/learn/cancel", "{}").code == 200, "learning cancelled");
   d = asJson(get("/api/learn/status"));
   CHECK(d["active"] == false && d["ready"] == false, "cancel clears capture");
@@ -436,6 +444,12 @@ static void testRecoveryAndFactoryReset() {
   JsonDocument d = asJson(get("/api/signals"));
   CHECK(d["profiles"][0]["id"] == "recover", "recovered profile content");
 
+  CHECK(LittleFS.exists("/signals.json.corrupt"), "damaged primary quarantined");
+  CHECK(put("/api/signals", R"({"profiles":[]})").code == 200, "write after recovery succeeds");
+  JsonDocument recoveredBackup;
+  CHECK(IhrStorage::readJson("/signals.json.bak", recoveredBackup), "recovered backup remains readable");
+  CHECK(recoveredBackup["profiles"][0]["id"] == "recover", "recovered backup not replaced by corruption");
+
   ESP.restarted = false;
   CHECK(post("/api/factory-reset", "{}").code == 400, "factory reset needs confirmation");
   CHECK(post("/api/factory-reset", "{\"confirm\":\"RESET\"}").code == 200,
@@ -446,6 +460,50 @@ static void testRecoveryAndFactoryReset() {
   CHECK(!LittleFS.exists(IHR_CONFIG_PATH), "config removed by factory reset");
   CHECK(!LittleFS.exists(IHR_SIGNALS_PATH), "signals removed by factory reset");
   CHECK(!LittleFS.exists("/signals.json.bak"), "signals backup removed by factory reset");
+  CHECK(!LittleFS.exists("/signals.json.corrupt"), "quarantine removed by factory reset");
+}
+
+static void testStorageFaults() {
+  JsonDocument original;
+  original["value"] = "original";
+  CHECK(IhrStorage::writeJson("/fault.json", original), "fault fixture saved");
+  JsonDocument replacement;
+  replacement["value"] = "replacement";
+  LittleFSFaults::writeLimit = 5;
+  CHECK(!IhrStorage::writeJson("/fault.json", replacement), "partial JSON write rejected");
+  LittleFSFaults::writeLimit = static_cast<size_t>(-1);
+  JsonDocument loaded;
+  CHECK(IhrStorage::readJson("/fault.json", loaded), "original after partial write readable");
+  CHECK(loaded["value"] == "original", "partial write did not replace original");
+
+  CHECK(IhrStorage::writeJson("/fault.json", replacement), "backup fixture created");
+  File bad = LittleFS.open("/fault.json", "w");
+  bad.print("{bad");
+  bad.close();
+  File quarantine = LittleFS.open("/fault.json.corrupt", "w");
+  quarantine.print("previous damaged copy");
+  quarantine.close();
+  CHECK(!IhrStorage::readJson("/fault.json", loaded), "existing quarantine prevents unsafe recovery");
+  CHECK(!IhrStorage::writeJson("/fault.json", replacement), "failed quarantine blocks writes");
+  CHECK(IhrStorage::readJson("/fault.json.bak", loaded) && loaded["value"] == "original",
+        "backup preserved after failed quarantine");
+  CHECK(IhrStorage::remove("/fault.json"), "remove clears blocked fixture");
+  CHECK(IhrStorage::writeJson("/fault.json", original), "fault fixture restored");
+  LittleFSFaults::failMount = true;
+  CHECK(!IhrStorage::begin(), "mount failure reported");
+  CHECK(!LittleFS.autoFormat, "automatic formatting disabled before mount");
+  LittleFSFaults::failMount = false;
+  CHECK(LittleFS.exists("/fault.json"), "mount failure did not format storage");
+
+  File config = LittleFS.open(IHR_CONFIG_PATH, "w");
+  config.print("{ damaged");
+  config.close();
+  gStorageUnavailable = false;
+  setup();
+  CHECK(gStorageUnavailable, "unreadable configuration halts boot");
+  String contents;
+  CHECK(IhrStorage::readText(IHR_CONFIG_PATH, contents) && contents == "{ damaged",
+        "unreadable configuration preserved");
 }
 
 int main() {
@@ -465,6 +523,7 @@ int main() {
   testStatusAndNetwork();
   testOta();
   testRecoveryAndFactoryReset();
+  testStorageFaults();
 
   printf("%d checks, %d failures\n", gChecks, gFails);
   return gFails == 0 ? 0 : 1;

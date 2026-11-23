@@ -6,22 +6,26 @@ namespace IhrStorage {
 
 static String bakPath(const char *path) { return String(path) + ".bak"; }
 static String tmpPath(const char *path) { return String(path) + ".tmp"; }
+// A failed quarantine must never allow a later write to replace the good backup.
+static String blockedPath;
 
 bool begin() {
+  // ESP8266 LittleFS defaults to auto-format on mount failure. Disable it.
+  if (!LittleFS.setConfig(LittleFSConfig(false))) return false;
   if (LittleFS.begin()) return true;
-  Serial.println(F("[FS] mount failed - formatting LittleFS"));
-  if (!LittleFS.format()) {
-    Serial.println(F("[FS] format failed"));
-    return false;
-  }
-  return LittleFS.begin();
+  Serial.println(F("[FS] mount failed; storage left untouched"));
+  return false;
+}
+
+bool formatAndBegin() {
+  return LittleFS.format() && LittleFS.begin();
 }
 
 bool exists(const char *path) { return LittleFS.exists(path); }
 
 bool remove(const char *path) {
   bool ok = true;
-  const char *suffixes[] = {"", ".bak", ".tmp"};
+  const char *suffixes[] = {"", ".bak", ".tmp", ".corrupt"};
   for (const char *suffix : suffixes) {
     String p = String(path) + suffix;
     if (LittleFS.exists(p.c_str()) && !LittleFS.remove(p.c_str())) {
@@ -29,6 +33,7 @@ bool remove(const char *path) {
       ok = false;
     }
   }
+  if (ok && blockedPath == path) blockedPath = "";
   return ok;
 }
 
@@ -43,8 +48,8 @@ static bool readJsonOne(const char *path, JsonDocument &doc) {
   }
   DeserializationError err = deserializeJson(doc, f);
   f.close();
-  if (err) {
-    Serial.printf("[FS] JSON parse failed for %s: %s\n", path, err.c_str());
+  if (err || !doc.is<JsonObject>()) {
+    Serial.printf("[FS] JSON parse failed for %s: %s\n", path, err ? err.c_str() : "root is not an object");
     return false;
   }
   return true;
@@ -57,6 +62,16 @@ bool readJson(const char *path, JsonDocument &doc) {
   doc.clear();
   if (readJsonOne(bak.c_str(), doc)) {
     Serial.printf("[FS] recovered %s from %s\n", path, bak.c_str());
+    // Keep both the damaged primary and the good backup until a new write.
+    if (LittleFS.exists(path)) {
+      String corrupt = String(path) + ".corrupt";
+      if (LittleFS.exists(corrupt.c_str()) || !LittleFS.rename(path, corrupt.c_str())) {
+        blockedPath = path;
+        Serial.printf("[FS] cannot quarantine %s; writes blocked\n", path);
+        doc.clear();
+        return false;
+      }
+    }
     return true;
   }
   return false;
@@ -66,6 +81,11 @@ bool readJson(const char *path, JsonDocument &doc) {
 // previous good copy as `.bak` for boot-time recovery. Any failure restores
 // the previous file.
 static bool installFile(const char *path, const String &tmp) {
+  if (blockedPath == path) {
+    Serial.printf("[FS] writes blocked for %s\n", path);
+    LittleFS.remove(tmp.c_str());
+    return false;
+  }
   String bak = bakPath(path);
   bool hadOld = LittleFS.exists(path);
   if (hadOld) {
@@ -94,9 +114,10 @@ bool writeJson(const char *path, const JsonDocument &doc) {
     Serial.printf("[FS] cannot open %s for writing\n", tmp.c_str());
     return false;
   }
+  size_t expected = measureJson(doc);
   size_t written = serializeJson(doc, f);
   f.close();
-  if (written == 0 || written > IHR_MAX_JSON_BYTES) {
+  if (written == 0 || written != expected || written > IHR_MAX_JSON_BYTES) {
     Serial.printf("[FS] refusing %u-byte write to %s\n",
                   static_cast<unsigned>(written), path);
     LittleFS.remove(tmp.c_str());

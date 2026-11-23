@@ -204,3 +204,7 @@ OTA-তে login (Basic auth), `X-ROVIXANE-CSRF: 1` ও multipart upload লা�
 | এই local environment-এ ESP8266 compile | `arduino-cli` না থাকায় এখানে দাবি করা হয় না |
 
 নিরাপত্তা ও সীমাবদ্ধতার জন্য [SECURITY.md](../SECURITY.md) এবং [FAQ.md](FAQ.md) দেখুন।
+
+### LittleFS initialization and recovery
+
+On a new or erased LittleFS partition, hold the D1/GPIO5 config button to GND during power-on for at least three seconds to explicitly initialize storage. **This formats and erases the entire LittleFS partition.** If the device previously contained data, do not format it: see [storage recovery](../SECURITY.md#storage-recovery) first. A failed mount without that physical confirmation stops boot without formatting.

@@ -31,9 +31,6 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Regenerate embedded web assets
-        run: python3 tools/generate_assets.py
-
       - name: Run host checks (not a firmware compile)
         run: sh tests/run_tests.sh
 

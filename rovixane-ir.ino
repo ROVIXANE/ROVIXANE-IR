@@ -44,6 +44,7 @@ static DNSServer gDns;
 static IRrecv gIrRecv(IHR_PIN_IR_RECV, IHR_RECV_BUF_SIZE);
 static IRsend gIrSend(IHR_PIN_IR_SEND);
 
+static bool gStorageUnavailable = false;
 static bool gApMode = false;
 static bool gStaTrying = false;
 static uint32_t gStaTryAt = 0;
@@ -149,7 +150,7 @@ static void pollLearning() {
       strlcpy(gLearn.error, "capture buffer overflow; decoded value is usable",
               sizeof(gLearn.error));
     }
-  } else if (gLearn.timingCount >= 4 && !gLearn.overflow) {
+  } else if (gLearn.timingCount >= 4 && !gLearn.overflow && !gLearn.truncated) {
     // Either the decoder did not recognise the frame, or this build can decode
     // the protocol but has no matching sender. Preserve the raw frame.
     strlcpy(gLearn.kind, "raw", sizeof(gLearn.kind));
@@ -165,7 +166,7 @@ static void pollLearning() {
     strlcpy(gLearn.kind, "error", sizeof(gLearn.kind));
     strlcpy(gLearn.protocol, "UNKNOWN", sizeof(gLearn.protocol));
     strlcpy(gLearn.error,
-            gLearn.overflow ? "capture buffer overflow; try again closer"
+            (gLearn.overflow || gLearn.truncated) ? "capture incomplete; try again"
                             : "no usable IR signal captured",
             sizeof(gLearn.error));
   }
@@ -736,7 +737,7 @@ static void handleOtaFinish() {
   }
   JsonDocument doc;
   doc["ok"] = true;
-  doc["message"] = "firmware verified";
+  doc["message"] = "firmware upload accepted";
   doc["restartRequired"] = true;
   doc["bytes"] = static_cast<uint32_t>(s.written);
   doc["filename"] = s.filename;
@@ -810,10 +811,29 @@ void setup() {
   delay(50);
 
   if (!IhrStorage::begin()) {
-    Serial.println(F("[BOOT] LittleFS unavailable"));
+    Serial.println(F("[BOOT] LittleFS unavailable. To erase and initialize it, hold the config button for 3 seconds now."));
+    uint32_t heldAt = millis();
+    while (digitalRead(IHR_PIN_CFG_BTN) == LOW && millis() - heldAt < IHR_CFG_HOLD_MS) delay(10);
+    if (digitalRead(IHR_PIN_CFG_BTN) != LOW || millis() - heldAt < IHR_CFG_HOLD_MS ||
+        !IhrStorage::formatAndBegin()) {
+      Serial.println(F("[BOOT] storage not initialized; halted to preserve data"));
+      gStorageUnavailable = true;
+      return;
+    }
+    Serial.println(F("[BOOT] storage explicitly formatted"));
   }
   if (!AppCfg::load(gCfg)) {
-    AppCfg::seedDefaults(gCfg);
+    String configBackup = String(IHR_CONFIG_PATH) + ".bak";
+    if (IhrStorage::exists(IHR_CONFIG_PATH) || IhrStorage::exists(configBackup.c_str())) {
+      Serial.println(F("[BOOT] configuration unreadable; halted to preserve data"));
+      gStorageUnavailable = true;
+      return;
+    }
+    if (!AppCfg::seedDefaults(gCfg)) {
+      Serial.println(F("[BOOT] cannot save initial configuration; halted"));
+      gStorageUnavailable = true;
+      return;
+    }
   }
   if (!SignalStore::begin()) {
     Serial.println(F("[BOOT] signal database started empty or recovered"));
@@ -833,6 +853,7 @@ void setup() {
 }
 
 void loop() {
+  if (gStorageUnavailable) { delay(100); return; }
   gServer.handleClient();
   if (gApMode && gCfg.captivePortal) gDns.processNextRequest();
   pollWifi();

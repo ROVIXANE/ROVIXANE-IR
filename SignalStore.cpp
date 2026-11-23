@@ -7,6 +7,7 @@
 namespace SignalStore {
 
 static JsonDocument s_db;
+static bool s_readOnly = false;
 
 static bool isCategory(const char *c) {
   return c != nullptr &&
@@ -300,15 +301,17 @@ static bool loadFromDisk(bool seedIfMissing) {
 
 bool begin() {
   bool ok = loadFromDisk(true);
+  s_readOnly = !ok;
   if (!ok) resetEmpty();
   return ok;
 }
 
 JsonDocument &doc() { return s_db; }
 
-bool save() { return IhrStorage::writeJson(IHR_SIGNALS_PATH, s_db); }
+bool save() { return !s_readOnly && IhrStorage::writeJson(IHR_SIGNALS_PATH, s_db); }
 
 bool replace(const String &json) {
+  if (s_readOnly) return false;
   // Parse into the live document only after clearing it, but keep the on-disk
   // copy as the rollback source. Invalid input never becomes the live DB.
   s_db.clear();
