@@ -420,6 +420,8 @@ static void testRecoveryAndFactoryReset() {
       {"id":"recover","name":"Recovered TV","category":"tv","signals":[
         {"id":"s1","label":"Power","protocol":"NEC","value":"0x00FF00FF","bits":32}]}]})").code == 200,
         "recovery fixture saved");
+  CHECK(LittleFS.exists("/signals.json.bak"),
+        "previous good database is retained as .bak");
   String backup;
   CHECK(IhrStorage::readText(IHR_SIGNALS_PATH, backup), "fixture readable");
   CHECK(IhrStorage::writeText("/signals.json.bak", backup), "backup fixture written");

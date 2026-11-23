@@ -62,8 +62,9 @@ bool readJson(const char *path, JsonDocument &doc) {
   return false;
 }
 
-// Move the destination out of the way, install the new file, then drop the
-// backup. Any failure restores the previous file.
+// Move the destination out of the way, install the new file, and keep the
+// previous good copy as `.bak` for boot-time recovery. Any failure restores
+// the previous file.
 static bool installFile(const char *path, const String &tmp) {
   String bak = bakPath(path);
   bool hadOld = LittleFS.exists(path);
@@ -81,7 +82,8 @@ static bool installFile(const char *path, const String &tmp) {
     LittleFS.remove(tmp.c_str());
     return false;
   }
-  if (hadOld) LittleFS.remove(bak.c_str());
+  // Keep `.bak` as the last known-good copy; readJson() falls back to it if
+  // the main file is later truncated or corrupted.
   return true;
 }
 

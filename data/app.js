@@ -1273,7 +1273,24 @@
         toast(t('errHttpPassword'), true); $('cfgHttpPass').focus(); return;
       }
     }
+    var previousUser = state.cfg.httpUser;
     post('/api/config', c).then(function (r) {
+      // The server applies a new login immediately, before the optional
+      // restart. Refresh the cached Basic token so the next request is not 401.
+      if (c.httpAuth && (c.httpPassword || c.httpUser !== previousUser)) {
+        var nextPass = c.httpPassword;
+        if (!nextPass) {
+          var oldToken = authToken();
+          if (oldToken) {
+            try {
+              var rawToken = atob(oldToken);
+              var splitAt = rawToken.indexOf(':');
+              if (splitAt >= 0) nextPass = rawToken.slice(splitAt + 1);
+            } catch (e) { /* ignore malformed token */ }
+          }
+        }
+        if (nextPass) rememberAuth(c.httpUser, nextPass);
+      }
       state.cfg.deviceName = c.deviceName;
       state.cfg.apSsid = c.apSsid;
       state.cfg.wifiSsid = c.wifiSsid;

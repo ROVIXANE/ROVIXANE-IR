@@ -189,6 +189,7 @@ static void stopAccessPoint() {
   if (!gApMode) return;
   gDns.stop();
   WiFi.softAPdisconnect(true);
+  WiFi.mode(WIFI_STA);
   gApMode = false;
 }
 
@@ -291,7 +292,8 @@ static void sendProgmem(const char *data, size_t length, const char *type,
                         bool cacheable) {
   gServer.sendHeader("X-Content-Type-Options", "nosniff");
   if (cacheable) {
-    gServer.sendHeader("Cache-Control", "public, max-age=3600");
+    // Revalidate so a dashboard loaded before an OTA never keeps stale JS/CSS.
+    gServer.sendHeader("Cache-Control", "no-cache");
   } else {
     gServer.sendHeader("Cache-Control", "no-store");
     gServer.sendHeader("X-Frame-Options", "DENY");
