@@ -93,7 +93,7 @@
 
 ```sh
 cd ~/Downloads
-sha256sum -c rovixane-ir-nodemcuv2-v2.0.0.sha256.txt
+sha256sum -c rovixane-ir-nodemcuv2-v2.0.1.sha256.txt
 ```
 
 4. USB OTG দিয়ে বোর্ড সংযোগ করুন ও ফ্ল্যাশ করুন:
