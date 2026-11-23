@@ -41,7 +41,7 @@ static const IPAddress IHR_AP_MASK(255, 255, 255, 0);
 static AppConfig gCfg;
 static ESP8266WebServer gServer(IHR_HTTP_PORT);
 static DNSServer gDns;
-static IRrecv gIrRecv(IHR_PIN_IR_RECV, IHR_RECV_BUF_SIZE);
+static IRrecv gIrRecv(IHR_PIN_IR_RECV, IHR_RECV_BUF_SIZE, 15, true);
 static IRsend gIrSend(IHR_PIN_IR_SEND);
 
 static bool gApMode = false;
@@ -99,12 +99,17 @@ static void startLearning() {
   if (gLearn.active) return;
   memset(&gLearn, 0, sizeof(gLearn));
   gLearn.active = true;
-  gIrRecv.enableIRIn();
+  // Clean up any half-finished receiver state from a previous session, then
+  // enable the interrupt with the internal pull-up. Some TSOP-style receivers
+  // have open-drain outputs, and a stuck receiver never produces a capture.
+  gIrRecv.disableIRIn();
+  gIrRecv.enableIRIn(true);
 }
 
 static void cancelLearning() {
   gLearn.active = false;
   gLearn.ready = false;
+  gIrRecv.disableIRIn();
 }
 
 static void copyCaptureTimings(decode_results &result) {
@@ -169,7 +174,7 @@ static void pollLearning() {
                             : "no usable IR signal captured",
             sizeof(gLearn.error));
   }
-  gIrRecv.resume();
+  gIrRecv.disableIRIn();
 }
 
 // ---------------------------------------------------------------------------
