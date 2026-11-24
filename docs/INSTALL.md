@@ -2,7 +2,7 @@
 
 এই গাইডটি আপনাকে একটি খালি NodeMCU ESP8266 ESP-12E বোর্ড থেকে শুরু করে ফোন-নিয়ন্ত্রিত **ROVIXANE IR** রিমোট পর্যন্ত নিয়ে যাবে। প্রস্তুত firmware BIN ব্যবহার করলে Arduino IDE বা প্রোগ্রামিং জ্ঞানের প্রয়োজন নেই।
 
-> **সংস্করণ:** এই গাইড **v2.0.0**-এর জন্য। প্রকাশিত **v1.0.0** release ও তার legacy asset অপরিবর্তিত। v2.0.0 BIN-এর নাম `rovixane-ir-nodemcuv2-v2.0.0.bin` এবং প্রথম বুটে অ্যাডমিন পাসওয়ার্ড সেট করা বাধ্যতামূলক।
+> **সংস্করণ:** এই গাইড **v3.0.1**-এর জন্য। প্রকাশিত **v1.0.0**, **v2.0.0** ও **v3.0.0** release ও তাদের legacy asset অপরিবর্তিত। v3.0.1 BIN-এর নাম `rovixane-ir-nodemcuv2-v3.0.1.bin` এবং প্রথম বুটে অ্যাডমিন পাসওয়ার্ড সেট করা বাধ্যতামূলক।
 
 ---
 
@@ -30,7 +30,8 @@
 ## ২. সঠিক firmware BIN বেছে নিন
 
 1. [ROVIXANE-IR Releases](https://github.com/ROVIXANE/ROVIXANE-IR/releases/latest) খুলুন।
-2. **Assets** থেকে NodeMCU BIN ডাউনলোড করুন: `rovixane-ir-nodemcuv2-v2.0.0.bin`।
+2. **Assets** থেকে NodeMCU BIN ডাউনলোড করুন: `rovixane-ir-nodemcuv2-v3.0.1.bin`।
+   সরাসরি লিংক: https://github.com/ROVIXANE/ROVIXANE-IR/releases/download/v3.0.1/rovixane-ir-nodemcuv2-v3.0.1.bin
    পুরোনো প্রকাশিত v1.0.0-এর নাম `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin` (ইতিহাস অপরিবর্তিত)।
 3. মিলে যাওয়া `.sha256.txt` ফাইলটিও ডাউনলোড করুন।
 
@@ -51,7 +52,7 @@ Termux-এ:
 
 ```sh
 cd ~/Downloads
-sha256sum -c rovixane-ir-nodemcuv2-v2.0.0.sha256.txt
+sha256sum -c rovixane-ir-nodemcuv2-v3.0.1.sha256.txt
 ```
 
 `OK` মানে ফাইলটি GitHub Actions-এ তৈরি প্রকাশিত বিল্ডের সাথে মিলে যাচ্ছে।
@@ -89,7 +90,7 @@ ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null
 ```sh
 python3 -m esptool --chip esp8266 --port /dev/ttyUSB0 --baud 115200 \
   write_flash --flash_size 4MB1M 0x00000 \
-  rovixane-ir-nodemcuv2-v2.0.0.bin
+  rovixane-ir-nodemcuv2-v3.0.1.bin
 ```
 
 আপনার ফোনে যে port দেখা গেছে সেটি দিন।
@@ -157,7 +158,7 @@ ESP8266 শুধু **2.4 GHz** সমর্থিত। রাউটারে 
 
 ## ৭. firmware আপডেট
 
-### বিকল্প ১: ফোনের ব্রাউজার থেকে OTA (v2.0.0+)
+### বিকল্প ১: ফোনের ব্রাউজার থেকে OTA (v3.0.1+)
 
 1. Releases থেকে নতুন `.bin` নামান; আগে **Settings → Download backup** দিয়ে JSON ব্যাকআপ রাখুন।
 2. একই Wi-Fi-তে থেকে ড্যাশবোর্ড খুলুন → **Settings → Firmware update**।
