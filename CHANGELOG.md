@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented here.
 
+## [3.0.0] - 2026-12-01
+
+### Changed
+
+- Rebranded the project to ROVIXANE-IR V3 (firmware version 3.0.0, Android wrapper 3.0.0).
+- Dashboard, CSS and firmware strings updated to V3 identity.
+- WebAssets.h regenerated to match data/ sources.
+
+### Compatibility
+
+- Data format `ihr-signals` v2 preserved; V2 and V1 configurations remain readable.
+- Previous releases (v1.0.0, v2.0.0, v2.0.1) left untouched.
+
 ## [2.0.0] - 2026-11-23
 
 ### Added

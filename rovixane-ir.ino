@@ -1,5 +1,5 @@
 /*
-  ROVIXANE IR V2 — Universal Infrared Remote
+  ROVIXANE IR V3 — Universal Infrared Remote
   Firmware for NodeMCU ESP8266 (ESP-12E)
   https://github.com/ROVIXANE/ROVIXANE-IR
   -----------------------------------------------------------------

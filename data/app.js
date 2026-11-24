@@ -1,4 +1,4 @@
-/* ROVIXANE IR V2 — offline universal remote dashboard. No external dependencies. */
+/* ROVIXANE IR V3 — offline universal remote dashboard. No external dependencies. */
 (function () {
   'use strict';
 
