@@ -7,7 +7,7 @@
 
 **English:** ROVIXANE IR is an open-source, offline-first universal infrared remote controller built on the NodeMCU ESP8266 ESP-12E. It serves a mobile-first dashboard directly from the microcontroller, learns signals from an existing remote, stores reusable profiles, and keeps every asset locally in the firmware.
 
-> **সংস্করণ:** এই শাখাটি **v2.0.0**। আগের প্রকাশিত **v1.0.0** release ও তার asset অপরিবর্তিত রাখা হয়েছে। v2.0.0 release GitHub Actions-এ host test ও বাস্তব ESP8266 compile সফল হলেই প্রকাশিত হয়।
+> **সংস্করণ:** এই শাখাটি **v3.0.1**। আগের প্রকাশিত **v1.0.0** release ও তার asset অপরিবর্তিত রাখা হয়েছে। v2.0.0 release GitHub Actions-এ host test ও বাস্তব ESP8266 compile সফল হলেই প্রকাশিত হয়।
 
 ---
 
@@ -34,7 +34,7 @@
 | প্রকল্প | ROVIXANE-IR |
 | রিপোজিটরি | [github.com/ROVIXANE/ROVIXANE-IR](https://github.com/ROVIXANE/ROVIXANE-IR) |
 | হার্ডওয়্যার | NodeMCU ESP8266 ESP-12E |
-| বর্তমান সংস্করণ | v2.0.0 |
+| বর্তমান সংস্করণ | v3.0.1 |
 | ইন্টারফেস | বাংলা ও ইংরেজি; ড্যাশবোর্ডে এক ক্লিকে বদলানো যায়; ডার্ক/লাইট |
 | সংযোগ | 2.4 GHz Wi-Fi, AP মোডে `ROVIXANE-IR-Setup`, IP `192.168.4.1` |
 | অফলাইন | HTML, CSS, JS, PWA manifest—সব ফার্মওয়্যারের ভেতরে |
@@ -93,7 +93,7 @@
 
 ```sh
 cd ~/Downloads
-sha256sum -c rovixane-ir-nodemcuv2-v2.0.1.sha256.txt
+sha256sum -c rovixane-ir-nodemcuv2-v3.0.1.sha256.txt
 ```
 
 4. USB OTG দিয়ে বোর্ড সংযোগ করুন ও ফ্ল্যাশ করুন:
@@ -104,7 +104,7 @@ pip install esptool
 ls /dev/ttyUSB* /dev/ttyACM* 2>/dev/null
 python3 -m esptool --chip esp8266 --port /dev/ttyUSB0 --baud 115200 \
   write_flash --flash_size 4MB1M 0x00000 \
-  rovixane-ir-nodemcuv2-v2.0.0.bin
+  rovixane-ir-nodemcuv2-v3.0.1.bin
 ```
 
 > **পুরোনো v1.0.0 asset:** প্রকাশিত v1.0.0 ফাইলের নাম `ihr-universal-ir-remote-nodemcuv2-v1.0.0.bin`—ইতিহাস অপরিবর্তিত। v2.0.0 থেকে নাম `rovixane-ir-nodemcuv2-vX.X.X.bin`, SSID `ROVIXANE-IR-Setup`।
@@ -258,7 +258,7 @@ sh tests/run_tests.sh              # asset + host tests
 | 403/415 error | request-এ `X-ROVIXANE-CSRF: 1` ও JSON content type আছে কি না দেখুন (UI নিজে করে) |
 | বাটনে টিভি সাড়া দেয় না | IR LED দিক, BC547 C/B/E, 47–220 Ω রেজিস্টার ও learn করা কোড যাচাই করুন |
 | Learn-এ কিছু ধরা পড়ছে না | TSOP pinout, 100 nF ক্যাপাসিটর ও রোদ/শক্তিশালী আলো এড়িয়ে চেষ্টা করুন |
-| OTA ব্যর্থ | সঠিক `rovixane-ir-nodemcuv2-v2.0.0.bin`, 4M1M layout ও স্থির Wi-Fi নিশ্চিত করুন |
+| OTA ব্যর্থ | সঠিক `rovixane-ir-nodemcuv2-v3.0.1.bin`, 4M1M layout ও স্থির Wi-Fi নিশ্চিত করুন |
 
 আরও: [FAQ.md](docs/FAQ.md)।
 
