@@ -8,7 +8,7 @@
 // ROVIXANE IR — Universal Infrared Remote
 // https://github.com/ROVIXANE/ROVIXANE-IR
 // ---------------------------------------------------------------------------
-#define ROVIXANE_IR_FIRMWARE_VERSION "3.0.0"
+#define ROVIXANE_IR_FIRMWARE_VERSION "3.0.1"
 #define ROVIXANE_IR_DISPLAY_NAME "ROVIXANE IR"
 #define ROVIXANE_IR_AP_SSID "ROVIXANE-IR-Setup"
 #define ROVIXANE_IR_PRODUCT_NAME "ROVIXANE IR — Universal Infrared Remote"

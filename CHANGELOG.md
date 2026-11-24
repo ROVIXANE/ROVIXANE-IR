@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [3.0.1] - 2026-12-02
+
+### Fixed
+
+- Version alignment across firmware, Android wrapper, dashboard and documentation.
+- Release asset pipeline: firmware binary + SHA-256 checksum attached to GitHub release.
+
+### Compatibility
+
+- Data format `ihr-signals` v2 preserved.
+- Previous releases (v1.0.0, v2.0.0, v2.0.1, v3.0.0) left untouched.
+
 ## [3.0.0] - 2026-12-01
 
 ### Changed
